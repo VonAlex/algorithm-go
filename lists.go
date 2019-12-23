@@ -15,7 +15,7 @@ type ListNode struct {
  */
 // 本题的关键点是链表遍历，
 // 注意：1. 两个链表有长有短
-//      2. 最后一个加和可能有进位，不能漏掉
+//     2. 求和运算最后可能出现额外的进位
 
 // AddTwoNumbers ..
 func AddTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
