@@ -26,5 +26,21 @@ func TestTwo3Sum(t *testing.T) {
 			t.Log(cmp.Diff(tc.want, got))
 		}
 	}
+}
 
+func TestFindRepeatNumber(t *testing.T) {
+	type test struct {
+		input []int
+		want  int
+	}
+	tests := []test{
+		{input: []int{2, 3, 1, 0, 2, 5, 3}, want: 2},
+		{input: []int{2, 3, 1, 0}, want: -1},
+	}
+	for _, tc := range tests {
+		got := FindRepeatNumber2(tc.input)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
 }

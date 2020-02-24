@@ -62,3 +62,48 @@ func TwoSum3(nums []int, target int) []int {
 	}
 	return nil
 }
+
+/**
+ * 找出数组中重复的数字。
+ * 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。
+ * https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/
+ *
+ * 输入：[2, 3, 1, 0, 2, 5, 3]
+ * 输出：2 或 3
+ */
+
+// FindRepeatNumber 利用 map 结构
+// 时间复杂度和空间复杂度 O(n)
+func FindRepeatNumber(nums []int) int {
+	if len(nums) == 0 {
+		return -1
+	}
+	sets := make(map[int]struct{})
+	for _, num := range nums {
+		if _, ok := sets[num]; ok {
+			return num
+		}
+		sets[num] = struct{}{}
+	}
+	return -1
+}
+
+// FindRepeatNumber2 强调了长度为 n 的数组内数字范围都是 0-n-1。
+// 可以想到，当数组内的数字经过排序后，那么下标 i，就应该等于数字 num，第一个不相等的，就是题解。
+// 可以先排序，时间复杂度 O(nlogn)，再求解
+// 也可以通过交换数字达到目的。时间复杂度 O(n),空间复杂度 O(1)
+func FindRepeatNumber2(nums []int) int {
+	if len(nums) == 0 {
+		return -1
+	}
+	for i, num := range nums {
+		if i == num { // 下标 == 数字，表示该数字已经在最早位置上了
+			continue
+		}
+		if num == nums[num] { // 数字 num 排序后应该在序号为 num 的位置，但是这个位置上已经有一个数字了，等于 num，那么这就是题解
+			return num
+		}
+		nums[i], nums[num] = nums[num], nums[i]
+	}
+	return -1
+}
