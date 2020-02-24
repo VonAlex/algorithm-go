@@ -1,7 +1,7 @@
 package leetcode
 
 /**
- * 题3 两数之和
+ * LeetCode 题3 无重复字符的最长子串
  * https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
  *
  * 给定一个字符串，请你找出其中不含有重复字符的 最长子串的长度
@@ -31,4 +31,41 @@ func LengthOfLongestSubstring(s string) int {
 		indexs[c] = i + 1 // c 的 value 保存为当前位置的下一个，方便更新 left
 	}
 	return ans
+}
+
+/**
+ * 剑指 offer 面试题05 替换空格
+ * 请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
+ * https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/
+ *
+ * 输入：s = "We are happy."
+ * 输出："We%20are%20happy."
+ */
+
+// 思路：从后往前挪动位置，时间复杂度和空间复杂度均为 O(N)
+func ReplaceSpace(s string) string {
+
+	// 首先计算出空格的个数，方便后面计算结果字符串的长度
+	spacenums := 0
+	for _, char := range s {
+		if char == ' ' {
+			spacenums++
+		}
+	}
+	slen := len(s)
+	res := make([]byte, slen+spacenums*2)
+	end := len(res) - 1
+	for i := slen - 1; i >= 0; i-- {
+		if s[i] == ' ' {
+			res[end] = '0'
+			end--
+			res[end] = '2'
+			end--
+			res[end] = '%'
+		} else {
+			res[end] = s[i]
+		}
+		end--
+	}
+	return string(res)
 }

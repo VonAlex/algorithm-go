@@ -1,7 +1,7 @@
 package leetcode
 
 /**
- * 题1 两数之和
+ * LeetCode 题1 两数之和
  * 给定一个整数数组 nums 和一个目标值 target，
  * 请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。
  */
@@ -64,7 +64,7 @@ func TwoSum3(nums []int, target int) []int {
 }
 
 /**
- * 找出数组中重复的数字。
+ * 剑指 offer 面试题03 找出数组中重复的数字
  * 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。
  * https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/
  *

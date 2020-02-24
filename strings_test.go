@@ -25,3 +25,23 @@ func TestLengthOfLongestSubstring(t *testing.T) {
 		}
 	}
 }
+
+func TestReplaceSpace(t *testing.T) {
+	type test struct {
+		input string
+		want  string
+	}
+	tests := []test{
+		{input: "we are happy", want: "we%20are%20happy"},
+		{input: "wearehappy", want: "wearehappy"},
+		{input: "we  are happy", want: "we%20%20are%20happy"},
+		{input: " we are happy", want: "%20we%20are%20happy"},
+	}
+
+	for _, tc := range tests {
+		got := ReplaceSpace(tc.input)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}
