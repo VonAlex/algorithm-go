@@ -250,6 +250,29 @@ func ReverseList2(head *ListNode) *ListNode {
 	return newHead   // 返回新头结点
 }
 
+// 解法 3 头插法
+// 时间复杂度 O(n)，空间复杂度 O(1)
+// 该解法的思路是不断把当前节点的下一个节点往头部插。下面举例说明，以 1->2->3->4->5 分析，
+// curr = 1 时，将 2 插到头部，链表变成了 2->1->3->4->5
+// 我们需要一个变量记住头部的位置，即 head，不断更新传入的 head 变量即可
+// 同时需要记住下一个节点的位置，即 next
+// 以此类推，直到 curr 的下一个节点是 nil 了，说明到最后一个节点了，此时的 curr 正好在 tail 节点上
+func ReverseList3(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	var next *ListNode
+	curr := head
+	for curr.Next != nil {
+		next = curr.Next
+		curr.Next = next.Next // 将 next 节点扣出来
+		next.Next = head      // next 节点转移到最前面
+		head = next           // 更新 head 节点，因为刚才在head 前面插入了一个节点
+	}
+	// 此时 head 和 curr 分别成为了新 list 的头尾节点
+	return head
+}
+
 /***************************** 辅助函数 *********************************/
 
 // ListPrint 正向打印 list
