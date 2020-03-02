@@ -62,3 +62,8 @@ func TestReversePrint(t *testing.T) {
 	ListPrint(oneNodeHead)
 	fmt.Println(ReversePrint4(oneNodeHead))
 }
+
+func TestReverseList(t *testing.T) {
+	ListPrint(head)
+	ListPrint(ReverseList2(head))
+}

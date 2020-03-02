@@ -97,7 +97,7 @@ func AddTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
  */
 
 // 解法1 使用栈结构，这是最容易想到的
-// 时间复杂度和空间复杂度都是 O(N)
+// 时间复杂度和空间复杂度都是 O(n)
 func ReversePrint(head *ListNode) []int {
 	if head == nil {
 		return nil
@@ -116,7 +116,7 @@ func ReversePrint(head *ListNode) []int {
 }
 
 // 解法2 两次循环，先获得 list 的节点个数，然后倒着放置节点
-// 时间复杂度 O(N)，空间复杂度 O(1)
+// 时间复杂度 O(n)，空间复杂度 O(1)
 func ReversePrint2(head *ListNode) []int {
 	if head == nil {
 		return nil
@@ -205,6 +205,49 @@ func reversePrintHelper(node *ListNode, res *[]int) int {
 	nextVal := reversePrintHelper(node.Next, res)
 	*res = append(*res, nextVal)
 	return node.Val
+}
+
+/**
+ * LeetCode 题 206 反转链表
+ * https://leetcode-cn.com/problems/reverse-linked-list/
+ *
+ * 输入: 1->2->3->4->5->NULL
+ * 输出: 5->4->3->2->1->NULL
+ */
+
+// 解法 1 迭代
+// 时间复杂度 O(n)，空间复杂度 O(1)
+func ReverseList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	var prev, next *ListNode
+	curr := head
+	for curr != nil {
+		next = curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+	}
+	return prev
+}
+
+// 解法 2 递归
+// 时间复杂度 O(n)，空间复杂度 O(n)
+// 核心是假设递归函数已经把链表反转好了, 以 1->2->3->4->5 进行分析
+// 在第一层栈中， head 是 1，需要保存新的反转后链表的 tail 节点，即 2
+// 调用反转函数，2->3->4->5 反转成 2 ← 3 ← 4 ← 5， newHead 是 5
+// 那么现在就要把 1 和新的 list 关联起来，这时候之前记录的 tail 节点派上了用场。
+// 以此类推
+func ReverseList2(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	next := head.Next // next 是新 list 的尾结点
+	newHead := ReverseList2(next)
+	next.Next = head // 将传入的节点接在新 list 的后面
+	head.Next = nil  // 清空指针域，成为新的尾结点
+	return newHead   // 返回新头结点
 }
 
 /***************************** 辅助函数 *********************************/
