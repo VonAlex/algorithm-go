@@ -107,3 +107,45 @@ func FindRepeatNumber2(nums []int) int {
 	}
 	return -1
 }
+
+/**
+ * 面试题 10.01 合并排序的数组
+ * https://leetcode-cn.com/problems/sorted-merge-lcci/
+ *
+ * 输入:
+ * 		A = [1,2,3,0,0,0], m = 3
+ * 		B = [2,5,6],       n = 3
+ *
+ * 输出: [1,2,2,3,5,6]
+ */
+
+// 解法1 双指针
+// 充分利用 A 和 B 已经排好序的特点
+// 时间复杂度和空间复杂度都是 O(m+n)
+func Merge(A []int, m int, B []int, n int) {
+	C := make([]int, m+n) // 准备一个新数组，足以容纳 A + B
+	var iA, iB, iC int
+	for ; iC < m+n; iC++ {
+		if iA == m || iB == n { // 遍历完 A 或者 B 为止
+			break
+		}
+		if A[iA] < B[iB] {
+			C[iC] = A[iA]
+			iA++
+		} else {
+			C[iC] = B[iB]
+			iB++
+		}
+	}
+	// 遍历剩下的 A
+	for ; iA < m; iA++ {
+		C[iC] = A[iA]
+		iC++
+	}
+	// 遍历剩下的 B
+	for ; iB < n; iB++ {
+		C[iC] = B[iB]
+		iC++
+	}
+	copy(A, C)
+}
