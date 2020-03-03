@@ -67,3 +67,8 @@ func TestReverseList(t *testing.T) {
 	ListPrint(head)
 	ListPrint(ReverseList2(head))
 }
+
+func TestDeleteNode(t *testing.T) {
+	ListPrint(head)
+	ListPrint(DeleteNode(head, 2))
+}

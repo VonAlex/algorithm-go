@@ -273,6 +273,26 @@ func ReverseList3(head *ListNode) *ListNode {
 	return head
 }
 
+func DeleteNode(head *ListNode, val int) *ListNode {
+	if head == nil {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev := dummy
+	curr := head
+	for curr != nil {
+		if curr.Val == val {
+			prev.Next = curr.Next
+			break
+		}
+		prev = curr
+		curr = curr.Next
+	}
+	return dummy.Next
+}
+
 /***************************** 辅助函数 *********************************/
 
 // ListPrint 正向打印 list
