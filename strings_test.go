@@ -45,3 +45,7 @@ func TestReplaceSpace(t *testing.T) {
 		}
 	}
 }
+
+func TestFirstUniqChar(t *testing.T) {
+	t.Log(FirstUniqChar("leetcode"))
+}

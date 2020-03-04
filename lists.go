@@ -273,10 +273,20 @@ func ReverseList3(head *ListNode) *ListNode {
 	return head
 }
 
+/**
+ * 剑指 offer 面试题 18 删除链表的节点
+ * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
+ *
+ * 输入: head = [4,5,1,9], val = 5
+ * 输出: [4,1,9]
+ *
+ * 说明：题目保证链表中节点的值互不相同
+ */
 func DeleteNode(head *ListNode, val int) *ListNode {
 	if head == nil {
 		return head
 	}
+	// 使用 dummy 节点简化特殊情况的处理
 	dummy := &ListNode{
 		Next: head,
 	}

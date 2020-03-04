@@ -69,3 +69,54 @@ func ReplaceSpace(s string) string {
 	}
 	return string(res)
 }
+
+/**
+ * 剑指 offer 面试题 50. 第一个只出现一次的字符
+ * https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/
+ * s = "abaccdeff"
+ * 返回 "b"
+ * s = ""
+ * 返回 " "
+ * 限制：0 <= s 的长度 <= 50000
+ */
+
+// 解法 1 暴力遍历，时间复杂度 O(n^2)
+
+// 解法 2-1 两次遍历法（map）
+// 时间复杂度为 O(n)
+func FirstUniqChar(s string) byte {
+	if s == "" {
+		return ' '
+	}
+	// 使用 map 计数
+	checkSet := make(map[rune]int)
+	for _, si := range s {
+		checkSet[si]++
+	}
+	for _, si := range s {
+		if checkSet[si] == 1 {
+			return byte(si)
+		}
+	}
+	return ' '
+}
+
+// 解法 2-2 两次遍历法（数组）
+// 如果 s 中不仅仅是小写字母，那么只能用 map
+func FirstUniqChar2(s string) byte {
+	if s == "" {
+		return ' '
+	}
+	// 使用数组计数
+	checkSet := make([]int, 26)
+	for _, si := range s {
+		checkSet[si-'a']++
+	}
+
+	for _, si := range s {
+		if checkSet[si-'a'] == 1 {
+			return byte(si)
+		}
+	}
+	return ' '
+}
