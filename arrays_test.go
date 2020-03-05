@@ -52,3 +52,21 @@ func TestMerge(t *testing.T) {
 	n := 3
 	Merge(A, m, B, n)
 }
+
+func TestDistributeCandies(t *testing.T) {
+	type test struct {
+		candies int
+		people  int
+		want    []int
+	}
+	tests := []test{
+		{candies: 7, people: 4, want: []int{1, 2, 3, 1}},
+		{candies: 10, people: 3, want: []int{5, 2, 3}},
+	}
+	for _, tc := range tests {
+		got := DistributeCandies(tc.candies, tc.people)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}

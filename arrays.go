@@ -149,3 +149,35 @@ func Merge(A []int, m int, B []int, n int) {
 	}
 	copy(A, C)
 }
+
+/*
+ * LeetCode 题 1103 分糖果 II
+ * https://leetcode-cn.com/problems/distribute-candies-to-people/
+ */
+
+// 解法 1 暴力解法，不断循环
+func DistributeCandies(candies int, num_people int) []int {
+	res := make([]int, num_people)
+	loop := 0
+	candy := 0
+	for candies != 0 {
+		for i := 0; i < num_people; i++ {
+			// i 从 0 开始
+			// 第 i 位小朋友应该分到的糖果数量是（小朋友序号i+1）+ 总人数 * 第 n 轮（n 从 1 开始）
+			candy = (i + 1) + num_people*loop
+			// 判断剩下的糖果是否足够给这个小朋友
+			if candies > candy {
+				res[i] += candy
+				candies -= candy
+			} else {
+				res[i] += candies
+				candies = 0
+			}
+		}
+		loop++
+	}
+	return res
+}
+
+// 解法 2 等差数列求和
+// 参考 https://leetcode-cn.com/problems/distribute-candies-to-people/solution/fen-tang-guo-ii-by-leetcode-solution/
