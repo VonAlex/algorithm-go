@@ -1,5 +1,10 @@
 package leetcode
 
+import (
+	"math"
+	"strconv"
+)
+
 /**
  * LeetCode 题 3 无重复字符的最长子串
  * https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
@@ -119,4 +124,66 @@ func FirstUniqChar2(s string) byte {
 		}
 	}
 	return ' '
+}
+
+/**
+ * LeetCode 题 7 整数反转
+ * https://leetcode-cn.com/problems/reverse-integer/
+ *
+ * 输入: 123  输出: 321
+ * 输入: -123 输出: -321、
+ * 输入: 120  输出: 21
+ *
+ * 假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−231,  231 − 1]。
+ * 请根据这个假设，如果反转后整数溢出那么就返回 0。
+ */
+
+// 解法 1：res = res*10 + pop
+func Reverse(x int) int {
+	res := 0
+	for x != 0 {
+		pop := x % 10
+		// res = res*10 + pop
+		// if res > math.MaxInt32 || res < math.MinInt32 {
+		// 	return 0
+		// }
+		// x /= 10
+
+		x /= 10
+
+		// 7 是因为 2^31 - 1 = 2147483647，个位数是 7
+		if res > math.MaxInt32/10 || (res == math.MaxInt32/10 && pop > 7) {
+			return 0
+		}
+		// 8 是因为 (-2)^31 = -2147483648，个位数是 8
+		if res < math.MinInt32/10 || (res == math.MinInt32/10 && pop < -8) {
+			return 0
+		}
+		res = res*10 + pop
+	}
+	return res
+}
+
+// 解法 2：先转成字符串，然后反转字符串，再转成数字
+func Reverse2(x int) int {
+	sign := 1
+	if x < 0 {
+		sign = 0 - sign
+		x = 0 - x
+	}
+	s := strconv.Itoa(x)
+	bts := make([]byte, 0, len(s))
+	for i := len(s) - 1; i >= 0; i-- {
+		bts = append(bts, s[i])
+	}
+	// Atoi 会自动处理 '020' 这种首字母为 0 的数字
+	res, err := strconv.Atoi(string(bts))
+	if err != nil {
+		return 0
+	}
+	res *= sign
+	if res > math.MaxInt32 || res < math.MinInt32 {
+		return 0
+	}
+	return res
 }
