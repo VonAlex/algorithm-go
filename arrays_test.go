@@ -75,3 +75,26 @@ func TestExange(t *testing.T) {
 	nums := []int{1, 2, 3, 4, 5}
 	t.Log(Exchange(nums))
 }
+
+func TestPivotIndex(t *testing.T) {
+	type test struct {
+		input []int
+		want  int
+	}
+	tests := []test{
+		{[]int{1, 7, 3, 6, 5, 6}, 3},
+		{[]int{1, 2, 3}, -1},
+		{[]int{}, -1},
+	}
+	for _, tc := range tests {
+		got := PivotIndex(tc.input)
+		if got != tc.want {
+			t.Log(tc.want, got)
+		}
+	}
+}
+
+func TestDominantIndex(t *testing.T) {
+	nums := []int{0, 0, 0, 1}
+	t.Log(DominantIndex2(nums))
+}

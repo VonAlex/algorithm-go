@@ -211,3 +211,83 @@ func Exchange(nums []int) []int {
 	}
 	return nums
 }
+
+/*
+ * 寻找数组的中心索引
+ * 中心索引：数组中心索引的左侧所有元素相加的和等于右侧所有元素相加的和
+ * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/770/
+ *
+ * 示例：
+ * 输入: nums = [1, 7, 3, 6, 5, 6]
+ * 输出: 3
+ */
+func PivotIndex(nums []int) int {
+	sum := 0
+	for _, num := range nums {
+		sum += num
+	}
+	leftSum := 0
+	for i := range nums {
+		if sum-nums[i] == 2*leftSum {
+			return i
+		}
+		leftSum += nums[i]
+	}
+	return -1
+}
+
+/*
+ * 至少是其他数字两倍的最大数
+ * 查找数组中的最大元素是否至少是数组中每个其他数字的两倍,如果是，则返回最大元素的索引，否则返回-1。
+ * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/771/
+ *
+ * 示例：
+ * 输入: nums = [3, 6, 1, 0]
+ * 输出: 1
+ */
+
+// 解法 1：两遍循环
+func DominantIndex(nums []int) int {
+	max := 0
+	idx := -1
+	// 先找到最大值
+	for i := range nums {
+		if nums[i] > max {
+			max = nums[i]
+			idx = i
+		}
+	}
+	for i := range nums {
+		// 跳过自身
+		if i == idx {
+			continue
+		}
+		if max < nums[i]*2 {
+			return -1
+		}
+	}
+	return idx
+}
+
+// 解法 2：一遍循环
+// 最关键的是要找到，数组中最大的数 m，和第二大的数 n，判断 m 与 2n 的大小关系
+func DominantIndex2(nums []int) int {
+	max := 0    // 数组中最大的数
+	second := 0 // 数组中第二大的数
+	idx := -1
+	for i := range nums {
+		if nums[i] <= max {
+			if second < nums[i] {
+				second = nums[i]
+			}
+			continue
+		}
+		second = max
+		max = nums[i]
+		idx = i
+	}
+	if max >= 2*second {
+		return idx
+	}
+	return -1
+}
