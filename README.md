@@ -1,1 +1,1 @@
-play algorithm in leetcode with golang v12.4
+play algorithm with golang v12.4
