@@ -1,5 +1,9 @@
 package leetcode
 
+import (
+	"math"
+)
+
 /**
  * LeetCode 面试题16. 数值的整数次方
  * https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/
@@ -73,6 +77,54 @@ func powWithUnsignedEx2(x float64, n int) float64 {
 		}
 		accum *= accum // 不断求平方值，x → x^2 → x^4 → x^8
 		n = n >> 1
+	}
+	return res
+}
+
+/**
+ * LeetCode 面试题17. 打印从1到最大的n位数
+ * https://leetcode-cn.com/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/
+ *
+ * 输入数字 n，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数 999。
+ *
+ * 示例 1:
+ *        输入: n = 1
+ *        输出: [1,2,3,4,5,6,7,8,9]
+ */
+// 其实这道题被 LeetCode 做简单的，应有的考虑 n 过大溢出情况，这里根本没有考虑到
+func PrintNumbers(n int) []int {
+	max := int(math.Pow10(n)) - 1
+	res := make([]int, max)
+	for i := 1; i <= max; i++ {
+		res[i-1] = i
+	}
+	return res
+}
+
+// 大数问题，字符串表示
+// 使用全排列的解法，每个数位上的数都是数字 0-9
+func PrintNumbers2(n int) []string {
+	number := make([]byte, n)
+	res := []string{}
+	for i := 0; i < 10; i++ {
+		number[0] = byte(i) + '0' // 最末位
+		resub := printNumbersHelper(number, n, 0)
+		res = append(res, resub...)
+	}
+	// TODO：把 res 每一项进行字符串反转得到最终结果
+	return res
+}
+
+func printNumbersHelper(number []byte, length, index int) []string {
+	res := []string{}
+	if index == length-1 {
+		res = append(res, string(number))
+		return res
+	}
+	for i := 0; i < 10; i++ {
+		number[index+1] = byte(i) + '0'
+		resub := printNumbersHelper(number, length, index+1) // 下一位
+		res = append(res, resub...)
 	}
 	return res
 }
