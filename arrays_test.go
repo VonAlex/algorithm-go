@@ -98,3 +98,22 @@ func TestDominantIndex(t *testing.T) {
 	nums := []int{0, 0, 0, 1}
 	t.Log(DominantIndex2(nums))
 }
+
+func TestPlusOne(t *testing.T) {
+	type test struct {
+		input []int
+		want  []int
+	}
+	tests := []test{
+		{[]int{9}, []int{1, 0}}, // 注意这种最高位有进位的情况
+		{[]int{1, 2, 3}, []int{1, 2, 4}},
+		{[]int{}, []int{}},
+		{[]int{1, 2, 9}, []int{1, 3, 0}},
+	}
+	for _, tc := range tests {
+		got := PlusOne(tc.input)
+		if !reflect.DeepEqual(got, tc.want) {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}

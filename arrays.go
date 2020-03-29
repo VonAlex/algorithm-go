@@ -291,3 +291,42 @@ func DominantIndex2(nums []int) int {
 	}
 	return -1
 }
+
+/*
+ * 加一(数组的加法)
+ * 给定一个由整数组成的非空数组所表示的非负整数，在该数的基础上加一。
+ * 最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
+ * 你可以假设除了整数 0 之外，这个整数不会以零开头
+ * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/772/
+ *
+ * 示例：
+ * 输入: [1,2,3]
+ * 输出: [1,2,4]
+ */
+func PlusOne(digits []int) []int {
+	length := len(digits)
+	if length == 0 {
+		return []int{}
+	}
+	carry := 1 // 末尾 + 1
+	lastIdx := length - 1
+	for i := lastIdx; i >= 0; i-- {
+		num := digits[i] + carry
+		if num < 10 { // 不再产生进位了，就可以返回了
+			digits[i] = num
+			return digits
+		}
+		if num >= 10 {
+			carry = num / 10
+			digits[i] = num % 10 // 在原数组改，或者是新申请一个结果数组，go 是参数传值，在 digits 数组修改不会影响调用者
+		}
+	}
+	// 最高位有进位的时候，结果肯定要多一位，原来的 digits 数组已经无法容纳了，所以需要再申请一个 +1 长度的数组
+	if carry > 0 {
+		res := make([]int, length+1)
+		res[0] = carry
+		copy(res[1:], digits)
+		return res
+	}
+	return digits
+}
