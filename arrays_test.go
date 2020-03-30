@@ -117,3 +117,20 @@ func TestPlusOne(t *testing.T) {
 		}
 	}
 }
+
+func TestSingleNumber(t *testing.T) {
+	type test struct {
+		input []int
+		want  int
+	}
+	tests := []test{
+		{[]int{4, 1, 2, 1, 2}, 4},
+		{[]int{2, 2, 1}, 1},
+	}
+	for _, tc := range tests {
+		got := SingleNumber(tc.input)
+		if got != tc.want {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}

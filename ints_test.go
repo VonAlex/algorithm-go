@@ -1,6 +1,8 @@
 package leetcode
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestPrintNumbers(t *testing.T) {
 	n := 2

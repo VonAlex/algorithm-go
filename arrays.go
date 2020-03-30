@@ -330,3 +330,24 @@ func PlusOne(digits []int) []int {
 	}
 	return digits
 }
+
+/*
+ * 只出现一次的数字
+ *
+ * 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+ * https://leetcode-cn.com/explore/interview/card/top-interview-quesitons/261/before-you-start/1106/
+ *
+ * 示例：
+ * 输入: [2,2,1]
+ * 输出: 1
+ */
+// 将数组内的数字进行按位异或运算，相同的两个数异或值为 0，
+// 一个数与 0 的异或运算结果是自身，
+// 一个数与全 1 数的异或运算结果是自身按位取反
+func SingleNumber(nums []int) int {
+	res := 0
+	for _, num := range nums {
+		res ^= num
+	}
+	return res
+}
