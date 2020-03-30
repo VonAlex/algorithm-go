@@ -358,6 +358,32 @@ func SingleNumber(nums []int) int {
 }
 
 /*
+ * 只出现一次的数字 II
+ *
+ * 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现了三次。找出那个只出现了一次的元素。
+ * https://leetcode-cn.com/problems/single-number-ii/
+ *
+ * 示例：
+ * 输入: [2,2,3,2]
+ * 输出: 3
+ */
+// 为了区分出现一次的数字和出现三次的数字，使用两个位掩码：seenOnce 和 seenTwice
+// 仅当 seenTwice 未变时，改变 seenOnce
+// 仅当 seenOnce 未变时，改变 seenTwice
+
+func SingleNumber2(nums []int) int {
+	seenOnce := 0
+	seenTwice := 0
+	for _, num := range nums {
+		seenOnce = ^seenTwice & (seenOnce ^ num)
+		seenTwice = ^seenOnce & (seenTwice ^ num)
+	}
+	return seenOnce
+}
+
+// 上面的题目当然也可以用 hash 表统计次数，实现简单就不写了
+
+/*
  * leetcode 169. 多数元素（众数）
  *
  * https://leetcode-cn.com/problems/majority-element/
