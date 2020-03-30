@@ -1,5 +1,10 @@
 package leetcode
 
+import (
+	"math/rand"
+	"sort"
+)
+
 /**
  * LeetCode 题1 两数之和
  * 给定一个整数数组 nums 和一个目标值 target，
@@ -350,4 +355,104 @@ func SingleNumber(nums []int) int {
 		res ^= num
 	}
 	return res
+}
+
+/*
+ * leetcode 169. 多数元素（众数）
+ *
+ * https://leetcode-cn.com/problems/majority-element/
+ * 给给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。
+ * 你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+ *
+ * 示例：
+ * 输入: [3,2,3]
+ * 输出: 3
+ */
+
+// 方法 1：hash 表法
+// 使用 hash 表来记录所有数字出现的次数
+// 可以遍历一次 hash 表（尤其注意只有一个元素的数组），也可以遍历两次。
+// 时间复杂度和空间复杂度都是 O(N)
+func MajorityElement(nums []int) int {
+	cnts := make(map[int]int)
+	length := len(nums)
+	if length == 0 {
+		return 0
+	}
+	majorityCount := len(nums) / 2
+	if majorityCount == 0 { // 单元素的情况
+		return nums[0]
+	}
+	target := 0
+	for _, num := range nums {
+		cnts[num]++
+		t, ok := cnts[num]
+		if ok && t > majorityCount {
+			target = num
+			break
+		}
+	}
+	return target
+}
+
+// 方法 2：排序法
+// 把数组进行排序，数组中间那个数字肯定就是众数
+// 快排的时间复杂度 O(NlogN)，可以使用内置的库函数
+func MajorityElement2(nums []int) int {
+	sort.Ints(nums)
+	return nums[len(nums)/2]
+}
+
+// 方法 3：Boyer-Moore 投票算法
+// cnt 实际表示的是众数比其他元素多出现的次数
+// [7, 7, 5, 7, 5, 1 | 5, 7 | 5, 5, 7, 7 | 7, 7, 7, 7]
+// 在遍历到数组中的第一个元素以及每个在 | 之后的元素时，candidate 都会因为 count 的值变为 0 而发生改变。
+// 最后一次 candidate 的值从 5 变为 7，也就是这个数组中的众数
+// 更多的解释可以参考 https://leetcode-cn.com/problems/majority-element/solution/duo-shu-yuan-su-by-leetcode-solution/
+func MajorityElement3(nums []int) int {
+	cnt := 0
+	candidate := 0
+	for _, num := range nums {
+		if cnt == 0 {
+			candidate = num
+		}
+		if candidate == num {
+			cnt++
+		} else {
+			cnt--
+		}
+	}
+	return candidate
+}
+
+// 方法 4: 随机法
+// 时间复杂度：理论上最坏情况下的时间复杂度为 O(∞)，
+// 因为如果我们的语气很差，这个算法会一直找不到众数，随机挑选无穷多次，所以最坏时间复杂度是没有上限的。
+// 然而，运行的期望时间是线性的。
+func MajorityElement4(nums []int) int {
+	length := len(nums)
+	if length == 0 {
+		return 0
+	}
+	majorityCount := len(nums) / 2
+	if majorityCount == 0 { // 单元素的情况
+		return nums[0]
+	}
+	for {
+		candidate := nums[rand.Intn(length)]
+		if countOccurences(nums, candidate) > majorityCount {
+			return candidate
+		}
+	}
+}
+
+func countOccurences(nums []int, num int) int {
+	cnt := 0
+	for _, v := range nums {
+		if v != num {
+			continue
+		}
+		cnt++
+	}
+	return cnt
 }

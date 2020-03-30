@@ -134,3 +134,21 @@ func TestSingleNumber(t *testing.T) {
 		}
 	}
 }
+
+func TestMajorityElement(t *testing.T) {
+	type test struct {
+		input []int
+		want  int
+	}
+	tests := []test{
+		{[]int{1}, 1},
+		{[]int{3, 3, 1}, 3},
+		{[]int{2, 2, 1, 1, 1, 2, 2}, 2},
+	}
+	for _, tc := range tests {
+		got := MajorityElement3(tc.input)
+		if got != tc.want {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}
