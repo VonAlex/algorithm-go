@@ -135,6 +135,22 @@ func TestSingleNumber(t *testing.T) {
 	}
 }
 
+func TestSingleNumber2(t *testing.T) {
+	type test struct {
+		input []int
+		want  int
+	}
+	tests := []test{
+		{[]int{2, 2, 3, 2}, 3},
+	}
+	for _, tc := range tests {
+		got := SingleNumber22(tc.input)
+		if got != tc.want {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}
+
 func TestMajorityElement(t *testing.T) {
 	type test struct {
 		input []int
@@ -151,4 +167,9 @@ func TestMajorityElement(t *testing.T) {
 			t.Log(cmp.Diff(tc.want, got))
 		}
 	}
+}
+
+func TestSortArray(t *testing.T) {
+	nums := []int{5, 1, 1, 2, 0, 0}
+	t.Log(SortArray2(nums))
 }

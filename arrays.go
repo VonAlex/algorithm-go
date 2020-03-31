@@ -367,10 +367,10 @@ func SingleNumber(nums []int) int {
  * 输入: [2,2,3,2]
  * 输出: 3
  */
+// 方法 1：位运算法
 // 为了区分出现一次的数字和出现三次的数字，使用两个位掩码：seenOnce 和 seenTwice
 // 仅当 seenTwice 未变时，改变 seenOnce
 // 仅当 seenOnce 未变时，改变 seenTwice
-
 func SingleNumber2(nums []int) int {
 	seenOnce := 0
 	seenTwice := 0
@@ -381,7 +381,25 @@ func SingleNumber2(nums []int) int {
 	return seenOnce
 }
 
-// 上面的题目当然也可以用 hash 表统计次数，实现简单就不写了
+// 方法 2：可以用 hash 表统计次数，实现简单就不写了
+
+// 方法 3  数学推导
+// 3(a+b+c) - (3a+3b+c) = 2c
+func SingleNumber22(nums []int) int {
+	cnts := make(map[int]struct{}) // 做 set 过滤
+	sum1 := 0
+	sum2 := 0
+	for _, num := range nums {
+		sum1 += num
+		if _, ok := cnts[num]; ok {
+			continue
+		}
+		sum2 += num
+		cnts[num] = struct{}{}
+	}
+	target := (3*sum2 - sum1) / 2
+	return target
+}
 
 /*
  * leetcode 169. 多数元素（众数）
@@ -481,4 +499,65 @@ func countOccurences(nums []int, num int) int {
 		cnt++
 	}
 	return cnt
+}
+
+/*
+ * leetcode 912. 数组排序
+ *
+ * https://leetcode-cn.com/problems/sort-an-array/
+ * 给你一个整数数组 nums，请你将该数组升序排列。
+ *
+ * 示例：
+ * 输入: nums = [5,2,3,1]
+ * 输出: [1,2,3,5]
+ */
+// 方法 1：冒泡法
+func SortArray(nums []int) []int {
+	length := len(nums) - 1
+	for i := 0; i < length; i++ {
+		for j := i; j <= length; j++ {
+			if nums[j] < nums[i] {
+				nums[i], nums[j] = nums[j], nums[i]
+			}
+		}
+	}
+	return nums
+}
+
+// 方法 2：快速排序
+func SortArray2(nums []int) []int {
+	quickSort(nums, 0, len(nums)-1)
+	return nums
+}
+
+func quickSort(nums []int, lo, hi int) {
+	if lo >= hi {
+		return
+	}
+	p := partition(nums, lo, hi)
+	quickSort(nums, lo, p-1)
+	quickSort(nums, p+1, hi)
+}
+
+func partition(nums []int, lo, hi int) int {
+	pivot := nums[lo]
+	left, right := lo, hi
+	for left < right {
+		for left < right && nums[right] > pivot {
+			right--
+		}
+		if left < right {
+			nums[left] = nums[right]
+			left++
+		}
+		for left < right && nums[left] < pivot {
+			left++
+		}
+		if left < right {
+			nums[right] = nums[left]
+			right--
+		}
+	}
+	nums[left] = pivot
+	return left
 }
