@@ -20,7 +20,7 @@ type ListNode struct {
  */
 // 本题的关键点是链表遍历，
 // 注意：1. 两个链表有长有短
-//     2. 求和运算最后可能出现额外的进位
+//      2. 求和运算最后可能出现额外的进位
 
 // AddTwoNumbers ..
 func AddTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
@@ -321,6 +321,100 @@ func PrintCommonPart(head1 *ListNode, head2 *ListNode) {
 			node1 = node1.Next
 		}
 	}
+}
+
+/**
+ * LeetCode 题19 删除单链表的倒数第 K 个节点
+ * 示例：
+ * 给定一个链表: 1->2->3->4->5, 和 n = 2.
+ * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
+ * 给定的 n 保证是有效的。
+ *
+ * 考察点是链表的删除，重要的是找到要删除节点的前一个节点
+ */
+// 解法 1：两遍遍历链表1
+// 假设链表长度是 N，倒数第 K 个节点的前一个节点就是第 N - K 个节点
+// 第 1 次遍历，每个节点 -1，到最后一个节点，该值为 K - N
+// 第 2 次遍历，每个节点 +1，当值为 0 时，就找到了要找的节点
+func RemoveLastKthNode(head *ListNode, n int) *ListNode {
+	if head == nil || n < 0 {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	curr := dummy
+	for curr.Next != nil {
+		n--
+		curr = curr.Next
+	}
+	if n > 0 {
+		return head
+	}
+	if n == 0 {
+		return head.Next
+	}
+	curr = dummy
+	for n != 0 {
+		n++
+		curr = curr.Next
+	}
+	curr.Next = curr.Next.Next
+	return head
+}
+
+// 解法 2：两遍遍历链表 2 (跟上面的解法类似，核心是找到第 N - K + 1 个节点)
+func RemoveLastKthNode2(head *ListNode, n int) *ListNode {
+	if head == nil || n < 0 {
+		return head
+	}
+	curr := head
+	length := 0
+	for curr != nil {
+		length++
+		curr = curr.Next
+	}
+	// 链表长度减去 K，可能有三种情况，>0,=0,<0
+	// <0 和 = 0 为异常情况，使用 dummy 节点来归一化处理
+	length -= n
+	dummy := &ListNode{
+		Next: head,
+	}
+	curr = dummy
+	// 找到从链表开头数起的第 (N - K) 个结点（是前置节点）
+	for length > 0 {
+		length--
+		curr = curr.Next
+	}
+	curr.Next = curr.Next.Next
+	return dummy.Next
+}
+
+// 解法 3 一次遍历法
+// 使用快慢指针法
+// 快指针先走 n+1 步,快慢指针相距 n 个数
+func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
+	if head == nil || n < 0 {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	curr1 := dummy
+	curr2 := dummy
+	for n >= 0 {
+		if curr1 == nil {
+			return head
+		}
+		n--
+		curr1 = curr1.Next
+	}
+	for curr1 != nil {
+		curr1 = curr1.Next
+		curr2 = curr2.Next
+	}
+	curr2.Next = curr2.Next.Next
+	return dummy.Next
 }
 
 /***************************** 辅助函数 *********************************/

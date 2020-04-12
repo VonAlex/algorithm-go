@@ -92,3 +92,8 @@ func TestDeleteNode(t *testing.T) {
 func TestPrintCommonPart(t *testing.T) {
 	PrintCommonPart(head, head2)
 }
+
+func TestRemoveLastKthNode(t *testing.T) {
+	ListPrint(head)
+	ListPrint(RemoveLastKthNode3(head, 5))
+}
