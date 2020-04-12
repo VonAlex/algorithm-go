@@ -303,6 +303,26 @@ func DeleteNode(head *ListNode, val int) *ListNode {
 	return dummy.Next
 }
 
+/**
+ * 打印两个有序链表的公共部分
+ */
+// 既然是有序链表，那么此题难度就很低了
+func PrintCommonPart(head1 *ListNode, head2 *ListNode) {
+	node1 := head1
+	node2 := head2
+	for node1 != nil && node2 != nil {
+		if node1.Val > node2.Val {
+			node2 = node2.Next
+		} else if node1.Val < node2.Val {
+			node1 = node1.Next
+		} else {
+			fmt.Println(node1.Val)
+			node2 = node2.Next
+			node1 = node1.Next
+		}
+	}
+}
+
 /***************************** 辅助函数 *********************************/
 
 // ListPrint 正向打印 list

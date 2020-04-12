@@ -48,6 +48,22 @@ var head = &ListNode{
 	},
 }
 
+var head2 = &ListNode{
+	Val: 1,
+	Next: &ListNode{
+		Val: 2,
+		Next: &ListNode{
+			Val: 6,
+			Next: &ListNode{
+				Val: 7,
+				Next: &ListNode{
+					Val: 8,
+				},
+			},
+		},
+	},
+}
+
 var oneNodeHead = &ListNode{
 	Val: 1,
 }
@@ -71,4 +87,8 @@ func TestReverseList(t *testing.T) {
 func TestDeleteNode(t *testing.T) {
 	ListPrint(head)
 	ListPrint(DeleteNode(head, 2))
+}
+
+func TestPrintCommonPart(t *testing.T) {
+	PrintCommonPart(head, head2)
 }

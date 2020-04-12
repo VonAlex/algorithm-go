@@ -168,8 +168,3 @@ func TestMajorityElement(t *testing.T) {
 		}
 	}
 }
-
-func TestSortArray(t *testing.T) {
-	nums := []int{5, 1, 1, 2, 0, 0}
-	t.Log(SortArray2(nums))
-}
