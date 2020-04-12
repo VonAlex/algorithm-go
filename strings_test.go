@@ -67,3 +67,20 @@ func TestReverse(t *testing.T) {
 		}
 	}
 }
+
+func TestIsPalindrome(t *testing.T) {
+	type test struct {
+		input string
+		want  bool
+	}
+	tests := []test{
+		{input: "A man, a plan, a canal: Panama", want: true},
+		{input: "race a car", want: false},
+	}
+	for _, tc := range tests {
+		got := IsPalindrome(tc.input)
+		if got != tc.want {
+			t.Log(cmp.Diff(tc.want, got))
+		}
+	}
+}
