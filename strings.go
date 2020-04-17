@@ -191,13 +191,14 @@ func Reverse2(x int) int {
 
 /**
  * leetcode 题 125 验证回文串
+ * https://leetcode-cn.com/problems/valid-palindrome/
  * 给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写
  * 说明：本题中，我们将空字符串定义为有效的回文串
  *
  * 输入: "A man, a plan, a canal: Panama"
  * 输出: true
  *
- * https://leetcode-cn.com/problems/valid-palindrome/
+ *
  */
 func IsPalindrome(s string) bool {
 	l := 0
@@ -224,6 +225,143 @@ func IsPalindrome(s string) bool {
 	}
 	return true
 }
+
+/*
+ * leetcode 题 131 分割回文串
+ * https://leetcode-cn.com/problems/palindrome-partitioning/
+ * 给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
+ * 返回 s 所有可能的分割方案。
+ * 示例:
+ * 输入: "aab"
+ * 输出:
+ * [
+ *   ["aa","b"],
+ *   ["a","a","b"]
+ * ]
+ *
+ * 以 aabb 为例
+ * 解法 1：分治法
+ * 先考虑在第 1 个位置切割, a | abb
+ * abb 的所有结果是 [a, bb], [a, b, b]
+ * 然后考虑在第 2 个位置切割, aa | bb
+ * bb 的所有结果是 [bb], [b, b]
+ * 以此类推直到字符串不能再切割
+ */
+func PalindromePartition(s string) [][]string {
+	return palindromePartitionHelper(s, 0)
+}
+
+func palindromePartitionHelper(s string, start int) [][]string {
+	ress := [][]string{}
+	lens := len(s)
+	if start == lens { // 递归出口为 idx 到达字符串末端
+		res := []string{}
+		ress = append(ress, res)
+		return ress
+	}
+	for i := start; i < lens; i++ {
+		left := s[start:i+1]
+		if !IsPalindrome(left) { // 对于不是回文的子串就跳过了
+			continue
+		}
+		// 处理子串
+		for _, l := range palindromePartitionHelper(s, i+1) {
+			ll := make([]string, len(l)+1)
+			ll[0] = left
+			copy(ll[1:], l) // 将 left 放在数组最前端
+			ress = append(ress, ll)
+		}
+	}
+	return ress
+}
+
+/*
+ * 解法 2：分治法的优化
+ * 判断字符串 abbbba 是否是回文串时，肯定会判断 bbbb 是不是回文串，
+ * 其实如果我们已经知道了 bbbb 是回文串，只需要判断 abbbba 的开头和末尾字符是否相等即可。
+ * 用 dp[i][j] 记录 s[i，j] 是否是回文串，可以避免很多不必要的比较，提前结束
+ */
+func PalindromePartition2(s string) [][]string {
+	slen := len(s)
+	dp := make([][]bool, slen)
+	for i := range dp {
+		dp[i] =  make([]bool, slen)
+	}
+	for ln := 1; ln <= slen; ln++ {
+		for i := 0; i <= slen - ln; i++ {
+			j := i+ln-1
+			dp[i][j] = (s[i] == s[j]) && (ln < 3 || dp[i+1][j-1])
+		}
+	}
+	return palindromePartitionHelper2(s, 0, dp)
+
+}
+
+func palindromePartitionHelper2(s string, start int, dp [][]bool) [][]string {
+	ress := [][]string{}
+	slen := len(s)
+	if start == slen { // 递归出口为 idx 到达字符串末端
+		res := []string{}
+		ress = append(ress, res)
+		return ress
+	}
+	for i := start; i < slen; i++ {
+		if !dp[start][i] {
+			continue
+		}
+		// 处理子串
+		left := s[start:i+1]
+		for _, l := range palindromePartitionHelper(s, i+1) {
+			ll := make([]string, len(l)+1)
+			ll[0] = left
+			copy(ll[1:], l) // 将 left 放在数组最前端
+			ress = append(ress, ll)
+		}
+	}
+	return ress
+}
+
+/*
+ * 解法 3：回溯法
+ * DFS 深度优先遍历，套用回溯法的模板
+ */
+func PalindromePartition3(s string) [][]string {
+	slen := len(s)
+	dp := make([][]bool, slen)
+	for i := range dp {
+		dp[i] =  make([]bool, slen)
+	}
+	for ln := 1; ln <= slen; ln++ {
+		for i := 0; i <= slen - ln; i++ {
+			j := i+ln-1
+			dp[i][j] = (s[i] == s[j]) && (ln < 3 || dp[i+1][j-1])
+		}
+	}
+	var ress [][]string
+	var temp []string
+	palindromePartitionHelper3(s, 0, &ress, temp, dp)
+	return ress
+}
+
+func palindromePartitionHelper3(s string, start int, ress *[][]string, path []string, dp [][]bool) {
+	slen := len(s)
+	if slen == start {
+		tmp := make([]string, len(path))
+		copy(tmp, path) // 深拷贝，防止上一层的删除影响到这一次的 slice
+		*ress = append(*ress, tmp)
+		return
+	}
+	for i:= start; i < slen; i++ {
+		if !dp[start][i] { // 判断start 到 i 子串是否是回文串
+			continue
+		}
+		path = append(path, s[start:i+1])
+		palindromePartitionHelper3(s, i+1, ress, path, dp)
+		path = path[:len(path)-1] // 回溯，删掉上一次塞进来的 s[start:i+1]
+	}
+	return
+}
+
 
 /**
  * leetcode 题 344 反转字符串

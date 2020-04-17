@@ -84,3 +84,8 @@ func TestIsPalindrome(t *testing.T) {
 		}
 	}
 }
+
+func TestPalindromePartition(t *testing.T) {
+	s := "aab"
+	t.Log(PalindromePartition3(s))
+}
