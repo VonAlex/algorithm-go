@@ -168,3 +168,32 @@ func TestMajorityElement(t *testing.T) {
 		}
 	}
 }
+
+func TestBinarySearch(t *testing.T) {
+	type args struct {
+		nums   []int
+		target int
+	}
+	tests := []struct {
+		name      string
+		args      args
+		wantIndex int
+	}{
+		{"case one num", args{[]int{1}, 1}, 0},
+		{"case repeat num", args{[]int{1, 2, 2, 3, 4}, 2}, 2},
+		{"case  normal", args{[]int{1, 2, 2, 3, 4}, 3}, 3},
+		{"case no target", args{[]int{1, 2, 2, 3, 4}, 5}, -1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotIndex := BinarySearch(tt.args.nums, tt.args.target); gotIndex != tt.wantIndex {
+				t.Errorf("BinarySearch() = %v, want %v", gotIndex, tt.wantIndex)
+			}
+		})
+	}
+}
+
+func TestRemoveDuplicateNums(t *testing.T) {
+	nums := []int{1, 2, 2, 3, 3, 5, 5, 6, 7}
+	t.Log(RemoveDuplicateNums(nums))
+}

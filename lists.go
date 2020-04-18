@@ -417,6 +417,27 @@ func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
 	return dummy.Next
 }
 
+func RemoveDuplicateNodes(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	pre := head
+	cur := head.Next
+	ex := make(map[int]bool)
+	ex[pre.Val] = true
+	for cur != nil {
+		if _, ok := ex[cur.Val]; ok {
+			pre.Next = cur.Next
+			cur = pre.Next
+		} else {
+			ex[cur.Val] = true
+			pre = pre.Next
+			cur = cur.Next
+		}
+	}
+	return head
+}
+
 /***************************** 辅助函数 *********************************/
 
 // ListPrint 正向打印 list

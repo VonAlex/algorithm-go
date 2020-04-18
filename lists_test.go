@@ -53,11 +53,14 @@ var head2 = &ListNode{
 	Next: &ListNode{
 		Val: 2,
 		Next: &ListNode{
-			Val: 6,
+			Val: 3,
 			Next: &ListNode{
-				Val: 7,
+				Val: 3,
 				Next: &ListNode{
-					Val: 8,
+					Val: 2,
+					Next: &ListNode{
+						Val: 1,
+					},
 				},
 			},
 		},
@@ -96,4 +99,10 @@ func TestPrintCommonPart(t *testing.T) {
 func TestRemoveLastKthNode(t *testing.T) {
 	ListPrint(head)
 	ListPrint(RemoveLastKthNode3(head, 5))
+}
+
+func TestRemoveDuplicateNodes(t *testing.T) {
+	ListPrint(head2)
+	RemoveDuplicateNodes(head2)
+	ListPrint(head2)
 }

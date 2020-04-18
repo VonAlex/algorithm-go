@@ -500,3 +500,44 @@ func countOccurences(nums []int, num int) int {
 	}
 	return cnt
 }
+
+func BinarySearch(nums []int, target int) (index int) {
+	index = -1
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return
+	}
+	l := 0
+	r := numsLen - 1
+	for l <= r {
+		mid := (l + r) >> 1
+		if target == nums[mid] {
+			index = mid
+			break
+		} else if target > nums[mid] {
+			l = mid + 1
+		} else if target < nums[mid] {
+			r = mid - 1
+		}
+	}
+	return
+}
+
+func RemoveDuplicateNums(nums []int) (length int) {
+	length = -1
+	numsLen := len(nums)
+	if numsLen == -1 {
+		return
+	}
+	lo := 0
+	hi := 0
+	for hi < numsLen {
+		if nums[lo] != nums[hi] {
+			lo++
+			nums[lo] = nums[hi]
+		}
+		hi++
+	}
+	length = lo + 1
+	return
+}
