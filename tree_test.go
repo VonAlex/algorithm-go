@@ -54,13 +54,35 @@ func TestPreorderTraversal(t *testing.T) {
 		want []int
 	}{
 		{"case one node", args{oneNodeRoot}, []int{1}},
-		{"case left unbalance", args{root2}, []int{1, 3, 2, 4, 5}},
+		{"case left unbalance", args{root2}, []int{3, 1, 4, 2, 5}},
 		{"case right unbalance", args{root}, []int{1, 2, 4, 5, 3}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := PreorderTraversal4(tt.args.root); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("PreorderTraversal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInorderTraversal(t *testing.T) {
+	type args struct {
+		root *TreeNode
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{"case one node", args{oneNodeRoot}, []int{1}},
+		{"case left unbalance", args{root2}, []int{3, 1, 4, 2, 5}},
+		{"case right unbalance", args{root}, []int{4, 2, 5, 1, 3}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := InorderTraversal3(tt.args.root); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("InorderTraversal() = %v, want %v", got, tt.want)
 			}
 		})
 	}
