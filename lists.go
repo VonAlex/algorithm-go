@@ -501,6 +501,32 @@ func DetectCycle(head *ListNode) *ListNode {
 	return slow
 }
 
+/**
+ * LeetCode T876 链表的中间结点
+ * https://leetcode-cn.com/problems/middle-of-the-linked-list/
+ *
+ * 给定一个带有头结点 head 的非空单链表，返回链表的中间结点。
+ * 如果有两个中间结点，则返回第二个中间结点。
+ */
+// 方法 1：快慢指针法
+// 时间复杂度 O(N)，空间复杂度 O(1)
+func MiddleNode(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	slow := head
+	fast := head
+	// 注意奇数节点和偶数节点的终止条件是不同的
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	return slow
+}
+
+// 方法 2：单指针法
+// 先遍历一遍获得长度，第二遍遍历找到中间节点
+
 /***************************** 辅助函数 *********************************/
 
 // ListPrint 正向打印 list
