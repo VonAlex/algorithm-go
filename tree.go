@@ -19,10 +19,9 @@ func PreorderTraversal(root *TreeNode) []int {
 	if root == nil {
 		return res
 	}
-	curr := root
-	res = append(res, curr.Val)
-	res = append(res, PreorderTraversal(curr.Left)...)
-	res = append(res, PreorderTraversal(curr.Right)...)
+	res = append(res, root.Val)
+	res = append(res, PreorderTraversal(root.Left)...)
+	res = append(res, PreorderTraversal(root.Right)...)
 	return res
 }
 
@@ -65,6 +64,7 @@ func PreorderTraversal3(root *TreeNode) []int {
 		curr = stack[index] // 栈顶
 		res = append(res, curr.Val)
 		stack = stack[:index] // 出栈
+
 		if curr.Right != nil {
 			stack = append(stack, curr.Right) // 右孩子后遍历，先入栈
 		}
@@ -119,10 +119,9 @@ func InorderTraversal(root *TreeNode) []int {
 	if root == nil {
 		return res
 	}
-	curr := root
-	res = append(res, InorderTraversal(curr.Left)...)
-	res = append(res, curr.Val)
-	res = append(res, InorderTraversal(curr.Right)...)
+	res = append(res, InorderTraversal(root.Left)...)
+	res = append(res, root.Val)
+	res = append(res, InorderTraversal(root.Right)...)
 	return res
 }
 
@@ -143,7 +142,8 @@ func InorderTraversal2(root *TreeNode) []int {
 			curr = stack[index] // 栈顶
 			res = append(res, curr.Val)
 			stack = stack[:index] // 出栈
-			curr = curr.Right     // 最后遍历右孩子
+
+			curr = curr.Right // 最后遍历右孩子
 		}
 	}
 	return res
@@ -175,6 +175,108 @@ func InorderTraversal3(root *TreeNode) []int {
 			res = append(res, curr.Val)
 			curr = curr.Right
 		}
+	}
+	return res
+}
+
+/**
+ * LeetCode 题144 二叉树的后序遍历
+ * https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+ * 后序遍历：左 → 右 → 中
+ */
+// 解法 1：递归法
+func PostorderTraversal(root *TreeNode) []int {
+	var res []int
+	if root == nil {
+		return res
+	}
+	res = append(res, PostorderTraversal(root.Left)...)
+	res = append(res, PostorderTraversal(root.Right)...)
+	res = append(res, root.Val)
+	return res
+}
+
+// 解法 2：迭代法
+// 需要用到两个辅助栈
+func PostorderTraversal2(root *TreeNode) []int {
+	var res []int
+	if root == nil {
+		return res
+	}
+	// helpStack 中存放的是后序遍历的逆序节点
+	var stack, helpStack []*TreeNode
+	curr := root
+	stack = append(stack, curr)
+	for len(stack) != 0 {
+		index := len(stack) - 1
+		curr = stack[index]   // 栈顶
+		stack = stack[:index] // 出栈
+
+		helpStack = append(helpStack, curr)
+		if curr.Left != nil { //
+			stack = append(stack, curr.Left)
+		}
+		if curr.Right != nil {
+			stack = append(stack, curr.Right)
+		}
+	}
+	for i := len(helpStack) - 1; i >= 0; i-- {
+		res = append(res, helpStack[i].Val)
+	}
+	return res
+}
+
+/**
+ * LeetCode 题144 二叉树的层遍历
+ * https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+ */
+// 解法 1：递归法
+// 深度遍历 DFS
+func LevelOrderTraversal(root *TreeNode) [][]int {
+	var res [][]int
+	if root == nil {
+		return res
+	}
+	var _dfs func(curr *TreeNode, level int)
+	_dfs = func(curr *TreeNode, level int) {
+		if curr == nil {
+			return
+		}
+		if level == len(res) { // 新的一层
+			res = append(res, []int{})
+		}
+		res[level] = append(res[level], curr.Val) // 相应的层添加节点
+		_dfs(curr.Left, level+1)                  // 先左后右
+		_dfs(curr.Right, level+1)
+	}
+	curr := root
+	_dfs(curr, 0)
+	return res
+}
+
+// 解法 2：迭代法
+// 广度遍历 BFS
+func LevelOrderTraversal2(root *TreeNode) [][]int {
+	var res [][]int
+	if root == nil {
+		return res
+	}
+	queue := list.New()
+	queue.PushFront(root) // 每次从头部插入新节点
+	for queue.Len() > 0 {
+		var currLevel []int
+		currLevelNodeNums := queue.Len() // 当前层有多少个节点
+		for i := 0; i < currLevelNodeNums; i++ {
+			curr := queue.Remove(queue.Back()).(*TreeNode) // 每次从后面取出老节点
+			currLevel = append(currLevel, curr.Val)
+			if curr.Left != nil {
+				queue.PushFront(curr.Left) // 先左孩子
+			}
+			if curr.Right != nil {
+				queue.PushFront(curr.Right) // 后右孩子
+			}
+		}
+		res = append(res, currLevel)
 	}
 	return res
 }

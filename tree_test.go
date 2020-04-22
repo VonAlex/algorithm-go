@@ -54,7 +54,7 @@ func TestPreorderTraversal(t *testing.T) {
 		want []int
 	}{
 		{"case one node", args{oneNodeRoot}, []int{1}},
-		{"case left unbalance", args{root2}, []int{3, 1, 4, 2, 5}},
+		{"case left unbalance", args{root2}, []int{3, 4, 5, 2, 1}},
 		{"case right unbalance", args{root}, []int{1, 2, 4, 5, 3}},
 	}
 	for _, tt := range tests {
@@ -83,6 +83,50 @@ func TestInorderTraversal(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := InorderTraversal3(tt.args.root); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("InorderTraversal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPostorderTraversal(t *testing.T) {
+	type args struct {
+		root *TreeNode
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{"case one node", args{oneNodeRoot}, []int{1}},
+		{"case left unbalance", args{root2}, []int{3, 4, 5, 2, 1}},
+		{"case right unbalance", args{root}, []int{4, 5, 2, 3, 1}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PostorderTraversal2(tt.args.root); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("PostorderTraversal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLevelOrderTraversal(t *testing.T) {
+	type args struct {
+		root *TreeNode
+	}
+	tests := []struct {
+		name string
+		args args
+		want [][]int
+	}{
+		{"case one node", args{oneNodeRoot}, [][]int{{1}}},
+		{"case left unbalance", args{root2}, [][]int{{1}, {3, 2}, {4, 5}}},
+		{"case right unbalance", args{root}, [][]int{{1}, {2, 3}, {4, 5}}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := LevelOrderTraversal2(tt.args.root); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("LevelOrderTraversal() = %v, want %v", got, tt.want)
 			}
 		})
 	}
