@@ -106,3 +106,7 @@ func TestRemoveDuplicateNodes(t *testing.T) {
 	RemoveDuplicateNodes(head2)
 	ListPrint(head2)
 }
+
+func TestDetectCycle(t *testing.T) {
+	ListPrint(DetectCycle(oneNodeHead))
+}

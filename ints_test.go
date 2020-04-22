@@ -8,3 +8,4 @@ func TestPrintNumbers(t *testing.T) {
 	n := 2
 	PrintNumbers2(n)
 }
+

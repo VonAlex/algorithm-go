@@ -36,14 +36,13 @@ func PreorderTraversal2(root *TreeNode) []int {
 	stack := list.New()
 	stack.PushBack(curr)
 	for stack.Len() > 0 {
-		curr = stack.Back().Value.(*TreeNode)
+		curr = stack.Remove(stack.Back()).(*TreeNode) // 出栈
 		res = append(res, curr.Val)
-		stack.Remove(stack.Back()) // 出栈
 		if curr.Right != nil {
-			stack.PushBack(curr.Right)
+			stack.PushBack(curr.Right) // 先右
 		}
 		if curr.Left != nil {
-			stack.PushBack(curr.Left)
+			stack.PushBack(curr.Left) // 后左
 		}
 	}
 	return res
@@ -76,7 +75,10 @@ func PreorderTraversal3(root *TreeNode) []int {
 }
 
 // 解法 3：莫里斯遍历
-// 每个前驱恰好访问两次，因此复杂度是 O(N)，其中 N 是顶点的个数，也就是树的大小。
+// 在Morris方法中不需要为每个节点额外分配指针指向其前驱（predecessor）和后继节点（successor），
+// 只需要利用叶子节点中的左右空指针指向某种顺序遍历下的前驱节点或后继节点就可以了。
+
+// 每个前驱节点恰好访问两次，因此复杂度是 O(N)，其中 N 是顶点的个数，也就是树的大小。
 // 我们在计算中不需要额外空间，但是输出需要包含 N 个元素，因此空间复杂度为 O(N)
 func PreorderTraversal4(root *TreeNode) []int {
 	var res []int
@@ -101,8 +103,8 @@ func PreorderTraversal4(root *TreeNode) []int {
 			prev.Right = curr // 建立一条伪边到当前节点
 			curr = curr.Left  // 访问左孩子
 		} else { // 第二次访问到前驱节点
-			prev.Right = nil  // right 重置为 nil
-			curr = curr.Right // 移动到下一个顶点
+			prev.Right = nil  // right 重置为 nil，取消伪边
+			curr = curr.Right // 移动到右孩子
 		}
 	}
 	return res
@@ -207,13 +209,13 @@ func PostorderTraversal2(root *TreeNode) []int {
 	var stack, helpStack []*TreeNode
 	curr := root
 	stack = append(stack, curr)
-	for len(stack) != 0 {
+	for len(stack) > 0 {
 		index := len(stack) - 1
 		curr = stack[index]   // 栈顶
 		stack = stack[:index] // 出栈
 
 		helpStack = append(helpStack, curr)
-		if curr.Left != nil { //
+		if curr.Left != nil {
 			stack = append(stack, curr.Left)
 		}
 		if curr.Right != nil {
@@ -227,8 +229,8 @@ func PostorderTraversal2(root *TreeNode) []int {
 }
 
 /**
- * LeetCode 题144 二叉树的层遍历
- * https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+ * LeetCode 题102 二叉树的层遍历
+ * hhttps://leetcode-cn.com/problems/binary-tree-level-order-traversal/
  */
 // 解法 1：递归法
 // 深度遍历 DFS

@@ -12,7 +12,7 @@ type ListNode struct {
 }
 
 /**
- * LeetCode 题2 两数相加
+ * LeetCode T2 两数相加
  *
  * 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
  * 输出：7 -> 0 -> 8
@@ -208,7 +208,7 @@ func reversePrintHelper(node *ListNode, res *[]int) int {
 }
 
 /**
- * LeetCode 题 206 反转链表
+ * LeetCode T206 反转链表
  * https://leetcode-cn.com/problems/reverse-linked-list/
  *
  * 输入: 1->2->3->4->5->NULL
@@ -324,7 +324,7 @@ func PrintCommonPart(head1 *ListNode, head2 *ListNode) {
 }
 
 /**
- * LeetCode 题19 删除单链表的倒数第 K 个节点
+ * LeetCode T19 删除单链表的倒数第 K 个节点
  * 示例：
  * 给定一个链表: 1->2->3->4->5, 和 n = 2.
  * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
@@ -436,6 +436,69 @@ func RemoveDuplicateNodes(head *ListNode) *ListNode {
 		}
 	}
 	return head
+}
+
+/**
+ * LeetCode T141 给定一个链表，判断链表中是否有环
+ * https://leetcode-cn.com/problems/linked-list-cycle/
+ */
+// 方法 1：快慢指针法
+// 假设非环部分长 N，环形部分长 K，那么时间复杂度为 O(N+K)，也就是 O(n)
+func HasCycle(head *ListNode) bool {
+	if head == nil {
+		return false
+	}
+	slow := head
+	fast := head
+	for fast != nil && fast.Next != nil {
+		fast = fast.Next.Next
+		slow = slow.Next
+		if slow == fast {
+			return true
+		}
+	}
+	return false
+}
+
+// 方法 2：哈希表法
+// 时间复杂度和空间复杂度都是 O(n)
+func HasCycle2(head *ListNode) bool {
+	return false
+}
+
+/**
+ * LeetCode 面试题 02.08. 环路检测
+ * 给定一个有环链表，实现一个算法返回环路的开头节点。
+ * https://leetcode-cn.com/problems/linked-list-cycle-lcci/
+ */
+// 方法 1：快慢指针法
+// 假设相遇时，slow 走了 K 步（起点到相遇点的距离），那两倍速的 fast 走了 2K 步
+// fast 多走的部分就是环的长度，即 2K-K = K
+// 假设相遇点离环开始处 M 步，那么起点距离环开始处为 K-M，因此 fast 和 slow 同步走，在交点处相遇
+func DetectCycle(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	slow := head
+	fast := head
+	for fast != nil && fast.Next != nil {
+		fast = fast.Next.Next
+		slow = slow.Next
+		if slow == fast { // 找到相遇的位置
+			break
+		}
+	}
+	// 处理没有环的情况
+	if fast == nil || fast.Next == nil {
+		return nil
+	}
+	slow = head // slow 从头开始走
+	for slow != fast {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	// 相遇到交点处
+	return slow
 }
 
 /***************************** 辅助函数 *********************************/
