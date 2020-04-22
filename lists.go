@@ -392,7 +392,6 @@ func RemoveLastKthNode2(head *ListNode, n int) *ListNode {
 
 // 解法 3 一次遍历法
 // 使用快慢指针法
-// 快指针先走 n+1 步,快慢指针相距 n 个数
 func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
 	if head == nil || n < 0 {
 		return head
@@ -400,22 +399,54 @@ func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
 	dummy := &ListNode{
 		Next: head,
 	}
-	curr1 := dummy
-	curr2 := dummy
-	for n >= 0 {
-		if curr1 == nil {
+	// dummy 节点解决了 n = 链表长度这种情况，进行了归一化
+	fast := dummy
+	slow := dummy
+	for n >= 0 { // fast 先走 n+1 步
+		if fast == nil {
 			return head
 		}
 		n--
-		curr1 = curr1.Next
+		fast = fast.Next
 	}
-	for curr1 != nil {
-		curr1 = curr1.Next
-		curr2 = curr2.Next
+	for fast != nil {
+		fast = fast.Next
+		slow = slow.Next
 	}
-	curr2.Next = curr2.Next.Next
+	slow.Next = slow.Next.Next
 	return dummy.Next
 }
+
+/**
+ * 剑指 offer 面试题22. 链表中倒数第k个节点
+ * https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
+ *
+ * 输入一个链表，输出该链表中倒数第k个节点。
+ * 为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。
+ */
+// 方法 1：快慢指针法
+func GetKthFromEnd(head *ListNode, k int) *ListNode {
+	if head == nil || k < 0 { // 参数不合理
+		return head
+	}
+	fast := head
+	for k > 0 { // fast 先走 k 步骤
+		if fast == nil { // k 大于链表长度
+			return head
+		}
+		fast = fast.Next
+		k--
+	}
+	slow := head
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	return slow
+}
+
+// 方法 2：2 次遍历法
+// 第 1 遍遍历得到链表长度为 n，第 2 遍遍历找到第 n-k 个节点
 
 func RemoveDuplicateNodes(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
@@ -526,6 +557,31 @@ func MiddleNode(head *ListNode) *ListNode {
 
 // 方法 2：单指针法
 // 先遍历一遍获得长度，第二遍遍历找到中间节点
+
+/**
+ * 程序员面试金典 面试题 02.02. 返回倒数第 k 个节点
+ * https://leetcode-cn.com/problems/kth-node-from-end-of-list-lcci/
+ *
+ * 实现一种算法，找出单向链表中倒数第 k 个节点。返回该节点的值。
+ * 输入： 1->2->3->4->5 和 k = 2
+ * 输出： 4
+ * 说明：给定的 k 保证是有效的。
+ */
+// 方法 1：快慢指针法
+// 实际上，要有异常情况的考虑，head 为空是返回什么值？k 为负数返回什么值？k 超过链表长度返回什么值？
+func KthToLast(head *ListNode, k int) int {
+	fast := head
+	for k > 0 { // fast 先走 k 步
+		fast = fast.Next
+		k--
+	}
+	slow := head
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	return slow.Val
+}
 
 /***************************** 辅助函数 *********************************/
 
