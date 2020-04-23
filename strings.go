@@ -260,7 +260,7 @@ func palindromePartitionHelper(s string, start int) [][]string {
 		return ress
 	}
 	for i := start; i < lens; i++ {
-		left := s[start:i+1]
+		left := s[start : i+1]
 		if !IsPalindrome(left) { // 对于不是回文的子串就跳过了
 			continue
 		}
@@ -285,11 +285,11 @@ func PalindromePartition2(s string) [][]string {
 	slen := len(s)
 	dp := make([][]bool, slen)
 	for i := range dp {
-		dp[i] =  make([]bool, slen)
+		dp[i] = make([]bool, slen)
 	}
 	for ln := 1; ln <= slen; ln++ {
-		for i := 0; i <= slen - ln; i++ {
-			j := i+ln-1
+		for i := 0; i <= slen-ln; i++ {
+			j := i + ln - 1
 			dp[i][j] = (s[i] == s[j]) && (ln < 3 || dp[i+1][j-1])
 		}
 	}
@@ -310,7 +310,7 @@ func palindromePartitionHelper2(s string, start int, dp [][]bool) [][]string {
 			continue
 		}
 		// 处理子串
-		left := s[start:i+1]
+		left := s[start : i+1]
 		for _, l := range palindromePartitionHelper(s, i+1) {
 			ll := make([]string, len(l)+1)
 			ll[0] = left
@@ -329,11 +329,11 @@ func PalindromePartition3(s string) [][]string {
 	slen := len(s)
 	dp := make([][]bool, slen)
 	for i := range dp {
-		dp[i] =  make([]bool, slen)
+		dp[i] = make([]bool, slen)
 	}
 	for ln := 1; ln <= slen; ln++ {
-		for i := 0; i <= slen - ln; i++ {
-			j := i+ln-1
+		for i := 0; i <= slen-ln; i++ {
+			j := i + ln - 1
 			dp[i][j] = (s[i] == s[j]) && (ln < 3 || dp[i+1][j-1])
 		}
 	}
@@ -351,7 +351,7 @@ func palindromePartitionHelper3(s string, start int, ress *[][]string, path []st
 		*ress = append(*ress, tmp)
 		return
 	}
-	for i:= start; i < slen; i++ {
+	for i := start; i < slen; i++ {
 		if !dp[start][i] { // 判断start 到 i 子串是否是回文串
 			continue
 		}
@@ -361,7 +361,6 @@ func palindromePartitionHelper3(s string, start int, ress *[][]string, path []st
 	}
 	return
 }
-
 
 /**
  * leetcode 题 344 反转字符串

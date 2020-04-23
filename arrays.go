@@ -6,7 +6,7 @@ import (
 )
 
 /**
- * LeetCode 题1 两数之和
+ * LeetCode T1 两数之和
  * 给定一个整数数组 nums 和一个目标值 target，
  * 请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。
  */
@@ -14,19 +14,16 @@ import (
 // TwoSum 暴力法
 // 时间复杂度 O(n^2)，空间复杂度 O(1)
 func TwoSum(nums []int, target int) []int {
-	res := []int{0, 0}
 	len := len(nums)
 	for i, num := range nums {
 		for j := i + 1; j < len; j++ {
 			if num+nums[j] != target {
 				continue
 			}
-			res[0] = i
-			res[1] = j
-			return res
+			return []int{i, j}
 		}
 	}
-	return nil
+	return []int{-1, -1}
 }
 
 // TwoSum2 两遍 hash 表法
@@ -53,7 +50,6 @@ func TwoSum2(nums []int, target int) []int {
 // 时间复杂度 O(n)，空间复杂度 O(n)
 // 由于相同元素的覆盖，一遍遍历 hash 表和两遍遍历，获得的结果是不同的
 func TwoSum3(nums []int, target int) []int {
-	res := []int{0, 0}
 	numIdx := make(map[int]int)
 	for i, num := range nums {
 		j, ok := numIdx[target-num]
@@ -61,11 +57,70 @@ func TwoSum3(nums []int, target int) []int {
 			numIdx[num] = i
 			continue
 		}
-		res[0] = j
-		res[1] = i
-		return res
+		return []int{i, j}
 	}
 	return nil
+}
+
+/**
+ * LeetCode T167. 两数之和 II - 输入有序数组
+ * 给定一个已按照升序排列 的有序数组，找到两个数使得它们相加之和等于目标数
+ * 函数应该返回这两个下标值 index1 和 index2，其中 index1 必须小于 index2。
+ * 说明:
+ *  	返回的下标值（index1 和 index2）不是从零开始的。
+ *		你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。
+ */
+// 方法 1：双指针法
+// 时间复杂度：O(n)，空间复杂度：O(1)
+// 要注意没有合适答案时删除什么，这个要做好约定
+func TwoSum4(numbers []int, target int) []int {
+	i := 0
+	j := len(numbers) - 1
+	for i <= j {
+		if numbers[i]+numbers[j] == target {
+			return []int{i + 1, j + 1}
+		} else if numbers[i]+numbers[j] > target {
+			j--
+		} else {
+			i++
+		}
+	}
+	return []int{-1, -1} // 找到不到 target 返回什么
+}
+
+// 方法 2：双指针 + 二分查找
+// 时间复杂度 O(nlogn)，n 是指数组长度
+// 设二分查找每次过滤掉 d 个数，如果 d 较小时，可能二分法不怎么占优势
+func TwoSum5(numbers []int, target int) []int {
+	i := 0
+	j := len(numbers) - 1
+
+	_bs := func(numbers []int, l, r, t int) int {
+		var mid int
+		for l <= r {
+			mid = (l + r) >> 1
+			if numbers[mid] == t {
+				break
+			} else if numbers[mid] > t {
+				r = mid - 1
+			} else {
+				l = mid + 1
+			}
+		}
+		return mid
+	}
+	for i <= j {
+		if numbers[i]+numbers[j] == target {
+			return []int{i + 1, j + 1}
+		} else if numbers[i]+numbers[j] > target {
+			// 从 [i, j-1] 重新定位 j
+			j = _bs(numbers, i, j-1, target-numbers[i])
+		} else {
+			// 从 [i+1, j] 重新定位 i
+			i = _bs(numbers, i+1, j, target-numbers[j])
+		}
+	}
+	return []int{-1, -1}
 }
 
 /**

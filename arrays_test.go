@@ -193,6 +193,12 @@ func TestBinarySearch(t *testing.T) {
 	}
 }
 
+func TestTwoSum(t *testing.T) {
+	numbers := []int{3, 24, 50, 79, 88, 150, 345}
+	target := 200
+	t.Log(TwoSum5(numbers, target))
+}
+
 func TestRemoveDuplicateNums(t *testing.T) {
 	nums := []int{1, 2, 2, 3, 3, 5, 5, 6, 7}
 	t.Log(RemoveDuplicateNums(nums))
