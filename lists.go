@@ -88,6 +88,66 @@ func AddTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
 }
 
 /**
+ * LeetCode T21. 合并两个有序链表
+ * https://leetcode-cn.com/problems/merge-two-sorted-lists/
+ *
+ * 示例：
+ * 	   输入：1->2->4, 1->3->4
+ *	   输出：1->1->2->3->4->4
+ */
+
+// 方法 1：迭代法
+// 时间复杂度：O(n + m), 空间复杂度：O(1)
+func MergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+	dummy := &ListNode{
+		Val: -1,
+	}
+	curr1 := l1
+	curr2 := l2
+	merged := dummy
+	for curr1 != nil && curr2 != nil {
+		if curr1.Val < curr2.Val {
+			merged.Next = curr1
+			curr1 = curr1.Next
+		} else {
+			merged.Next = curr2
+			curr2 = curr2.Next
+		}
+		merged = merged.Next
+	}
+	if curr1 != nil {
+		merged.Next = curr1
+	}
+	if curr2 != nil {
+		merged.Next = curr2
+	}
+	return dummy.Next
+}
+
+// 方法 2：递归法
+// 时间/空间复杂度都是O(n + m)
+func MergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+	if l1.Val < l2.Val {
+		l1.Next = MergeTwoLists2(l1.Next, l2)
+		return l1
+	}
+	l2.Next = MergeTwoLists2(l1, l2.Next)
+	return l2
+}
+
+/**
  * 剑指 offer 面试题06 从尾到头打印链表
  * 输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
  * https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/
