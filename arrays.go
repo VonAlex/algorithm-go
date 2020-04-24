@@ -556,26 +556,83 @@ func countOccurences(nums []int, num int) int {
 	return cnt
 }
 
-func BinarySearch(nums []int, target int) (index int) {
-	index = -1
+/*
+ * LeetCode T1704. 二分查找
+ * https://leetcode-cn.com/problems/binary-search/
+ * 给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target ，
+ * 写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
+ */
+func BinarySearch(nums []int, target int) int {
 	numsLen := len(nums)
 	if numsLen == 0 {
-		return
+		return -1
 	}
 	l := 0
 	r := numsLen - 1
 	for l <= r {
-		mid := (l + r) >> 1
+		mid := l + (r-l)>>1
 		if target == nums[mid] {
-			index = mid
-			break
+			return mid
 		} else if target > nums[mid] {
 			l = mid + 1
 		} else if target < nums[mid] {
 			r = mid - 1
 		}
 	}
-	return
+	return -1
+}
+
+// 二分查找，寻找数组中相同元素的左边界
+// [1, 2, 2, 2, 3] -> 1
+func BinarySearchFindLeftBound(nums []int, target int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return -1
+	}
+	l := 0
+	r := numsLen - 1
+	for l <= r {
+		mid := l + (r-l)>>1
+		if target == nums[mid] {
+			r = mid - 1
+		} else if target > nums[mid] {
+			l = mid + 1
+		} else if target < nums[mid] {
+			r = mid - 1
+		}
+	}
+	// 异常判断
+	if l >= numsLen || nums[l] != target {
+		return -1
+	}
+	return l
+}
+
+// 解题思路可以参考 https://leetcode-cn.com/problems/binary-search/solution/er-fen-cha-zhao-xiang-jie-by-labuladong/
+// 二分查找，寻找数组中相同元素的右边界
+// [1, 2, 2, 2, 3] -> 3
+func BinarySearchFindRightBound(nums []int, target int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return -1
+	}
+	l := 0
+	r := numsLen - 1
+	for l <= r {
+		mid := l + (r-l)>>1
+		if target == nums[mid] {
+			l = mid + 1
+		} else if target > nums[mid] {
+			l = mid + 1
+		} else if target < nums[mid] {
+			r = mid - 1
+		}
+	}
+	// 异常判断
+	if r < 0 || nums[r] != target {
+		return -1
+	}
+	return r
 }
 
 func RemoveDuplicateNums(nums []int) (length int) {

@@ -223,3 +223,49 @@ func TestCountPrimes(t *testing.T) {
 		})
 	}
 }
+
+func TestBinarySearchFindLeftBound(t *testing.T) {
+	type args struct {
+		nums   []int
+		target int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"normal", args{[]int{1, 2, 2, 4}, 2}, 1},
+		{"right", args{[]int{1, 2, 2, 4}, 6}, -1},
+		{"left", args{[]int{1, 2, 2, 4}, 0}, -1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := BinarySearchFindLeftBound(tt.args.nums, tt.args.target); got != tt.want {
+				t.Errorf("BinarySearchFindLeftBound() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBinarySearchFindRightBound(t *testing.T) {
+	type args struct {
+		nums   []int
+		target int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"normal", args{[]int{1, 2, 2, 4}, 2}, 2},
+		{"right", args{[]int{1, 2, 2, 4}, 6}, -1},
+		{"left", args{[]int{1, 2, 2, 4}, 0}, -1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := BinarySearchFindRightBound(tt.args.nums, tt.args.target); got != tt.want {
+				t.Errorf("BinarySearchFindRightBound() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
