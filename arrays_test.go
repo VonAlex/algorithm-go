@@ -203,3 +203,23 @@ func TestRemoveDuplicateNums(t *testing.T) {
 	nums := []int{1, 2, 2, 3, 3, 5, 5, 6, 7}
 	t.Log(RemoveDuplicateNums(nums))
 }
+
+func TestCountPrimes(t *testing.T) {
+	type args struct {
+		n int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"normal", args{5}, 2},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := CountPrimes(tt.args.n); got != tt.want {
+				t.Errorf("CountPrimes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

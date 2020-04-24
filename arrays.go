@@ -596,3 +596,30 @@ func RemoveDuplicateNums(nums []int) (length int) {
 	length = lo + 1
 	return
 }
+
+/**
+ * LeetCode T204. 计数质数
+ * https://leetcode-cn.com/problems/count-primes/
+ *
+ * 统计所有小于非负整数 n 的质数的数量
+ */
+func CountPrimes(n int) int {
+	isPrime := make([]bool, n)
+	for i := 0; i < n; i++ {
+		isPrime[i] = true
+	}
+	for i := 2; i*i < n; i++ { // 根据因子的对称性，i 只需要遍历到 sqt(n)
+		if isPrime[i] {
+			for j := i * i; j < n; j += i { // dito，j 从 i^2 开始尽可能避免重复标记
+				isPrime[j] = false
+			}
+		}
+	}
+	cnt := 0
+	for i := 2; i < n; i++ {
+		if isPrime[i] {
+			cnt++
+		}
+	}
+	return cnt
+}

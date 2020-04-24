@@ -36,3 +36,9 @@ func IsPowerOfTwo2(n int) bool {
 	}
 	return n&(-n) == n
 }
+
+// 判断两个数是否异号
+// 使用 x*y 有可能造成数值溢出
+func IsOppositeSign(x, y int) bool {
+	return (x ^ y) < 0
+}
