@@ -89,3 +89,29 @@ func TestPalindromePartition(t *testing.T) {
 	s := "aab"
 	t.Log(PalindromePartition3(s))
 }
+
+func TestNumSum(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"no num", args{"cccccc"}, 0},
+		{"all posotive", args{"a1cd2e33"}, 36},
+		{"one negative sign", args{"a1cd-2e33"}, 32},
+		{"two negative sign", args{"a1cd--2e33"}, 36},
+		{"head negative", args{"-1a1c-d--2e33"}, 35},
+		{"head negative", args{"a1c-d--2e-33"}, -30},
+		{"other", args{"a1c-d--2e33"}, 36},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NumSum(tt.args.s); got != tt.want {
+				t.Errorf("NumSum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -413,3 +413,40 @@ func IsAnagram(s string, t string) bool {
 
 // 方法 2 排序法
 // 将两个字节数组字母先排序，看他们是否相等
+
+/*
+ * 字符串中数字字串的求和
+ * 给定一个字符串 str，求其中全部包含数字串所代表的数字之和
+ * 要求：
+ * 1. 忽略小数点
+ * 2. 如果紧贴数字字串左侧出现字符 '-'，当连续出现的数量为奇数时，则视数字为负，否则为正。
+ * 例如，A-1BC--12，计算结果 -1 + 12 = 11
+ */
+func NumSum(s string) int {
+	if s == "" {
+		return 0
+	}
+	sum := 0
+	num := 0 // 累加字符串中出现的数字
+	sign := 1
+	for i, char := range s {
+		curr := char - '0'
+		if curr > 9 || curr < 0 { // 非数字字符
+			sum += num // 在遇到非数字字符时累加 sum
+			num = 0    // 累积数字清零
+			if char != '-' {
+				sign = 1 // 累积符号清空
+				continue
+			}
+			if i != 0 && s[i-1] == '-' {
+				sign = -sign
+			} else {
+				sign = -1 // 第一个字符是 - 号
+			}
+		} else {
+			num = 10*num + int(curr)*sign // 在遇到数字字符时累加 num
+		}
+	}
+	sum += num // 兜住字符串最后字符为数字的情况
+	return sum
+}
