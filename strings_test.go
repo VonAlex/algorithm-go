@@ -115,3 +115,9 @@ func TestNumSum(t *testing.T) {
 		})
 	}
 }
+
+func TestSundaySearch(t *testing.T) {
+	tt := "aaaaa"
+	p := "bba"
+	t.Log(SundaySearch(tt, p))
+}

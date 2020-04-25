@@ -3,6 +3,7 @@ package leetcode
 import (
 	"math"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -449,4 +450,160 @@ func NumSum(s string) int {
 	}
 	sum += num // 兜住字符串最后字符为数字的情况
 	return sum
+}
+
+func RotateString(A string, B string) bool {
+	if len(A) != len(B) {
+		return false
+	}
+	BB := B + B
+	return strings.Contains(BB, A)
+}
+
+/*
+ * LeetCode T28. 实现 strStr()
+ * https://leetcode-cn.com/problems/implement-strstr/
+ *
+ * 给定一个 haystack 字符串和一个 needle 字符串，
+ * 在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
+ *
+ */
+
+// 方法 1：BF(Brute Force，暴力检索)
+// 时间复杂度 O(MN)
+// i，j 都要回溯
+
+// 方法 2：RK(Robin-Karp，哈希检索)
+
+// 方法 3：KMP 算法
+// 整个算法最坏的情况是，当模式串首字符位于i - j的位置时才匹配成功，算法结束。
+// 如果文本串的长度为n，模式串的长度为m
+// 匹配过程的时间复杂度为O(n)，算上计算 next的O(m)时间，KMP的整体时间复杂度为O(m + n)
+func KmpSearch(text, pattern string) int {
+	i := 0
+	j := 0
+	textLen := len(text)
+	pLen := len(pattern)
+	if pLen == 0 {
+		return 0
+	}
+	next := getNext(pattern)
+	for i < textLen && j < pLen {
+		if j == -1 || text[i] == pattern[j] {
+			i++
+			j++
+		} else {
+			j = next[j] // j 的回溯，i 不回溯
+		}
+	}
+	if j == pLen {
+		return i - j
+	}
+	return -1
+}
+
+// 获得 next 数组
+func getNext(p string) []int {
+	pLen := len(p)
+	next := make([]int, pLen)
+	next[0] = -1
+	k := -1
+	j := 0
+	for j < pLen-1 {
+		// p[k]表示前缀，p[j]表示后缀
+		if k == -1 || p[k] == p[j] {
+			k++
+			j++
+			if p[k] != p[j] {
+				next[j] = k // j+1
+			} else {
+				// 优化点
+				// 不能出现p[j] = p[next[j]]，所以当出现时需要继续递归，k=next[k]=next[next[k]]
+				next[j] = next[k]
+			}
+		} else {
+			k = next[k]
+		}
+	}
+	return next
+}
+
+// 方法 5：BM（Boyer Moore)
+
+// 方法 6：Sunday 算法
+// 思想跟BM算法很相似：
+// 只不过Sunday算法是从前往后匹配，在匹配失败时关注的是主串中参加匹配的最末位字符的下一位字符。
+// 如果该字符没有在模式串中出现则直接跳过，即移动位数 = 模式串长度 + 1；
+// 否则，其移动位数 = 模式串长度 - 该字符最右出现的位置(以0开始)
+// 时间复杂度，最差情况O（MN），最好情况O（N）
+func SundaySearch(text, pattern string) int {
+	pLen := len(pattern)
+	if pLen == 0 {
+		return 0
+	}
+	tLen := len(text)
+	asciiSize := 128
+	next := make([]int, asciiSize)
+	for i := 0; i < asciiSize; i++ {
+		next[i] = pLen + 1 // 初始值全部为 pLen + 1，当然这里也可以用 map 来做
+	}
+	for offset, c := range pattern {
+		next[c] = pLen - offset
+	}
+
+	i := 0 // pattern 的头部元素在 text 中位置
+	j := 0 // pattern 与 text 已经匹配的长度
+	for i <= tLen-pLen {
+		j = 0
+		for text[i+j] == pattern[j] {
+			j++
+			if j >= pLen {
+				return i
+			}
+		}
+		// 最后一次匹配失败了，直接返回 -1
+		if i+pLen == tLen {
+			return -1
+		}
+		i += next[text[i+pLen]]
+	}
+	return -1
+}
+
+/*
+ * LeetCode 面试题58 - II. 左旋转字符串
+ * https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/
+ *
+ * 字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。
+ * 请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+ */
+
+// 方法 1：切片法
+// trick 方法，并不是题目想考察的点
+func ReverseLeftWords(s string, n int) string {
+	if n == 0 {
+		return s
+	}
+	res := s[n:] + s[:n]
+	return res
+}
+
+// 方法 2：三次旋转法
+func ReverseLeftWords2(s string, n int) string {
+	if n == 0 {
+		return s
+	}
+	_reverStr := func(sbytes []byte, from, to int) {
+		for from <= to {
+			sbytes[from], sbytes[to] = sbytes[to], sbytes[from]
+			from++
+			to--
+		}
+	}
+	slen := len(s)
+	sbytes := []byte(s)
+	_reverStr(sbytes, 0, n-1)
+	_reverStr(sbytes, n, slen-1)
+	_reverStr(sbytes, 0, slen-1)
+	return string(sbytes)
 }
