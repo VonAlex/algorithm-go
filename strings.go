@@ -381,3 +381,35 @@ func ReverseString(s []byte) {
 		r--
 	}
 }
+
+/**
+ * leetcode T242. 有效的字母异位词
+ * https://leetcode-cn.com/problems/valid-anagram/
+ * 给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词
+ *
+ * 输入: s = "anagram", t = "nagaram"
+ * 输出: true
+ *
+ */
+// 方法 1：哈希表法
+// 使用哈希表更为通用，如果字符串仅仅是小写英文字母，也可以定义一个 26 长度的数组来统计字符频度
+func IsAnagram(s string, t string) bool {
+	if len(s) != len(t) { // 长度不一样的俩字符串肯定不是异位词
+		return false
+	}
+	cnts := make(map[rune]int)
+	// 也可以同时遍历 s 和 t
+	for _, cr := range s {
+		cnts[cr]++
+	}
+	for _, cr := range t {
+		cnts[cr]--
+		if cnts[cr] < 0 {
+			return false
+		}
+	}
+	return true
+}
+
+// 方法 2 排序法
+// 将两个字节数组字母先排序，看他们是否相等
