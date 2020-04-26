@@ -121,3 +121,26 @@ func TestSundaySearch(t *testing.T) {
 	p := "bba"
 	t.Log(SundaySearch(tt, p))
 }
+
+func TestReverseWords(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"have left/right space", args{"  hello world!  "}, "world! hello"},
+		{"have middle space", args{"a good   example"}, "example good a"},
+		{"no space", args{"a good example"}, "example good a"},
+		{"empty", args{""}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ReverseWords3(tt.args.s); got != tt.want {
+				t.Errorf("ReverseWords() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -1,6 +1,7 @@
 package leetcode
 
 import (
+	"container/list"
 	"math"
 	"strconv"
 	"strings"
@@ -589,6 +590,7 @@ func ReverseLeftWords(s string, n int) string {
 }
 
 // 方法 2：三次旋转法
+// 时间复杂度为O(n)
 func ReverseLeftWords2(s string, n int) string {
 	if n == 0 {
 		return s
@@ -606,4 +608,138 @@ func ReverseLeftWords2(s string, n int) string {
 	_reverStr(sbytes, n, slen-1)
 	_reverStr(sbytes, 0, slen-1)
 	return string(sbytes)
+}
+
+/*
+ * LeetCode T151. 翻转字符串里的单词
+ * https://leetcode-cn.com/problems/reverse-words-in-a-string/
+ *
+ * 给定一个字符串，逐个翻转字符串中的每个单词。
+ * 示例：
+ * 输入: "  hello world!  "
+ * 输出: "world! hello"
+ * 输入字符串可以在前面或者后面包含多余的空格，但是反转后的字符不能包括。
+ *
+ * 输入: "a good   example"
+ * 输出: "example good a"
+ * 解释: 如果两个单词间有多余的空格，将反转后单词间的空格减少到只含一个。
+ */
+// 方法 1
+// golang 字符串无法修改，所以需要额外空间存储
+// string 与 []byte 进行类型转换的时候，涉及到内存拷贝
+func ReverseWords(s string) string {
+	if s == "" {
+		return s
+	}
+	// 去掉冗余空格
+	_trimSpace := func(s string) string {
+		l := 0
+		r := len(s) - 1
+
+		// 去掉字符串开头的空白字符
+		for l <= r && s[l] == ' ' {
+			l++
+		}
+		// 去掉字符串末尾的空白字符
+		for l <= r && s[r] == ' ' {
+			r--
+		}
+		// 将字符串间多余的空白字符去除
+		var output []byte
+		for l <= r {
+			if s[l] == ' ' && s[l-1] == ' ' {
+				l++
+				continue
+			}
+			output = append(output, s[l])
+			l++
+		}
+		return string(output)
+	}
+	// 反转单词
+	_reverStr := func(sbytes []byte, from, to int) {
+		for from <= to {
+			sbytes[from], sbytes[to] = sbytes[to], sbytes[from]
+			from++
+			to--
+		}
+	}
+
+	sb := []byte(_trimSpace(s))
+	wordStart := 0 // 记录单词初始位置
+	curr := 0      // 记录单词结束位置
+	slen := len(sb)
+	for wordStart < slen {
+		for curr < slen && sb[curr] != ' ' {
+			curr++
+		}
+		_reverStr(sb, wordStart, curr-1)
+		wordStart = curr + 1 // wordEnd 停在了空格上，下一个单词
+		curr = wordStart
+	}
+
+	_reverStr(sb, 0, slen-1)
+	return string(sb)
+}
+
+// 方法 2：使用strings 包内的函数
+func ReverseWords2(s string) string {
+	if s == "" {
+		return s
+	}
+	s = strings.TrimSpace(s)
+	res := strings.Fields(s)
+	i := 0
+	j := len(res) - 1
+	for i <= j {
+		res[i], res[j] = res[j], res[i]
+		i++
+		j--
+	}
+	return strings.Join(res, " ")
+}
+
+// 方法 3：借助双端队列
+func ReverseWords3(s string) string {
+	if s == "" {
+		return s
+	}
+	l := 0
+	r := len(s) - 1
+	for l <= r && s[l] == ' ' {
+		l++
+	}
+	for l <= r && s[r] == ' ' {
+		r--
+	}
+	trimRight := (r < len(s)-1)
+
+	deque := list.New()
+	wordStart := l
+	curr := l
+	for curr <= r {
+		for curr < r && s[curr] != ' ' {
+			curr++
+		}
+		if curr == r {
+			if trimRight {
+				// 右侧经过 trim，r 肯定小于 len(s) - 1，所以 r+1 是安全值
+				deque.PushFront(string(s[wordStart : r+1])) // 从前面塞入
+			} else {
+				// 右侧没有经过 trim，那么直接切片到字符串末尾
+				deque.PushFront(string(s[wordStart:]))
+			}
+			break
+		}
+		deque.PushFront(string(s[wordStart:curr]))
+		for s[curr] == ' ' {
+			curr++
+		}
+		wordStart = curr
+	}
+	var res []string
+	for e := deque.Front(); e != nil; e = e.Next() {
+		res = append(res, e.Value.(string))
+	}
+	return strings.Join(res, " ")
 }
