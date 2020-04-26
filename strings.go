@@ -699,7 +699,7 @@ func ReverseWords2(s string) string {
 	return strings.Join(res, " ")
 }
 
-// 方法 3：借助双端队列
+// 方法 3：借助栈结构
 func ReverseWords3(s string) string {
 	if s == "" {
 		return s
@@ -712,34 +712,71 @@ func ReverseWords3(s string) string {
 	for l <= r && s[r] == ' ' {
 		r--
 	}
-	trimRight := (r < len(s)-1)
-
-	deque := list.New()
+	stack := list.New()
 	wordStart := l
 	curr := l
 	for curr <= r {
-		for curr < r && s[curr] != ' ' {
+		if s[curr] != ' ' {
 			curr++
+			continue
 		}
-		if curr == r {
-			if trimRight {
-				// 右侧经过 trim，r 肯定小于 len(s) - 1，所以 r+1 是安全值
-				deque.PushFront(string(s[wordStart : r+1])) // 从前面塞入
-			} else {
-				// 右侧没有经过 trim，那么直接切片到字符串末尾
-				deque.PushFront(string(s[wordStart:]))
-			}
-			break
-		}
-		deque.PushFront(string(s[wordStart:curr]))
-		for s[curr] == ' ' {
+		stack.PushFront(string(s[wordStart:curr]))
+		for curr <= r && s[curr] == ' ' {
 			curr++
 		}
 		wordStart = curr
 	}
+	if wordStart <= r {
+		stack.PushFront(string(s[wordStart:curr]))
+	}
+
 	var res []string
-	for e := deque.Front(); e != nil; e = e.Next() {
+	for e := stack.Front(); e != nil; e = e.Next() {
 		res = append(res, e.Value.(string))
 	}
 	return strings.Join(res, " ")
+}
+
+// 输出 s 中的单词列表
+func SplitWords(s string) []string {
+	if s == "" {
+		return nil
+	}
+	sLen := len(s)
+	curr := 0
+	wordStart := curr
+	var res []string
+	for curr < sLen {
+		if s[curr] != ' ' {
+			curr++
+			continue
+		}
+		res = append(res, s[wordStart:curr])
+		curr++
+		for curr < sLen && s[curr] == ' ' {
+			curr++
+		}
+		wordStart = curr
+	}
+	if wordStart < sLen {
+		res = append(res, s[wordStart:curr])
+	}
+	return res
+}
+
+// 计算 s 中有多少了单词(忽略掉空格)
+func CountFields(s string) int {
+	n := 0
+	var isSpace int
+	wasSpace := 1
+	for i := 0; i < len(s); i++ {
+		if s[i] == ' ' {
+			isSpace = 1
+		} else {
+			isSpace = 0
+		}
+		n += wasSpace & ^isSpace
+		wasSpace = isSpace
+	}
+	return n
 }

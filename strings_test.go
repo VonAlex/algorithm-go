@@ -144,3 +144,13 @@ func TestReverseWords(t *testing.T) {
 		})
 	}
 }
+
+func TestCountFields(t *testing.T) {
+	s := "     "
+	t.Log(CountFields(s))
+}
+
+func TestSplitWords(t *testing.T) {
+	s := "a good   example"
+	t.Log(SplitWords(s))
+}
