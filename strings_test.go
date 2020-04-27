@@ -165,13 +165,36 @@ func TestMinWindow(t *testing.T) {
 		args args
 		want string
 	}{
-		// {"normal", args{"ADOBECODEBANC", "ABC"}, "BANC"},
+		{"normal", args{"ADOBECODEBANC", "ABC"}, "BANC"},
 		{"normal2", args{"ABAACBAB", "ABC"}, "ACB"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := MinWindow(tt.args.s, tt.args.t); got != tt.want {
 				t.Errorf("MinWindow() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFindAnagrams(t *testing.T) {
+	type args struct {
+		s string
+		p string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{"normal", args{"cbaebabacd", "abc"}, []int{0, 6}},
+		{"normal2", args{"abab", "ab"}, []int{0, 1, 2}},
+		{"normal3", args{"baa", "aa"}, []int{1}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := FindAnagrams(tt.args.s, tt.args.p); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("FindAnagrams() = %v, want %v", got, tt.want)
 			}
 		})
 	}

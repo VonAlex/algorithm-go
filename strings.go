@@ -857,3 +857,65 @@ func MinWindow(s string, t string) string {
 	}
 	return s[start : start+minLen]
 }
+
+/*
+ * LeetCode T438. 找到字符串中所有字母异位词
+ * https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/
+ *
+ * 给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
+ * 字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100
+ *
+ * 示例：
+ * 输入: s: "cbaebabacd" p: "abc"
+ * 输出: [0, 6]
+ *
+ * 说明：
+ * 		字母异位词指字母相同，但排列不同的字符串。
+ * 		不考虑答案输出的顺序。
+ *
+ */
+// 滑动窗口解法
+// 与“最小覆盖子串”题解基本上是相同的，只是结果输出需要变一下
+// 上一题是求解最小窗口，所以需要 start 和 minLen 去记录历史值，方面比较
+// 本题长度就等于 p 字符串的长度，而且结果保存到 slice 里
+// 因为，异位词的长度肯定要跟窗口长度相等
+func FindAnagrams(s string, p string) []int {
+	left := 0
+	right := 0
+	window := make(map[byte]int)
+
+	pLen := len(p)
+	needs := make(map[byte]int)
+	for i := 0; i < pLen; i++ {
+		needs[p[i]]++
+	}
+	needMatched := len(needs)
+	matched := 0
+
+	var res []int
+	sLen := len(s)
+	for right < sLen {
+		c1 := s[right]
+		if _, ok := needs[c1]; ok {
+			window[c1]++
+			if window[c1] == needs[c1] {
+				matched++
+			}
+		}
+		for matched == needMatched {
+			if right-left+1 == pLen { // 长度等于 t 的长度
+				res = append(res, left)
+			}
+			c2 := s[left]
+			if _, ok := needs[c2]; ok {
+				window[c2]--
+				if window[c2] < needs[c2] {
+					matched--
+				}
+			}
+			left++
+		}
+		right++
+	}
+	return res
+}
