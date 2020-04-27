@@ -154,3 +154,25 @@ func TestSplitWords(t *testing.T) {
 	s := "a good   example"
 	t.Log(SplitWords(s))
 }
+
+func TestMinWindow(t *testing.T) {
+	type args struct {
+		s string
+		t string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// {"normal", args{"ADOBECODEBANC", "ABC"}, "BANC"},
+		{"normal2", args{"ABAACBAB", "ABC"}, "ACB"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MinWindow(tt.args.s, tt.args.t); got != tt.want {
+				t.Errorf("MinWindow() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

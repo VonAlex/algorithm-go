@@ -612,6 +612,7 @@ func ReverseLeftWords2(s string, n int) string {
 
 /*
  * LeetCode T151. 翻转字符串里的单词
+ * LeetCode 面试题58 - I. 翻转单词顺序
  * https://leetcode-cn.com/problems/reverse-words-in-a-string/
  *
  * 给定一个字符串，逐个翻转字符串中的每个单词。
@@ -624,7 +625,7 @@ func ReverseLeftWords2(s string, n int) string {
  * 输出: "example good a"
  * 解释: 如果两个单词间有多余的空格，将反转后单词间的空格减少到只含一个。
  */
-// 方法 1
+// 方法 1 三次旋转法
 // golang 字符串无法修改，所以需要额外空间存储
 // string 与 []byte 进行类型转换的时候，涉及到内存拷贝
 func ReverseWords(s string) string {
@@ -764,7 +765,7 @@ func SplitWords(s string) []string {
 	return res
 }
 
-// 计算 s 中有多少了单词(忽略掉空格)
+// 计算 s 中有多少单词(忽略掉空格)
 func CountFields(s string) int {
 	n := 0
 	var isSpace int
@@ -779,4 +780,80 @@ func CountFields(s string) int {
 		wasSpace = isSpace
 	}
 	return n
+}
+
+/*
+ * LeetCode T76. 最小覆盖子串
+ * https://leetcode-cn.com/problems/minimum-window-substring/
+ *
+ * 给你一个字符串 S、一个字符串 T，请在字符串 S 里面找出：包含 T 所有字母的最小子串。
+ * 示例：
+ * 输入: S = "ADOBECODEBANC", T = "ABC"
+ * 输出: "BANC"
+ * 说明：
+ * 		如果 S 中不存这样的子串，则返回空字符串 ""
+ * 		如果 S 中存在这样的子串，我们保证它是唯一的答案。
+ *
+ */
+// 滑动窗口解法
+// S 的长度为 M，T 的长度为 N，时间复杂度为 O(M+N)
+// 遍历 T 的时间复杂度 O(N)
+// 2 个 while 循环里最多执行 2M 次，时间复杂度为 O(M)
+
+// 另外，可以如下优化滑动窗口，将 T 中不存在的字符从 S 中去掉
+// S 变成一个 map, key 是原 S 中字符的位置，value 是字符
+// 下面遍历 S 就变成了遍历这个 map
+// 因为 go 中 map 遍历是无序的，所有要把 key 用一个 list，有序存起来
+// 按照这个有序 list 进行遍历 map
+func MinWindow(s string, t string) string {
+	if s == "" || t == "" {
+		return ""
+	}
+	left := 0                    // 窗口左侧
+	right := 0                   // 窗口右侧
+	window := make(map[byte]int) // 窗口
+
+	start := 0   // 最小子串开始的位置
+	minLen := -1 // 最小子串的长度
+
+	needs := make(map[byte]int) // 需要匹配的字符计数器
+	tLen := len(t)
+	for i := 0; i < tLen; i++ {
+		needs[t[i]]++
+	}
+	needsMacth := len(needs)
+	matched := 0 // 窗口中已经匹配到字符数
+
+	slen := len(s)
+	for right < slen { // 遍历 s
+		c1 := s[right] // 窗口右侧
+		if _, ok := needs[c1]; ok {
+			window[c1]++                 // c1 在窗口中出现的次数
+			if window[c1] == needs[c1] { // t 中的 c1 字符被 window 全部包含
+				matched++
+			}
+		}
+
+		for matched == needsMacth { // 窗口中已经包含了 t 中的所有字符
+			newWindowSize := right - left + 1
+			if minLen == -1 || newWindowSize < minLen { // 更新窗口大小
+				start = left
+				minLen = newWindowSize
+			}
+			c2 := s[left] // 窗口左侧
+			if _, ok := needs[c2]; ok {
+				window[c2]--
+				if window[c2] < needs[c2] {
+					matched-- // 失配一个字符
+				}
+			}
+			left++ // 窗口收紧左边侧
+		}
+
+		right++ // 窗口右移
+	}
+	if minLen == -1 {
+		return ""
+	}
+	return s[start : start+minLen]
 }
