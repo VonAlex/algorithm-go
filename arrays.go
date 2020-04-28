@@ -601,3 +601,99 @@ func CountPrimes(n int) int {
 	}
 	return cnt
 }
+
+// 方法 1：暴力法
+// 最简单的方法是考虑给定 nums 数组的每个可能的子数组，找到每个子数组的元素总和，
+// 并检查使用给定 k 获得的总和是否相等。
+// 当总和等于 k 时，递增用于存储所需结果的 count。
+// 时间复杂度：O(n^3)，会超时，空间复杂度：O(1)
+func SubarraySum(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	for start := 0; start < numsLen; start++ {
+		for end := start + 1; end <= numsLen; end++ {
+			sum := 0
+			for i := start; i < end; i++ {
+				sum += nums[i]
+			}
+			if sum == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 2：暴力法 2
+func SubarraySum2(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	for start := 0; start < numsLen; start++ {
+		sum := 0
+		for end := start; end < numsLen; end++ {
+			sum += nums[end]
+			if sum == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 3：前缀和解法 1
+// 时间复杂度：O(n^2), 空间复杂度：O(n)
+func SubarraySum3(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	// 前缀和数组长度比 nums 多 1，0 位置数为 0
+	// 构造前缀和
+	presums := make([]int, numsLen+1)
+	presums[0] = 0
+	for i := 1; i <= numsLen; i++ {
+		presums[i] = presums[i-1] + nums[i-1]
+	}
+	for start := 0; start < numsLen; start++ {
+		for end := start + 1; end <= numsLen; end++ {
+
+			// presums[end]-presums[start] 表示 nums[start] 到 nums[end-1]
+			if presums[end]-presums[start] == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 4：前缀和解法 2
+// 时间复杂度：O(n)，空间复杂度 O(n)
+// 该方法是方法 3 的一个改进，方法 3 中的 2 个 for 的内层循环，寻找 end 的过程，
+// 实际上可以使用一个 map 来统计不同前缀和出现的频度
+func SubarraySum4(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	// 前缀和：该前缀和出现的次数
+	preSums := map[int]int{
+		0: 1,
+	}
+	var sum, res int
+	for i := 0; i < numsLen; i++ {
+		sum += nums[i] // 和的统计
+		subSum := sum - k
+		if _, ok := preSums[subSum]; ok {
+			res += preSums[subSum]
+		}
+		preSums[sum]++
+	}
+	return res
+}
