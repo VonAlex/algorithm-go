@@ -42,3 +42,44 @@ func IsPowerOfTwo2(n int) bool {
 func IsOppositeSign(x, y int) bool {
 	return (x ^ y) < 0
 }
+
+/**
+ * LeetCode 面试题56 - I. 数组中数字出现的次数
+ * https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/
+ *
+ * 一个整型数组 nums 里除两个数字之外，其他数字都出现了两次。请写程序找出这两个只出现一次的数字。
+ * 要求时间复杂度是O(n)，空间复杂度是O(1)。
+ * 示例 1：
+ * 	   输入：nums = [4,1,4,6]
+ *	   输出：[1,6] 或 [6,1]
+ */
+// 分组异或
+// 思路：如果除了一个数字以外，其他数字都出现了两次，那么如何找到出现一次的数字？
+// 就是全员做亦或操作，相同的数字两两抵消，0 ^ a = a
+// 本题有 2 个数字，那么可以先办法把这组数分成两堆，每一堆里包含一个唯一的数，这样问题简化了以前那个题目了
+// 那么如果去分成 2 堆呢？
+// 假设两个只出现一次的数是 a 和 b，那么全员异或结果实际上就是 a ^ b
+// 结果中取任一个二进制为 1 的位，表示 a 和 b 在这个位置上不同。
+// 所以，可以根据这个 1 的位置来把数据划成 2 堆
+func SingleNumbers(nums []int) []int {
+	if len(nums) == 0 {
+		return nums
+	}
+	ret := 0
+	for _, num := range nums {
+		ret ^= num
+	}
+	div := 1
+	for ret&div == 0 {
+		div <<= 1 // 找二进制表示中为 1 的最右位置
+	}
+	var a, b int
+	for _, num := range nums {
+		if num&div == 0 {
+			a ^= num
+		} else {
+			b ^= num
+		}
+	}
+	return []int{a, b}
+}
