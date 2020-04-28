@@ -5,41 +5,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
-	"unicode"
 )
-
-/**
- * LeetCode 题 3 无重复字符的最长子串
- * https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
- *
- * 给定一个字符串，请你找出其中不含有重复字符的最长子串的长度
- *
- * 关键点在左端字符位置的更新
- */
-// 1. 暴力法，但由于时间限制，会出现 TLE
-// 逐个检查所有的子字符串，看它是否不含有重复的字符。
-
-// 2. 优化版的滑动窗口
-// 时间复杂度 O(n)，空间复杂度 O(min(m,n))，m 是字符集的大小
-func LengthOfLongestSubstring(s string) int {
-	var ans, left, length int
-	indexs := make(map[rune]int) // 定义字符到索引的映射
-	for i, c := range s {
-		pos, ok := indexs[c]
-
-		// 如果 s[j] 在 [i, j) 范围内有与 j' 重复的字符。
-		// 不需要逐渐增加 i，可直接跳过 [i，j'] 范围内的所有元素，并将 i 变为 j' + 1。
-		if ok && left < pos { // 遇到重复字符时才可能更新 left
-			left = pos // left = max(left, pos)
-		}
-		length = i - left + 1
-		if ans < length { // ans = max(length, ans)
-			ans = length
-		}
-		indexs[c] = i + 1 // c 的 value 保存为当前位置的下一个，方便更新 left
-	}
-	return ans
-}
 
 /**
  * 剑指 offer 面试题 05 替换空格
@@ -191,42 +157,7 @@ func Reverse2(x int) int {
 	return res
 }
 
-/**
- * leetcode 题 125 验证回文串
- * https://leetcode-cn.com/problems/valid-palindrome/
- * 给定一个字符串，验证它是否是回文串，只考虑字母和数字字符，可以忽略字母的大小写
- * 说明：本题中，我们将空字符串定义为有效的回文串
- *
- * 输入: "A man, a plan, a canal: Panama"
- * 输出: true
- *
- *
- */
-func IsPalindrome(s string) bool {
-	l := 0
-	r := len(s) - 1
-	valid := func(v rune) bool {
-		return unicode.IsDigit(v) || unicode.IsLetter(v)
-	}
-	for l < r {
-		lletter := unicode.ToLower(rune(s[l]))
-		rletter := unicode.ToLower(rune(s[r]))
-		if !valid(lletter) {
-			l++
-			continue
-		}
-		if !valid(rletter) {
-			r--
-			continue
-		}
-		if lletter != rletter {
-			return false
-		}
-		l++
-		r--
-	}
-	return true
-}
+/****************************************************************************************/
 
 /*
  * leetcode 题 131 分割回文串
@@ -362,26 +293,6 @@ func palindromePartitionHelper3(s string, start int, ress *[][]string, path []st
 		path = path[:len(path)-1] // 回溯，删掉上一次塞进来的 s[start:i+1]
 	}
 	return
-}
-
-/**
- * leetcode 题 344 反转字符串
- * 编写一个函数，其作用是将输入的字符串反转过来。
- * 说明：不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
- *
- * 输入：["h","e","l","l","o"]
- * 输出：["o","l","l","e","h"]
- *
- * https://leetcode-cn.com/problems/reverse-string/
- */
-func ReverseString(s []byte) {
-	l := 0
-	r := len(s) - 1
-	for l < r {
-		s[l], s[r] = s[r], s[l]
-		l++
-		r--
-	}
 }
 
 /**
@@ -780,142 +691,4 @@ func CountFields(s string) int {
 		wasSpace = isSpace
 	}
 	return n
-}
-
-/*
- * LeetCode T76. 最小覆盖子串
- * https://leetcode-cn.com/problems/minimum-window-substring/
- *
- * 给你一个字符串 S、一个字符串 T，请在字符串 S 里面找出：包含 T 所有字母的最小子串。
- * 示例：
- * 输入: S = "ADOBECODEBANC", T = "ABC"
- * 输出: "BANC"
- * 说明：
- * 		如果 S 中不存这样的子串，则返回空字符串 ""
- * 		如果 S 中存在这样的子串，我们保证它是唯一的答案。
- *
- */
-// 滑动窗口解法
-// S 的长度为 M，T 的长度为 N，时间复杂度为 O(M+N)
-// 遍历 T 的时间复杂度 O(N)
-// 2 个 while 循环里最多执行 2M 次，时间复杂度为 O(M)
-
-// 另外，可以如下优化滑动窗口，将 T 中不存在的字符从 S 中去掉
-// S 变成一个 map, key 是原 S 中字符的位置，value 是字符
-// 下面遍历 S 就变成了遍历这个 map
-// 因为 go 中 map 遍历是无序的，所有要把 key 用一个 list，有序存起来
-// 按照这个有序 list 进行遍历 map
-func MinWindow(s string, t string) string {
-	if s == "" || t == "" {
-		return ""
-	}
-	left := 0                    // 窗口左侧
-	right := 0                   // 窗口右侧
-	window := make(map[byte]int) // 窗口
-
-	start := 0   // 最小子串开始的位置
-	minLen := -1 // 最小子串的长度
-
-	needs := make(map[byte]int) // 需要匹配的字符计数器
-	tLen := len(t)
-	for i := 0; i < tLen; i++ {
-		needs[t[i]]++
-	}
-	needsMacth := len(needs)
-	matched := 0 // 窗口中已经匹配到字符数
-
-	slen := len(s)
-	for right < slen { // 遍历 s
-		c1 := s[right] // 窗口右侧
-		if _, ok := needs[c1]; ok {
-			window[c1]++                 // c1 在窗口中出现的次数
-			if window[c1] == needs[c1] { // t 中的 c1 字符被 window 全部包含
-				matched++
-			}
-		}
-
-		for matched == needsMacth { // 窗口中已经包含了 t 中的所有字符
-			newWindowSize := right - left + 1
-			if minLen == -1 || newWindowSize < minLen { // 更新窗口大小
-				start = left
-				minLen = newWindowSize
-			}
-			c2 := s[left] // 窗口左侧
-			if _, ok := needs[c2]; ok {
-				window[c2]--
-				if window[c2] < needs[c2] {
-					matched-- // 失配一个字符
-				}
-			}
-			left++ // 窗口收紧左边侧
-		}
-
-		right++ // 窗口右移
-	}
-	if minLen == -1 {
-		return ""
-	}
-	return s[start : start+minLen]
-}
-
-/*
- * LeetCode T438. 找到字符串中所有字母异位词
- * https://leetcode-cn.com/problems/find-all-anagrams-in-a-string/
- *
- * 给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
- * 字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100
- *
- * 示例：
- * 输入: s: "cbaebabacd" p: "abc"
- * 输出: [0, 6]
- *
- * 说明：
- * 		字母异位词指字母相同，但排列不同的字符串。
- * 		不考虑答案输出的顺序。
- *
- */
-// 滑动窗口解法
-// 与“最小覆盖子串”题解基本上是相同的，只是结果输出需要变一下
-// 上一题是求解最小窗口，所以需要 start 和 minLen 去记录历史值，方面比较
-// 本题长度就等于 p 字符串的长度，而且结果保存到 slice 里
-// 因为，异位词的长度肯定要跟窗口长度相等
-func FindAnagrams(s string, p string) []int {
-	left := 0
-	right := 0
-	window := make(map[byte]int)
-
-	pLen := len(p)
-	needs := make(map[byte]int)
-	for i := 0; i < pLen; i++ {
-		needs[p[i]]++
-	}
-	needMatched := len(needs)
-	matched := 0
-
-	var res []int
-	sLen := len(s)
-	for right < sLen {
-		c1 := s[right]
-		if _, ok := needs[c1]; ok {
-			window[c1]++
-			if window[c1] == needs[c1] {
-				matched++
-			}
-		}
-		for matched == needMatched {
-			if right-left+1 == pLen { // 长度等于 t 的长度
-				res = append(res, left)
-			}
-			c2 := s[left]
-			if _, ok := needs[c2]; ok {
-				window[c2]--
-				if window[c2] < needs[c2] {
-					matched--
-				}
-			}
-			left++
-		}
-		right++
-	}
-	return res
 }

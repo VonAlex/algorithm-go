@@ -7,25 +7,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestLengthOfLongestSubstring(t *testing.T) {
-	type test struct {
-		input string
-		want  int
-	}
-	tests := []test{
-		{input: "abcabcbb", want: 3},
-		{input: "bbbbb", want: 1},
-		{input: "pwwkew", want: 3},
-	}
-
-	for _, tc := range tests {
-		got := LengthOfLongestSubstring(tc.input)
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Log(cmp.Diff(tc.want, got))
-		}
-	}
-}
-
 func TestReplaceSpace(t *testing.T) {
 	type test struct {
 		input string
@@ -195,6 +176,69 @@ func TestFindAnagrams(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := FindAnagrams(tt.args.s, tt.args.p); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("FindAnagrams() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLengthOfLongestSubstring(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"normal", args{"abcabcbb"}, 3},
+		{"normal2", args{"bbbbb"}, 1},
+		{"normal3", args{"pwwkew"}, 3},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := LengthOfLongestSubstring(tt.args.s); got != tt.want {
+				t.Errorf("LengthOfLongestSubstring() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestReverseVowels(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"contain upper", args{"aA"}, "Aa"},
+		{"contain punch", args{"a.b,."}, "a.b,."},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ReverseVowels2(tt.args.s); got != tt.want {
+				t.Errorf("ReverseVowels() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMaxArea(t *testing.T) {
+	type args struct {
+		height []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"contain upper", args{[]int{1, 8, 6, 2, 5, 4, 8, 3, 7}}, 49},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := MaxArea(tt.args.height); got != tt.want {
+				t.Errorf("MaxArea() = %v, want %v", got, tt.want)
 			}
 		})
 	}
