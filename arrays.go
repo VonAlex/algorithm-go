@@ -99,7 +99,7 @@ func MoveZeroes(nums []int) {
 // 如果当前元素是非 0 的，那么它的正确位置最多可以是当前位置或者更早的位置。
 // 如果是后者，则当前位置最终将被非 0 或 0 占据，该非 0 或 0 位于大于 “cur” 索引的索引处。
 // 我们马上用 0 填充当前位置，这样不像以前的解决方案，我们不需要在下一个迭代中回到这里。
-// 慢指针（lastnonzerofoundat）之前的所有元素都是非零的
+// 慢指针（l）之前的所有元素都是非零的
 // 当前指针和慢速指针之间的所有元素都是零。
 // 时间复杂度 O(n)，需要做数组写入的次数为数组中非 0 元素的个数
 func MoveZeroes2(nums []int) {
@@ -107,12 +107,13 @@ func MoveZeroes2(nums []int) {
 	if numsLen == 0 {
 		return
 	}
-	lastNonZeroFoundAt := 0
-	for curr := 0; curr < numsLen; curr++ {
-		if nums[curr] != 0 {
-			nums[lastNonZeroFoundAt], nums[curr] = nums[curr], nums[lastNonZeroFoundAt]
-			lastNonZeroFoundAt++
+	var l, r int
+	for r < numsLen {
+		if nums[r] != 0 {
+			nums[l], nums[r] = nums[r], nums[l]
+			l++
 		}
+		r++
 	}
 	return
 }
@@ -132,16 +133,17 @@ func MoveZeroes2(nums []int) {
 // 方法 1：双指针 —— 当要删除的元素元素较多时
 func RemoveElement(nums []int, val int) int {
 	numsLen := len(nums)
-	l := 0
-	for r := 0; r < numsLen; r++ {
+	var l, r int // r 从 0 开始是因为第一个元素也可能等于 val，不同于 26 题中的有序数组
+	for r < numsLen {
 		if nums[r] != val {
 			// 交换，或者赋值都可以
 			// nums[l], nums[r] = nums[r], nums[l]
 			nums[l] = nums[r]
 			l++
 		}
+		r++
 	}
-	return l
+	return l // 最终， 0 ~ l-1 内的元素是想要的，长度为 l
 }
 
 // 方法 2：双指针 —— 当要删除的元素很少时
@@ -158,6 +160,62 @@ func RemoveElement2(nums []int, val int) int {
 		} else {
 			l++
 		}
+	}
+	return l
+}
+
+/**
+ * LeetCode T26. 删除排序数组中的重复项
+ * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/
+ *
+ * 给定一个排序数组，你需要在 原地 删除重复出现的元素，使得每个元素只出现一次，返回移除后数组的新长度。
+ * 不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+ * 示例:
+ * 		给定数组 nums = [1,1,2],
+ * 		函数应该返回新的长度 2, 并且原数组 nums 的前两个元素被修改为 1, 2。
+ *      你不需要考虑数组中超出新长度后面的元素。
+ */
+func RemoveDuplicates(nums []int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	l := 0
+	r := 1 // 第一个元素不能修改
+	for r < numsLen {
+		if nums[l] != nums[r] {
+			l++ // 左指针先往前移动一个，错开上一次处理过的
+			nums[l] = nums[r]
+		}
+		r++
+	}
+	return l + 1 // l 在被覆盖时，先加 1，不同于 25 题后加 1，所以最终， 0 ~ l 内的元素是想要的，长度为 l+1
+}
+
+/**
+ * LeetCode T80. 删除排序数组中的重复项 II
+ * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/
+ *
+ * 给定一个排序数组，你需要在原地删除重复出现的元素，使得每个元素最多出现两次，返回移除后数组的新长度。
+ * 不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+ * 示例:
+ * 		给定数组  nums = [1,1,1,2,2,3],
+ * 		函数应返回新长度 length = 5, 并且原数组的前五个元素被修改为 1, 1, 2, 2, 3。
+ *      你不需要考虑数组中超出新长度后面的元素。
+ */
+func RemoveDuplicates2(nums []int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	l := 2
+	r := 2 // 前两个元素不能动
+	for r < numsLen {
+		if nums[r] != nums[l-2] {
+			nums[l] = nums[r]
+			l++
+		}
+		r++
 	}
 	return l
 }
@@ -593,25 +651,6 @@ func countOccurences(nums []int, num int) int {
 		cnt++
 	}
 	return cnt
-}
-
-func RemoveDuplicateNums(nums []int) (length int) {
-	length = -1
-	numsLen := len(nums)
-	if numsLen == -1 {
-		return
-	}
-	lo := 0
-	hi := 0
-	for hi < numsLen {
-		if nums[lo] != nums[hi] {
-			lo++
-			nums[lo] = nums[hi]
-		}
-		hi++
-	}
-	length = lo + 1
-	return
 }
 
 /**
