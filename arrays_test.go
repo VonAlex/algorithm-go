@@ -290,3 +290,43 @@ func TestSubarraySum(t *testing.T) {
 		})
 	}
 }
+
+func TestMoveZeroes(t *testing.T) {
+	type args struct {
+		nums []int
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{"normal", args{[]int{0, 1, 0, 3, 12}}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			MoveZeroes2(tt.args.nums)
+		})
+	}
+}
+
+func TestRemoveElement(t *testing.T) {
+	type args struct {
+		nums []int
+		val  int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"normal", args{[]int{3, 2, 2, 3}, 3}, 2},
+		{"normal2", args{[]int{0, 1, 2, 2, 3, 0, 4, 2}, 2}, 5},
+		{"normal2", args{[]int{1, 2, 3, 5, 4}, 5}, 4},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RemoveElement(tt.args.nums, tt.args.val); got != tt.want {
+				t.Errorf("RemoveElement() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

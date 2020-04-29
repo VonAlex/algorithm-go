@@ -118,6 +118,51 @@ func MoveZeroes2(nums []int) {
 }
 
 /**
+ * LeetCode T27. 移除元素
+ * https://leetcode-cn.com/problems/remove-element/
+ * 给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+ * 不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+ * 元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+ * 示例:
+ * 		给定 nums = [3,2,2,3], val = 3,
+ * 		函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。
+ *      你不需要考虑数组中超出新长度后面的元素。
+ */
+// 解题思路跟上面的 “LeetCode T283. 移动零“ 完全一样
+// 方法 1：双指针 —— 当要删除的元素元素较多时
+func RemoveElement(nums []int, val int) int {
+	numsLen := len(nums)
+	l := 0
+	for r := 0; r < numsLen; r++ {
+		if nums[r] != val {
+			// 交换，或者赋值都可以
+			// nums[l], nums[r] = nums[r], nums[l]
+			nums[l] = nums[r]
+			l++
+		}
+	}
+	return l
+}
+
+// 方法 2：双指针 —— 当要删除的元素很少时
+// 如果 nums 数组为 [1, 2, 3, 5, 4], val = 4
+// 那么按照前面的方法会对前 4 个元素进行不必要的操作
+func RemoveElement2(nums []int, val int) int {
+	numsLen := len(nums)
+	l := 0
+	r := numsLen
+	for l < r {
+		if nums[l] == val {
+			nums[l] = nums[r-1]
+			r--
+		} else {
+			l++
+		}
+	}
+	return l
+}
+
+/**
  * 剑指 offer 面试题03 找出数组中重复的数字
  * 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。
  * https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/
