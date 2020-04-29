@@ -63,64 +63,58 @@ func TwoSum3(nums []int, target int) []int {
 }
 
 /**
- * LeetCode T167. 两数之和 II - 输入有序数组
- * 给定一个已按照升序排列 的有序数组，找到两个数使得它们相加之和等于目标数
- * 函数应该返回这两个下标值 index1 和 index2，其中 index1 必须小于 index2。
+ * LeetCode T283. 移动零
+ * https://leetcode-cn.com/problems/move-zeroes/
+ * 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+ * 示例:
+ * 		输入: [0,1,0,3,12]
+ * 		输出: [1,3,12,0,0]
  * 说明:
- *  	返回的下标值（index1 和 index2）不是从零开始的。
- *		你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。
+ * 必须在原数组上操作，不能拷贝额外的数组。
+ * 尽量减少操作次数。
  */
 // 方法 1：双指针法
-// 时间复杂度：O(n)，空间复杂度：O(1)
-// 要注意没有合适答案时删除什么，这个要做好约定
-func TwoSum4(numbers []int, target int) []int {
-	i := 0
-	j := len(numbers) - 1
-	for i <= j {
-		if numbers[i]+numbers[j] == target {
-			return []int{i + 1, j + 1}
-		} else if numbers[i]+numbers[j] > target {
-			j--
-		} else {
-			i++
+// 先找出移动后，非零元素的右边界，然后在剩余位置填 0
+// 时间复杂度 O(n)，需要做数组写入的次数为数组长度
+func MoveZeroes(nums []int) {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return
+	}
+	var l int                      // 左指针记录最后一个非 0 位置的下一位
+	for r := 0; r < numsLen; r++ { // 后指针用来遍历
+		if nums[r] != 0 {
+			nums[l] = nums[r]
+			l++
 		}
 	}
-	return []int{-1, -1} // 找到不到 target 返回什么
+	for l < numsLen {
+		nums[l] = 0
+		l++
+	}
+	return
 }
 
-// 方法 2：双指针 + 二分查找
-// 时间复杂度 O(nlogn)，n 是指数组长度
-// 设二分查找每次过滤掉 d 个数，如果 d 较小时，可能二分法不怎么占优势
-func TwoSum5(numbers []int, target int) []int {
-	i := 0
-	j := len(numbers) - 1
-
-	_bs := func(numbers []int, l, r, t int) int {
-		var mid int
-		for l <= r {
-			mid = (l + r) >> 1
-			if numbers[mid] == t {
-				break
-			} else if numbers[mid] > t {
-				r = mid - 1
-			} else {
-				l = mid + 1
-			}
-		}
-		return mid
+// 方法 2：快慢指针法
+// 如果当前元素是非 0 的，那么它的正确位置最多可以是当前位置或者更早的位置。
+// 如果是后者，则当前位置最终将被非 0 或 0 占据，该非 0 或 0 位于大于 “cur” 索引的索引处。
+// 我们马上用 0 填充当前位置，这样不像以前的解决方案，我们不需要在下一个迭代中回到这里。
+// 慢指针（lastnonzerofoundat）之前的所有元素都是非零的
+// 当前指针和慢速指针之间的所有元素都是零。
+// 时间复杂度 O(n)，需要做数组写入的次数为数组中非 0 元素的个数
+func MoveZeroes2(nums []int) {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return
 	}
-	for i <= j {
-		if numbers[i]+numbers[j] == target {
-			return []int{i + 1, j + 1}
-		} else if numbers[i]+numbers[j] > target {
-			// 从 [i, j-1] 重新定位 j
-			j = _bs(numbers, i, j-1, target-numbers[i])
-		} else {
-			// 从 [i+1, j] 重新定位 i
-			i = _bs(numbers, i+1, j, target-numbers[j])
+	lastNonZeroFoundAt := 0
+	for curr := 0; curr < numsLen; curr++ {
+		if nums[curr] != 0 {
+			nums[lastNonZeroFoundAt], nums[curr] = nums[curr], nums[lastNonZeroFoundAt]
+			lastNonZeroFoundAt++
 		}
 	}
-	return []int{-1, -1}
+	return
 }
 
 /**
