@@ -1,6 +1,7 @@
 package leetcode
 
 import (
+	"container/heap"
 	"math/rand"
 )
 
@@ -130,7 +131,7 @@ func partition2(nums []int, lo, hi int) int {
 func partition3(nums []int, lo, hi int) int {
 	pivot := nums[lo]
 	l := lo
-	r := lo + 1
+	r := lo + 1 // l 的下一个
 	for r <= hi {
 		if nums[r] < pivot {
 			l++
@@ -198,4 +199,114 @@ func ShellSort(nums []int) {
 			}
 		}
 	}
+}
+
+/**
+ * LeetCode T215. 数组中的第K个最大元素
+ * https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
+ *
+ * 在未排序的数组中找到第 k 个最大的元素。
+ * 请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+ *
+ * 示例：
+ * 输入: [3,2,1,5,6,4] 和 k = 2
+ * 输出: 5
+ */
+// 方法1： 冒泡法
+func FindKthLargest(nums []int, k int) int {
+	maxIdx := len(nums) - 1
+	for i := 0; i < maxIdx; i++ { // 趟数从 0 开始
+		for j := 0; j < maxIdx-i; j++ {
+			if nums[j] > nums[j+1] {
+				nums[j], nums[j+1] = nums[j+1], nums[j]
+			}
+		}
+		// 第 k 大的元素，是倒数第 K 个
+		if i+1 == k {
+			return nums[maxIdx-i]
+		}
+	}
+	return nums[0] // 只有一个元素的情况
+}
+
+// 方法 2：快速选择法
+// 本方法大致上与快速排序相同。平均时间复杂度 O(N)
+// 简便起见，注意到第 k 个最大元素也就是第 N - k (数组位置)个最小元素，因此可以用第 k 小算法来解决本问题。
+// 也可以将数组从大到小排列， 第 K 大在数组中的位置就是 K-1
+//
+func FindKthLargest2(nums []int, k int) int {
+	l := 0
+	numsLen := len(nums)
+	r := numsLen - 1
+	ksmall := numsLen - k
+	return quickSelect(nums, l, r, ksmall)
+}
+
+func quickSelect(nums []int, lo, hi, ksmall int) int {
+	// 单路快排
+	random := lo + rand.Intn(hi-lo+1)
+	if random != lo {
+		nums[lo], nums[random] = nums[random], nums[lo]
+	}
+	pivot := nums[lo]
+	l := lo
+	r := l + 1
+	for r <= hi {
+		if nums[r] < pivot {
+			l++
+			nums[l], nums[r] = nums[r], nums[l]
+		}
+		r++
+	}
+	nums[lo], nums[l] = nums[l], nums[lo]
+
+	// 根据 l 与 ksmall 的大小决定，要继续处理左半边还是右半边
+	if l == ksmall {
+		return nums[l]
+	} else if l < ksmall {
+		return quickSelect(nums, l+1, hi, ksmall)
+	}
+	return quickSelect(nums, lo, l-1, ksmall)
+}
+
+type intheap []int
+
+// 实现 sort 接口的三个方法
+func (p intheap) Less(i, j int) bool {
+	return p[i] < p[j]
+}
+
+func (p intheap) Len() int {
+	return len(p)
+}
+
+func (p intheap) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+// 实现 heap 接口的额外方法
+func (p *intheap) Pop() interface{} {
+	n := len(*p)
+	x := (*p)[n-1]
+	*p = (*p)[:n-1]
+	return x
+}
+
+func (p *intheap) Push(x interface{}) {
+	*p = append(*p, x.(int))
+}
+
+// 方法 3：最小堆法
+// 保持堆内的元素个数为 k，最后取出元素就是要求的目标
+// 时间复杂度 : O(Nlogk)。空间复杂度 : O(k)，用于存储堆元素。
+func FindKthLargest3(nums []int, k int) int {
+	hp := &intheap{}
+	heap.Init(hp)
+	for _, num := range nums {
+		heap.Push(hp, num)
+		if len(*hp) > k {
+			heap.Pop(hp)
+		}
+	}
+	return heap.Pop(hp).(int)
 }

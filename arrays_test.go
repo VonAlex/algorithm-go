@@ -370,3 +370,12 @@ func TestMerge(t *testing.T) {
 	Merge(num1, m, num2, n)
 	fmt.Println(num1)
 }
+
+func TestFindKthLargest(t *testing.T) {
+	nums := []int{3, 2, 1, 5, 6, 4}
+	k := 2
+	// nums := []int{1}
+	// k := 1
+
+	t.Log(FindKthLargest3(nums, k))
+}
