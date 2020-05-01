@@ -1,6 +1,7 @@
 package leetcode
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -43,14 +44,6 @@ func TestFindRepeatNumber(t *testing.T) {
 			t.Log(cmp.Diff(tc.want, got))
 		}
 	}
-}
-
-func TestMerge(t *testing.T) {
-	A := []int{1, 2, 3, 0, 0, 0}
-	m := 3
-	B := []int{2, 5, 6}
-	n := 3
-	Merge(A, m, B, n)
 }
 
 func TestDistributeCandies(t *testing.T) {
@@ -366,4 +359,14 @@ func TestRemoveDuplicates2(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMerge(t *testing.T) {
+	num1 := make([]int, 6)
+	copy(num1, []int{4, 5, 6})
+	m := 3
+	num2 := []int{1, 2, 3}
+	n := 3
+	Merge(num1, m, num2, n)
+	fmt.Println(num1)
 }
