@@ -337,7 +337,7 @@ func Merge(nums1 []int, m int, nums2 []int, n int) {
 }
 
 // 方法 2：双指针法，从前向后
-// 时间复杂度: O(m + n)，空间复杂度: O(m + n)
+// 时间复杂度: O(m + n)，空间复杂度: O(m + n), 需要一个中间数组
 func Merge2(nums1 []int, m int, nums2 []int, n int) {
 	if len(nums1) == 0 || len(nums2) == 0 {
 		return

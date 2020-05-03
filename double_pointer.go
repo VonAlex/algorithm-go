@@ -231,7 +231,7 @@ func TwoSum5(numbers []int, target int) []int {
 	_bs := func(numbers []int, l, r, t int) int {
 		var mid int
 		for l <= r {
-			mid = (l + r) >> 1
+			mid = l + (r-l)>>1
 			if numbers[mid] == t {
 				break
 			} else if numbers[mid] > t {
