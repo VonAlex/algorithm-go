@@ -142,6 +142,37 @@ func partition3(nums []int, lo, hi int) int {
 	return l
 }
 
+// 三路快排
+func QuickSort3Way(nums []int, lo, hi int) {
+	if lo >= hi {
+		return
+	}
+	l, r := partition5(nums, lo, hi)
+	QuickSort3Way(nums, lo, l-1)
+	QuickSort3Way(nums, r, hi)
+}
+
+func partition5(nums []int, lo, hi int) (l, r int) {
+	pivot := nums[lo]
+	l = lo         // nums[lo+1...l] < pivot
+	r = hi + 1     // nums[r...hi] > pivot
+	curr := lo + 1 // nums[l+1...curr) == pivot
+	for curr < r {
+		if nums[curr] == pivot {
+			curr++
+		} else if nums[curr] > pivot {
+			nums[curr], nums[r-1] = nums[r-1], nums[curr]
+			r--
+		} else {
+			nums[l+1], nums[curr] = nums[curr], nums[l+1]
+			curr++
+			l++
+		}
+	}
+	nums[lo], nums[l] = nums[l], nums[lo]
+	return
+}
+
 /*
  * 直接插入排序
  * 基本方法是：每一步将一个待排序的元素，按其排序码的大小，

@@ -35,3 +35,10 @@ func TestSortArray2(t *testing.T) {
 	ShellSort(nums)
 	t.Log(nums)
 }
+
+func Test_quickSort3Way(t *testing.T) {
+	// nums := []int{5, 1, 1, 2, 0, 0}
+	nums := []int{6, 1, 2, 7, 9, 3, 4, 5, 10, 8}
+	QuickSort3Way(nums, 0, 9)
+	t.Log(nums)
+}
