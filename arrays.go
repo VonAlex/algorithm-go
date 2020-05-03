@@ -276,35 +276,97 @@ func FindRepeatNumber2(nums []int) int {
  * 输出: [1,2,2,3,5,6]
  */
 
-// 解法1 双指针
-// 充分利用 A 和 B 已经排好序的特点
-// 时间复杂度和空间复杂度都是 O(m+n)
-func Merge(A []int, m int, B []int, n int) {
-	C := make([]int, m+n) // 准备一个新数组，足以容纳 A + B
-	var iA, iB, iC int
-	for ; iC < m+n; iC++ {
-		if iA == m || iB == n { // 遍历完 A 或者 B 为止
-			break
-		}
-		if A[iA] < B[iB] {
-			C[iC] = A[iA]
-			iA++
+/*
+ * LeetCode T88. 合并两个有序数组
+ * https://leetcode-cn.com/problems/merge-sorted-array/
+ * 面试题 10.01. 合并排序的数组
+ * https://leetcode-cn.com/problems/sorted-merge-lcci/
+ *
+ * 给你两个有序整数数组 nums1 和 nums2，请你将 nums2 合并到 nums1 中，使 nums1 成为一个有序数组。
+ *
+ * 说明:
+ * 初始化 nums1 和 nums2 的元素数量分别为 m 和 n 。
+ * 你可以假设 nums1 有足够的空间（空间大小大于或等于 m + n）来保存 nums2 中的元素。
+ *
+ * 示例：
+ *
+ * 输入:
+ * 		nums1 = [1,2,3,0,0,0], m = 3
+ *		nums2 = [2,5,6],       n = 3
+ *
+ * 输出: [1,2,2,3,5,6]
+ */
+// 此题与合并排序链表是一样的，只是换成了数组
+// 方法 1：双指针法，从后向前
+// 时间复杂度 : O(n + m)，空间复杂度 : O(1)
+func Merge(nums1 []int, m int, nums2 []int, n int) {
+	nums1Len := len(nums1)
+	nums2Len := len(nums2)
+	if nums1Len == 0 || nums2Len == 0 {
+		return
+	}
+	if nums1Len != m {
+		m = nums1Len
+	}
+	if nums2Len != n {
+		n = nums2Len
+	}
+	curr := m + n - 1 // 总进度指针
+
+	for m > 0 && n > 0 {
+		if nums1[m-1] > nums2[n-1] {
+			nums1[curr] = nums1[m-1]
+			m--
 		} else {
-			C[iC] = B[iB]
-			iB++
+			nums1[curr] = nums2[n-1]
+			n--
 		}
+		curr--
 	}
-	// 遍历剩下的 A
-	for ; iA < m; iA++ {
-		C[iC] = A[iA]
-		iC++
+	for m > 0 {
+		nums1[curr] = nums1[m-1]
+		m--
+		curr--
 	}
-	// 遍历剩下的 B
-	for ; iB < n; iB++ {
-		C[iC] = B[iB]
-		iC++
+	for n > 0 {
+		nums1[curr] = nums2[n-1]
+		n--
+		curr--
 	}
-	copy(A, C)
+	return
+}
+
+// 方法 2：双指针法，从前向后
+// 时间复杂度: O(m + n)，空间复杂度: O(m + n)
+func Merge2(nums1 []int, m int, nums2 []int, n int) {
+	if len(nums1) == 0 || len(nums2) == 0 {
+		return
+	}
+	merged := make([]int, m+n)
+
+	var curr, curr1, curr2 int
+	for curr1 < m && curr2 < n {
+		if nums1[curr1] < nums2[curr2] {
+			merged[curr] = nums1[curr1]
+			curr1++
+		} else {
+			merged[curr] = nums2[curr2]
+			curr2++
+		}
+		curr++
+	}
+	for curr1 < m {
+		merged[curr] = nums1[curr1]
+		curr1++
+		curr++
+	}
+	for curr2 < n {
+		merged[curr] = nums2[curr2]
+		curr2++
+		curr++
+	}
+	copy(nums1, merged)
+	return
 }
 
 /*
