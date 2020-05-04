@@ -89,7 +89,7 @@ func Fib4(n int) int {
 	return curr
 }
 
-/**
+/*
  * LeetCode T322. 零钱兑换
  * https://leetcode-cn.com/problems/coin-change/
  *
@@ -164,9 +164,90 @@ func CoinChange2(coins []int, amount int) int {
 	return dp[amount]
 }
 
-// func maxSubArray(nums []int) int {
+/*
+ * LeetCode T53. 最大子序和
+ * https://leetcode-cn.com/problems/maximum-subarray/
+ *
+ * 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+ * 示例 1:
+ * 输入: [-2,1,-3,4,-1,2,1,-5,4],
+ * 输出: 6
+ * 解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+ */
+// 方法 1：动态规划
+func MaxSubArray(nums []int) int {
+	numsLen := len(nums)
+	// 1.定义状态：dp[i] 表示以 i 结尾子串的最大值
+	dp := make([]int, numsLen)
+	// 3.初始化：找到初始条件
+	dp[0] = nums[0]
+	for i := 1; i < numsLen; i++ {
+		// 第 i 个子组合的最大值可以通过第 i-1 个子组合的最大值和第 i 个数字获得
+		// 2.状态转移方程，如果 dp[i-1] 不能带来正增益的话，那么丢弃以前的最大值
+		if dp[i-1] > 0 {
+			dp[i] = dp[i-1] + nums[i]
+		} else {
+			// 抛弃前面的结果
+			dp[i] = nums[i]
+		}
+	}
+	max := nums[0]
+	// 4.选出结果
+	for _, sum := range dp {
+		if sum > max {
+			max = sum
+		}
+	}
+	return max
+}
 
-// }
+// 动态规划的优化
+func MaxSubArray2(nums []int) int {
+	// 状态压缩：每次状态的更新只依赖于前一个状态，就是说 dp[i] 的更新只取决于 dp[i-1] ,
+	// 我们只用一个存储空间保存上一次的状态即可。
+	// var start, end, subStart, subEnd int  // 可以获得最大和子序列的边界位置
+	sum := nums[0]
+	maxSum := nums[0]
+	numsLen := len(nums)
+	for i := 1; i < numsLen; i++ {
+		if sum > 0 {
+			sum += nums[i]
+			// subEnd++
+		} else {
+			sum = nums[i]
+			// subStart = i
+			// subEnd = i
+		}
+		if maxSum < sum {
+			maxSum = sum
+			// start = subStart
+			// end = subEnd
+		}
+	}
+	return maxSum
+}
+
+// 方法 2：Kadane算法
+func MaxSubArray3(nums []int) int {
+	_max := func(x, y int) int {
+		if x > y {
+			return x
+		}
+		return y
+	}
+	sum := nums[0]
+	maxSum := nums[0]
+	for _, num := range nums {
+		sum = _max(num, sum+num) // sum 能否提供正增益，与 dp 解法其实是一致的
+		if maxSum < sum {
+			maxSum = sum
+		}
+	}
+	return maxSum
+}
+
+// 方法 3：分治法
+// 时间复杂度 O(nlogn)
 
 func min(x, y int) int {
 	if x < y {
