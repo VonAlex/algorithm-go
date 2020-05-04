@@ -202,6 +202,8 @@ func MaxArea(height []int) int {
  * 说明:
  *  	返回的下标值（index1 和 index2）不是从零开始的。
  *		你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。
+ *
+ * 问题的本质是如何缩减搜索空间
  */
 // 方法 1：双指针法
 // 时间复杂度：O(n)，空间复杂度：O(1)
@@ -254,6 +256,69 @@ func TwoSum5(numbers []int, target int) []int {
 		}
 	}
 	return []int{-1, -1}
+}
+
+/**
+ * LeetCode T240. 搜索二维矩阵 II
+ * 编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target。该矩阵具有以下特性：
+ * 每行的元素从左到右升序排列。
+ * 每列的元素从上到下升序排列。
+ *
+ * 示例:
+ * 现有矩阵 matrix 如下：
+ * [
+ *    [1,   4,  7, 11, 15],
+ *    [2,   5,  8, 12, 19],
+ *    [3,   6,  9, 16, 22],
+ *    [10, 13, 14, 17, 24],
+ *    [18, 21, 23, 26, 30]
+ * ]
+ * 给定 target = 5，返回 true。
+ * 给定 target = 20，返回 false。
+ */
+// 方法 1：双指针缩减搜索区间
+// 时间复杂度 O(n+m)，空间复杂度 O(1)
+func SearchMatrix(matrix [][]int, target int) bool {
+	rows := len(matrix)
+	if rows == 0 {
+		return false
+	}
+	columns := len(matrix[0])
+	// 列 j 从最后一列开始
+	// 行 i 从第一行开始
+	// 这样可以一次淘汰一行或者一列，继续形成规则的搜索空间
+	// 无法使用二分，虽然一次可以淘汰 1/4 的空间，但是会破坏后续搜索空间的规则性
+	i, j := 0, columns-1
+	// 从矩阵右上角开始遍历
+	for i < rows && j >= 0 {
+		if matrix[i][j] == target {
+			return true
+		} else if matrix[i][j] < target {
+			i++
+		} else {
+			j--
+		}
+	}
+	return false
+}
+
+// 方法 2：逐行进行二分查找
+// 利用有序的特性
+// 时间复杂度：O(nlogm)
+func SearchMatrix2(matrix [][]int, target int) bool {
+	rows := len(matrix)
+	if rows == 0 {
+		return false
+	}
+	for i := 0; i < rows-1; i++ {
+		if matrix[i][0] > target { // 提前结束没有意义的比较
+			return false
+		}
+		if BinarySearch(matrix[i], target) != -1 { // 找到了
+			return true
+		}
+	}
+	return false
 }
 
 /*************************************** 滑动窗口题目(前后指针) *******************************************/

@@ -1,6 +1,8 @@
 package leetcode
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMinSubArrayLen(t *testing.T) {
 	type args struct {
@@ -24,4 +26,28 @@ func TestMinSubArrayLen(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSearchMatrix(t *testing.T) {
+	// type args struct {
+	// 	matrix [][]int
+	// 	target int
+	// }
+	// tests := []struct {
+	// 	name string
+	// 	args args
+	// 	want bool
+	// }{
+	// // TODO: Add test cases.
+	// }
+	// for _, tt := range tests {
+	// 	t.Run(tt.name, func(t *testing.T) {
+	// 		if got := SearchMatrix(tt.args.matrix, tt.args.target); got != tt.want {
+	// 			t.Errorf("SearchMatrix() = %v, want %v", got, tt.want)
+	// 		}
+	// 	})
+	// }
+	matrix := [][]int{{1, 4, 7, 11, 15}, {2, 5, 8, 12, 19}, {3, 6, 9, 16, 22}, {10, 13, 14, 17, 24}, {18, 21, 23, 26, 30}}
+	got := SearchMatrix2(matrix, 15)
+	t.Log(got)
 }
