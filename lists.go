@@ -270,7 +270,8 @@ func reversePrintHelper(node *ListNode, res *[]int) int {
 /**
  * LeetCode T206 反转链表
  * https://leetcode-cn.com/problems/reverse-linked-list/
- *
+ * 面试题24. 反转链表
+ * https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/
  * 输入: 1->2->3->4->5->NULL
  * 输出: 5->4->3->2->1->NULL
  */
@@ -284,8 +285,17 @@ func ReverseList(head *ListNode) *ListNode {
 	var prev, next *ListNode
 	curr := head
 	for curr != nil {
+		// next = curr.Next
+		// curr.Next = prev
+		// prev = curr
+		// curr = next
+
 		next = curr.Next
-		curr.Next = prev
+		if prev == nil { // curr 是头结点
+			curr.Next = nil
+		} else {
+			curr.Next = prev // curr 不是头结点
+		}
 		prev = curr
 		curr = next
 	}
@@ -333,6 +343,14 @@ func ReverseList3(head *ListNode) *ListNode {
 	return head
 }
 
+// func ReverseBetween(head *ListNode, m int, n int) *ListNode {
+// 	if head == nil {
+// 		return head
+// 	}
+// 	var prev, next *ListNode
+// 	curr := head
+// }
+
 /**
  * 剑指 offer 面试题 18 删除链表的节点
  * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
@@ -358,6 +376,80 @@ func DeleteNode(head *ListNode, val int) *ListNode {
 			break
 		}
 		prev = curr
+		curr = curr.Next
+	}
+	return dummy.Next
+}
+
+// 不使用 dummy 结点
+func DeleteNode2(head *ListNode, val int) *ListNode {
+	var prev *ListNode
+	curr := head
+	for curr != nil {
+		if prev == nil { // curr 是头结点
+			if head.Val == val {
+				return head.Next
+			}
+		} else { // curr 不是头结点
+			if curr.Val == val {
+				prev.Next = curr.Next
+			}
+		}
+		prev = curr
+		curr = curr.Next
+	}
+	return head
+}
+
+/**
+ * LeetCode T203. 删除链表中等于给定值 val 的所有节点。
+ * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
+ *
+ * 输入: 1->2->6->3->4->5->6, val = 6
+ * 输出: 1->2->3->4->5
+ *
+ * 说明：链表中有相同的元素
+ */
+// 本题是上面一题的升级版
+// 方法 1: 不使用 dummy 结点
+func RemoveElements(head *ListNode, val int) *ListNode {
+	var prev *ListNode
+	curr := head
+	for curr != nil {
+		if prev == nil { // curr 是头结点
+			if head.Val == val {
+				head = head.Next
+				if head == nil {
+					return nil
+				}
+				continue
+			}
+		} else { // curr 不是头结点
+			if curr.Val == val {
+				prev.Next = curr.Next
+				curr = curr.Next // 跳过 val，prev 不变，curr 往下一个
+				continue
+			}
+		}
+		prev = curr
+		curr = curr.Next
+	}
+	return head
+}
+
+// 方法 2：使用 dummy 结点简化特殊情况
+func RemoveElements2(head *ListNode, val int) *ListNode {
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev := dummy
+	curr := head
+	for curr != nil {
+		if curr.Val == val {
+			prev.Next = curr.Next // prev 不动
+		} else {
+			prev = curr
+		}
 		curr = curr.Next
 	}
 	return dummy.Next
