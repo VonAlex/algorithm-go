@@ -267,7 +267,7 @@ func reversePrintHelper(node *ListNode, res *[]int) int {
 	return node.Val
 }
 
-/**
+/*
  * LeetCode T206 反转链表
  * https://leetcode-cn.com/problems/reverse-linked-list/
  * 面试题24. 反转链表
@@ -343,13 +343,52 @@ func ReverseList3(head *ListNode) *ListNode {
 	return head
 }
 
-// func ReverseBetween(head *ListNode, m int, n int) *ListNode {
-// 	if head == nil {
-// 		return head
-// 	}
-// 	var prev, next *ListNode
-// 	curr := head
-// }
+/**
+ * LeetCode T92. 反转链表 II
+ * https://leetcode-cn.com/problems/reverse-linked-list-ii/
+ *
+ * 反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
+ * 输入: 1->2->3->4->5->NULL, m = 2, n = 4
+ * 输出: 1->4->3->2->5->NULL
+ *
+ * 说明: 1 ≤ m ≤ n ≤ 链表长度。
+ */
+func ReverseBetween(head *ListNode, m int, n int) *ListNode {
+	if head == nil {
+		return head
+	}
+	if m >= n { // 不合理的情况，m 应该小于 n
+		return head
+	}
+
+	var prev, next *ListNode
+	curr := head
+	for m > 1 { // 找到反转部分的前一个节点
+		prev = curr
+		if curr == nil { // m 大于链表长度的情况
+			return head
+		}
+		curr = curr.Next
+		m--
+		n--
+	}
+	con := prev                // 反转部分的前一个节点
+	tail := curr               // 反转部分的第一个节点，反转后成为该部分最后一个节点
+	for n > 0 && curr != nil { // 兼容 n 大于链表长度的情况
+		next = curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+		n--
+	}
+	if con != nil {
+		con.Next = prev
+	} else {
+		head = prev // 从头开始反转，即 m = 1 的情况
+	}
+	tail.Next = curr
+	return head
+}
 
 /**
  * 剑指 offer 面试题 18 删除链表的节点
@@ -569,6 +608,35 @@ func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
 	return dummy.Next
 }
 
+// 解法 4：快慢指针 - 去掉 dummy 节点
+func RemoveLastKthNode4(head *ListNode, n int) *ListNode {
+	if head == nil || n < 0 {
+		return head
+	}
+	fast := head
+	for n > 0 { // fast 先走 n 步
+		if fast == nil {
+			return head
+		}
+		n--
+		fast = fast.Next
+	}
+	var prev *ListNode // prev 节点辅助
+	slow := head
+	for fast != nil {
+		prev = slow
+		fast = fast.Next
+		slow = slow.Next
+	}
+	// 遍历结束，slow 就是倒数第 k 个节点
+	if prev == nil {
+		head = slow.Next
+	} else {
+		prev.Next = slow.Next
+	}
+	return head
+}
+
 /**
  * 剑指 offer 面试题22. 链表中倒数第k个节点
  * https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
@@ -600,6 +668,31 @@ func GetKthFromEnd(head *ListNode, k int) *ListNode {
 // 方法 2：2 次遍历法
 // 第 1 遍遍历得到链表长度为 n，第 2 遍遍历找到第 n-k 个节点
 
+/*
+ * 程序员面试金典 面试题 02.02. 返回倒数第 k 个节点
+ * https://leetcode-cn.com/problems/kth-node-from-end-of-list-lcci/
+ *
+ * 实现一种算法，找出单向链表中倒数第 k 个节点。返回该节点的值。
+ * 输入： 1->2->3->4->5 和 k = 2
+ * 输出： 4
+ * 说明：给定的 k 保证是有效的。
+ */
+// 方法 1：快慢指针法
+// 实际上，要有异常情况的考虑，head 为空是返回什么值？k 为负数返回什么值？k 超过链表长度返回什么值？
+func KthToLast(head *ListNode, k int) int {
+	fast := head
+	for k > 0 { // fast 先走 k 步
+		fast = fast.Next
+		k--
+	}
+	slow := head
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	return slow.Val
+}
+
 func RemoveDuplicateNodes(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
@@ -622,7 +715,8 @@ func RemoveDuplicateNodes(head *ListNode) *ListNode {
 }
 
 /**
- * LeetCode T141 给定一个链表，判断链表中是否有环
+ * LeetCode T141 环形链表
+ * 给定一个链表，判断链表中是否有环
  * https://leetcode-cn.com/problems/linked-list-cycle/
  */
 // 方法 1：快慢指针法
@@ -649,10 +743,13 @@ func HasCycle2(head *ListNode) bool {
 	return false
 }
 
-/**
+/*
+ * LeetCode T142. 环形链表 II
+ * https://leetcode-cn.com/problems/linked-list-cycle-ii/
  * LeetCode 面试题 02.08. 环路检测
- * 给定一个有环链表，实现一个算法返回环路的开头节点。
  * https://leetcode-cn.com/problems/linked-list-cycle-lcci/
+ *
+ * 给定一个有环链表，实现一个算法返回环路的开头节点。
  */
 // 方法 1：快慢指针法
 // 假设相遇时，slow 走了 K 步（起点到相遇点的距离），那两倍速的 fast 走了 2K 步
@@ -665,8 +762,8 @@ func DetectCycle(head *ListNode) *ListNode {
 	slow := head
 	fast := head
 	for fast != nil && fast.Next != nil {
-		fast = fast.Next.Next
 		slow = slow.Next
+		fast = fast.Next.Next
 		if slow == fast { // 找到相遇的位置
 			break
 		}
@@ -684,7 +781,7 @@ func DetectCycle(head *ListNode) *ListNode {
 	return slow
 }
 
-/**
+/*
  * LeetCode T876 链表的中间结点
  * https://leetcode-cn.com/problems/middle-of-the-linked-list/
  *
@@ -710,29 +807,49 @@ func MiddleNode(head *ListNode) *ListNode {
 // 方法 2：单指针法
 // 先遍历一遍获得长度，第二遍遍历找到中间节点
 
-/**
- * 程序员面试金典 面试题 02.02. 返回倒数第 k 个节点
- * https://leetcode-cn.com/problems/kth-node-from-end-of-list-lcci/
+/*
+ * LeetCode 面试题 02.03. 删除链表中间的某个节点
+ * https://leetcode-cn.com/problems/delete-middle-node-lcci/
+ * LeetCode T237. 删除链表中的节点
+ * https://leetcode-cn.com/problems/delete-node-in-a-linked-list/
  *
- * 实现一种算法，找出单向链表中倒数第 k 个节点。返回该节点的值。
- * 输入： 1->2->3->4->5 和 k = 2
- * 输出： 4
- * 说明：给定的 k 保证是有效的。
+ * 实现一种算法，删除单向链表中间的某个节点（除了第一个和最后一个节点，不一定是中间节点），假定你只能访问该节点。
+ * 示例：
+ * 输入：单向链表a->b->c->d->e->f中的节点c
+ * 结果：不返回任何数据，但该链表变为a->b->d->e->f
  */
-// 方法 1：快慢指针法
-// 实际上，要有异常情况的考虑，head 为空是返回什么值？k 为负数返回什么值？k 超过链表长度返回什么值？
-func KthToLast(head *ListNode, k int) int {
-	fast := head
-	for k > 0 { // fast 先走 k 步
-		fast = fast.Next
-		k--
+// 实例本题提示了一种删除链表节点的方法，不要找到前一个节点，而是后一个节点覆盖要删除的节点，然后改变指针
+func DeleteSomeNode(node *ListNode) {
+	if node == nil || node.Next == nil {
+		return
 	}
-	slow := head
-	for fast != nil {
+	node.Val = node.Next.Val
+	node.Next = node.Next.Next
+}
+
+// 删除链表的中间节点
+// Q1：确认偶数节点的时候删哪个（前 or 后）
+// Q2: 确认只有一个节点怎么处理
+func DeleteMiddleNode(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	slow := dummy
+	fast := dummy
+	if fast != nil && fast.Next != nil {
 		slow = slow.Next
-		fast = fast.Next
+		fast = fast.Next.Next
 	}
-	return slow.Val
+	if slow.Next == nil {
+		slow = nil
+	} else {
+		slow.Val = slow.Next.Val
+		slow.Next = slow.Next.Next
+	}
+	return head
 }
 
 /***************************** 辅助函数 *********************************/

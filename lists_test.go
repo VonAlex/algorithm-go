@@ -71,12 +71,12 @@ var head3 = &ListNode{
 	Val: 1,
 	Next: &ListNode{
 		Val: 2,
-		Next: &ListNode{
-			Val: 2,
-			Next: &ListNode{
-				Val: 1,
-			},
-		},
+		// Next: &ListNode{
+		// 	Val: 2,
+		// 	Next: &ListNode{
+		// 		Val: 1,
+		// 	},
+		// },
 	},
 }
 
@@ -119,7 +119,7 @@ func TestPrintCommonPart(t *testing.T) {
 
 func TestRemoveLastKthNode(t *testing.T) {
 	ListPrint(head)
-	ListPrint(RemoveLastKthNode3(head, 5))
+	ListPrint(RemoveLastKthNode4(head, 1))
 }
 
 func TestRemoveDuplicateNodes(t *testing.T) {
@@ -152,4 +152,9 @@ func TestMergeTwoLists(t *testing.T) {
 		},
 	}
 	ListPrint(MergeTwoLists(l1, l2))
+}
+
+func TestDeleteMiddleNode(t *testing.T) {
+	ListPrint(head3)
+	ListPrint(DeleteMiddleNode(head3))
 }
