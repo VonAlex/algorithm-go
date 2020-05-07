@@ -105,9 +105,7 @@ func MergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 	if l2 == nil {
 		return l1
 	}
-	dummy := &ListNode{
-		Val: -1,
-	}
+	dummy := &ListNode{}
 	curr1 := l1
 	curr2 := l2
 	merged := dummy
@@ -494,27 +492,27 @@ func RemoveElements2(head *ListNode, val int) *ListNode {
 	return dummy.Next
 }
 
-/**
+/*
  * 打印两个有序链表的公共部分
  */
 // 既然是有序链表，那么此题难度就很低了
 func PrintCommonPart(head1 *ListNode, head2 *ListNode) {
-	node1 := head1
-	node2 := head2
-	for node1 != nil && node2 != nil {
-		if node1.Val > node2.Val {
-			node2 = node2.Next
-		} else if node1.Val < node2.Val {
-			node1 = node1.Next
+	curr1 := head1
+	curr2 := head2
+	for curr1 != nil && curr2 != nil {
+		if curr1.Val > curr2.Val {
+			curr2 = curr2.Next
+		} else if curr1.Val < curr2.Val {
+			curr1 = curr1.Next
 		} else {
-			fmt.Println(node1.Val)
-			node2 = node2.Next
-			node1 = node1.Next
+			fmt.Println(curr1.Val)
+			curr2 = curr2.Next
+			curr1 = curr1.Next
 		}
 	}
 }
 
-/**
+/*
  * LeetCode T19 删除单链表的倒数第 K 个节点
  * 示例：
  * 给定一个链表: 1->2->3->4->5, 和 n = 2.
@@ -714,7 +712,7 @@ func RemoveDuplicateNodes(head *ListNode) *ListNode {
 	return head
 }
 
-/**
+/*
  * LeetCode T141 环形链表
  * 给定一个链表，判断链表中是否有环
  * https://leetcode-cn.com/problems/linked-list-cycle/
@@ -780,6 +778,40 @@ func DetectCycle(head *ListNode) *ListNode {
 	// 相遇到交点处
 	return slow
 }
+
+/*
+ * LeetCode T面试题52. 两个链表的第一个公共节点
+ * https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/
+ * 输入两个链表，找出它们的第一个公共节点。
+ */
+// 方法 1：双指针法
+func GetIntersectionNode(headA, headB *ListNode) *ListNode {
+	currA := headA
+	currB := headB
+	if currA == nil || currB == nil {
+		return nil
+	}
+	var loop int
+	for currA != currB {
+		currA = currA.Next
+		if currA == nil {
+			currA = headB
+			loop++
+		}
+		currB = currB.Next
+		if currB == nil {
+			currB = headA
+			loop++
+		}
+		// 当两个指针同时到达结尾时，loop = 4，没有公共部分，返回 nil
+		if loop > 2 {
+			return nil
+		}
+	}
+	return currA
+}
+
+// 方法 2：哈希表法
 
 /*
  * LeetCode T876 链表的中间结点
