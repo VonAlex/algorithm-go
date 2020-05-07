@@ -15,10 +15,23 @@ import (
  * 输入: nums = [5,2,3,1]
  * 输出: [1,2,3,5]
  */
-// 方法 1：冒泡排序
+
+// 参考文档 https://goa.lenggirl.com/algorithm/sort.html
+// 桶排
+// 基数排序
+// 计数排序
+// 选择排序
+// 堆排
+// 冒泡法
+// 快排
+// 插入排序
+// 希尔排序
+// 归并排序
+
+// 方法 1：冒泡排序（交换排序 // 稳定）
 // 每次把最大或者最小的数冒泡到数组最后
 // 时间复杂度 O(n^2)
-func SortArray(nums []int) []int {
+func BubbleSort(nums []int) []int {
 	length := len(nums) - 1       // 数组最后一个坐标
 	for i := 0; i < length; i++ { // 需要经过 len(nums) - 1 趟的比较
 		for j := 0; j < length-i; j++ { // 这一趟需要比较的次数
@@ -34,7 +47,7 @@ func SortArray(nums []int) []int {
 // 使用一个变量 swapped 标记，这次比较是否有交换过元素，
 // 如果有，说明有序了，后面不用再冒泡了。
 // 这样可能会减少遍历的趟数
-func SortArray2(nums []int) []int {
+func BubbleSort2(nums []int) []int {
 	length := len(nums) - 1 // 数组最后一个坐标
 	swapped := true
 	for i := 0; i < length; i++ { // 需要经过 len(nums) - 1 趟的比较
@@ -52,21 +65,21 @@ func SortArray2(nums []int) []int {
 	return nums
 }
 
-// 方法 2：快速排序
+// 方法 2：快速排序(交换排序)
 // 平均时间复杂度 O(nlogn)，最坏时间复杂度 O(n^2)
-func SortArray3(nums []int) []int {
-	quickSort(nums, 0, len(nums)-1)
+func QuickSort(nums []int) []int {
+	quickSortHelper(nums, 0, len(nums)-1)
 	return nums
 }
 
-func quickSort(nums []int, lo, hi int) {
+func quickSortHelper(nums []int, lo, hi int) {
 	// 优化点：在元素数量较少的时候，可以使用插入排序，减小递归的深度
 	if lo >= hi {
 		return
 	}
 	p := partition3(nums, lo, hi)
-	quickSort(nums, lo, p-1)
-	quickSort(nums, p+1, hi)
+	quickSortHelper(nums, lo, p-1)
+	quickSortHelper(nums, p+1, hi)
 }
 
 // 前后两路快排 1 (填坑)
@@ -175,7 +188,7 @@ func partition5(nums []int, lo, hi int) (l, r int) {
 }
 
 /*
- * 直接插入排序
+ * 直接插入排序 (插入排序 // 稳定)
  * 基本方法是：每一步将一个待排序的元素，按其排序码的大小，
  * 插入到前面已经排好序的一组元素的适当位置上去，直到元素全部插入为止。
  *
@@ -232,7 +245,97 @@ func ShellSort(nums []int) {
 	}
 }
 
-/**
+/*
+ * 归并排序（稳定）
+ * 归并排序是一种分治策略的排序算法，通过递归地先使每个子序列有序，再将两个有序的序列进行合并成一个有序的序列。
+ * 归并排序是唯一一个有稳定性保证的高级排序算法，某些时候，为了寻求大规模数据下排序前后，相同元素位置不变，可以使用归并排序。
+ */
+// https://goa.lenggirl.com/algorithm/sort/merge_sort.html
+// 优化点 1：数组元素个数较少可以使用插入排序
+// 优化点 2: 合并有序数组时需要借助额外的空间，可以使用手摇算法进行原地合并
+
+// 自顶向下的归并排序递归实现
+// 每次都是一分为二，特别均匀，所以最差和最坏时间复杂度都一样,时间复杂度为：O(nlogn)
+// 递归栈的空间复杂度为：O(logn)
+func MergeSort(nums []int) {
+	start := 0
+	end := len(nums) // end 指的是有效范围的下一个位置，即排序 [start, end) 范围内的数据
+	mergeSortHelper(nums, start, end)
+	return
+}
+
+func mergeSortHelper(nums []int, start, end int) {
+	if end-start <= 1 { // 只有一个元素，不需要再分了
+		return
+	}
+	mid := start + (end-start)>>1
+	mergeSortHelper(nums, start, mid)
+	mergeSortHelper(nums, mid, end)
+	merge(nums, start, mid, end)
+	return
+}
+
+// 归并操作：合并两个有序数组
+func merge(nums []int, l, mid, r int) {
+	lLen := mid - l
+	rLen := r - mid
+	mergedLen := r - l
+	// 优化点1：[1, 3] 和 [4, 6] 这样的不需要进行“并”操作
+	if nums[mid-1] < nums[mid] {
+		return
+	}
+	merged := make([]int, 0, mergedLen)
+	lp := 0 // 左边指针
+	rp := 0 // 右边指针
+	for lp < lLen && rp < rLen {
+		lval := nums[l+lp]
+		rval := nums[mid+rp]
+		if lval < rval {
+			merged = append(merged, lval)
+			lp++
+		} else {
+			merged = append(merged, rval)
+			rp++
+		}
+	}
+	merged = append(merged, nums[l+lp:mid]...)
+	merged = append(merged, nums[mid+rp:r]...)
+	for i := 0; i < mergedLen; i++ { // 拷贝到原数组
+		nums[l+i] = merged[i]
+	}
+	return
+}
+
+// 自下向上的归并排序
+// 时间复杂度为：O(nlogn)，没有递归，空间复杂度为：O(1)
+func MergeSort2(nums []int) {
+	start := 0
+	end := len(nums) // end 指的是有效范围的下一个位置，即排序 [start, end) 范围内的数据
+	mergeSortHelper2(nums, start, end)
+}
+
+// 左半部分 [l. mid)，右半部分 [mid, r)
+func mergeSortHelper2(nums []int, start, end int) {
+	step := 1 // 起始步长为 step
+	for end-start > step {
+		for i := start; i < end; i += step << 1 {
+			l := i
+			mid := l + step  //
+			r := l + step<<1 // l + 2 * step
+			if mid >= end {  // 没有右半部分
+				break
+			}
+			if r > end { // 右半部分长度不够 step
+				r = end
+			}
+			merge(nums, l, mid, r)
+		}
+		step <<= 1 // 步长翻倍
+	}
+	return
+}
+
+/*
  * LeetCode T215. 数组中的第K个最大元素
  * https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
  *
