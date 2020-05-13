@@ -336,6 +336,75 @@ func mergeSortHelper2(nums []int, start, end int) {
 }
 
 /*
+ * 直接选择排序（稳定）
+ * 第一趟从n个元素的数据序列中选出关键字最小/大的元素并放在最前/后位置，
+ * 下一趟从n-1个元素中选出最小/大的元素并放在最前/后位置。以此类推，经过n-1趟完成排序
+ * 时间复杂度 O(n^2)
+ */
+func SelectSort(nums []int) {
+	length := len(nums) - 1
+	for i := 0; i < length; i++ { // 需要 length - 1 趟比较
+		for j := i + 1; j <= length; j++ {
+			if nums[j] < nums[i] {
+				nums[i], nums[j] = nums[j], nums[i]
+			}
+		}
+	}
+	return
+}
+
+// 优化 1：不用每次都 swap，而是一趟选出最小的，与开头元素交换
+func SelectSort2(nums []int) {
+	length := len(nums) - 1
+	for i := 0; i < length; i++ { // 需要 length - 1 趟比较
+		minIdx := i // 每轮都找到最小的元素
+		for j := i + 1; j <= length; j++ {
+			if nums[j] < nums[minIdx] {
+				minIdx = j
+			}
+		}
+		if minIdx != i { // 交换
+			nums[i], nums[minIdx] = nums[minIdx], nums[i]
+		}
+	}
+	return
+}
+
+// 优化 2：一趟选出最大与最小，从两端进行交换
+// 时间复杂度减为原来的一半
+// 优化后的选择排序还是很慢，它很好理解，但是还是不建议在工程上使用
+func SelectSort3(nums []int) {
+	length := len(nums) - 1
+	for i := 0; i < length/2; i++ {
+		minIdx := i
+		maxIdx := i
+		for j := i + 1; j <= length-i; j++ {
+			if nums[j] < nums[minIdx] {
+				minIdx = j
+			}
+			if nums[j] > nums[maxIdx] {
+				maxIdx = j
+			}
+		}
+		// [i+1, length-i] 范围内最大值是开头的元素，最小值不是最尾的元素
+		if maxIdx == i && minIdx != length-i {
+			// 为了防止把开头元素换掉，先换最大值，再换最小值
+			nums[length-i], nums[maxIdx] = nums[maxIdx], nums[length-i]
+			nums[i], nums[minIdx] = nums[minIdx], nums[i]
+			// 恰好是开头和结尾的元素，交互它们即可
+		} else if maxIdx == i && minIdx == length-i {
+			nums[maxIdx], nums[minIdx] = nums[minIdx], nums[maxIdx]
+		} else {
+			/// 中间元素的情况
+			// minIdx 有可能 = i，先交换 maxIdx 就会出错
+			nums[i], nums[minIdx] = nums[minIdx], nums[i]
+			nums[length-i], nums[maxIdx] = nums[maxIdx], nums[length-i]
+		}
+	}
+	return
+}
+
+/*
  * LeetCode T215. 数组中的第K个最大元素
  * https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
  *
