@@ -19,14 +19,9 @@ import (
 // 参考文档 https://goa.lenggirl.com/algorithm/sort.html
 // 桶排
 // 基数排序
-// 计数排序
-// 选择排序
-// 堆排
-// 冒泡法
-// 快排
-// 插入排序
-// 希尔排序
-// 归并排序
+
+// 不稳定算法记忆口诀 “快些选队” 快：快速排序 些：希尔排序 选：选择排序 队：堆排序
+// 为什么区分稳定和不稳定？ https://www.cxyxiaowu.com/2573.html
 
 // 方法 1：冒泡排序（交换排序 // 稳定）
 // 每次把最大或者最小的数冒泡到数组最后
@@ -404,6 +399,87 @@ func SelectSort3(nums []int) {
 	return
 }
 
+/*
+ * 堆排序（不稳定）
+ * 堆实际上是一棵完全二叉树。
+ * 堆满足两个性质:
+ * 1. 堆的每一个父节点都大于（或小于）其子节点；
+ * 2. 堆的每个左子树和右子树也是一个堆。
+ *
+ * 堆排序的步骤分为三步:
+ * 1. 建堆（升序建大堆，降序建小堆）
+ * 2. 交换数据
+ * 3. 向下调整
+ *
+ * 假设二叉堆总共有n个元素，下沉调整的最坏时间复杂度等于二叉堆的高度，也就是O(logn)。--> 完全二叉树的高度是 log(n)
+ * 把无序数组构建成二叉堆，需要进行n/2次循环。每次循环调用一次下沉调整方法，计算规模是n/2*logn，时间复杂度O(nlogn)。
+ * 然后，在 2/3 阶段，需要循环 n-1 次，每次都要调用一次下沉调整方法，计算规模是(n-1)*logn，时间复杂度O(nlogn)
+ * 因此，整体的时间复杂度为 Ο(nlogn)
+ */
+
+func HeapSort(nums []int) {
+	length := len(nums)
+	buildMaxHeap(nums, length)
+	// 2/3 循环删除堆顶元素，移到集合尾部，调节堆产生新的堆顶
+	for i := length - 1; i > 0; i-- {
+		nums[0], nums[i] = nums[i], nums[0]
+		length--
+		heapify(nums, 0, length)
+	}
+}
+
+// 1 建堆
+func buildMaxHeap(nums []int, length int) {
+	// 二叉堆第一个非叶子节点
+	for i := length/2 - 1; i >= 0; i-- {
+		heapify2(nums, i, length)
+	}
+	return
+}
+
+// 递归实现堆化
+func heapify(nums []int, i, length int) {
+	left := 2*i + 1
+	right := 2*i + 2
+	largest := i
+	// 选出 i,left,right 这三个位置上最大的数
+	if left < length && nums[left] > nums[largest] {
+		largest = left
+	}
+	if right < length && nums[right] > nums[largest] {
+		largest = right
+	}
+	if largest == i {
+		return
+	}
+	nums[largest], nums[i] = nums[i], nums[largest]
+	// largest 做了交换，需要重新堆化
+	heapify(nums, largest, length)
+	return
+}
+
+// 迭代实现堆化
+func heapify2(nums []int, i, length int) {
+	for i < length {
+		largest := i
+		left := 2*i + 1
+		right := left + 1
+		if left < length && nums[left] > nums[largest] {
+			largest = left
+		}
+		if right < length && nums[right] > nums[largest] {
+			largest = right
+		}
+		if largest == i {
+			break
+		}
+		nums[largest], nums[i] = nums[i], nums[largest]
+		i = largest // 堆化 swap 过的节点
+	}
+	return
+}
+
+/********************************************** 以上为各排序算法实现 ***********************************************/
 /*
  * LeetCode T215. 数组中的第K个最大元素
  * https://leetcode-cn.com/problems/kth-largest-element-in-an-array/
