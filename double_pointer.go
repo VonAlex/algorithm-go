@@ -665,3 +665,41 @@ func BinarySearchFindRightBound(nums []int, target int) int {
 	}
 	return r
 }
+
+/*
+ * LeetCode T35. 搜索插入位置
+ * https://leetcode-cn.com/problems/search-insert-position/
+ * 给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。
+ * 如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+ * 你可以假设数组中无重复元素。
+ * 示例：
+ * 输入: [1,3,5,6], 5
+ * 输出: 2
+ * 输入: [1,3,5,6], 7
+ * 输出: 4
+ * 输入: [1,3,5,6], 0
+ * 输出: 0
+ */
+func SearchInsert(nums []int, target int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	l := 0
+	r := numsLen - 1
+	for l <= r {
+		mid := l + (r-l)>>1
+		if target == nums[mid] {
+			return mid
+		} else if target > nums[mid] {
+			l = mid + 1
+		} else if target < nums[mid] {
+			r = mid - 1
+		}
+	}
+	// 数组中没有 target 时返回左边界
+	// case1：数组中的数都小于 target，l = numsLen + 1
+	// case2：数组中的数都小于 target，l = 0(起始值)
+	// case3：target 在数组中某两个数之间，l= 第一个大于 target 的数，此时 right = 最后一个小于 target 的数
+	return l
+}
