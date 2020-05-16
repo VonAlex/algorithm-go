@@ -742,6 +742,7 @@ func MySqrt(x int) int {
  *
  * 假设按照升序排序的数组在预先未知的某个点上进行了旋转。( 例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] )。
  * 请找出其中最小的元素。
+ *
  * 你可以假设数组中不存在重复元素。
  * 示例 1:
  * 输入: [3,4,5,1,2]
@@ -756,7 +757,7 @@ func FindMin(nums []int) int {
 	if nums[r] > nums[0] { // 已经排好序的数组
 		return nums[0]
 	}
-	for l <= r {
+	for l < r {
 		mid := l + (r-l)>>1
 		if nums[mid] > nums[mid+1] {
 			return nums[mid+1]
@@ -764,11 +765,43 @@ func FindMin(nums []int) int {
 		if nums[mid] < nums[mid-1] {
 			return nums[mid]
 		}
-		if nums[mid] > nums[l] {
+		if nums[mid] > nums[r] {
 			l = mid + 1
 		} else {
 			r = mid - 1
 		}
 	}
 	return -1
+}
+
+/*
+ * LeetCode T154. 寻找旋转排序数组中的最小值 II
+ * 153 题中，如果数组中有重复元素呢？
+ */
+// 如下图所示的旋转数组
+//                 o  o  o
+//              o
+//           o                                o  o  o
+//  o  o  o                       o  o  o  o
+//                          o  o
+// 可以发现 153 题是本题的一个特殊情况
+// 在最坏情况下，也就是数组中包含相同元素时(nums[mid]==nums[r])，需要逐个遍历元素，复杂度为 O(N)
+func FindMin2(nums []int) int {
+	if len(nums) == 1 { // 单节点数组
+		return nums[0]
+	}
+	l := 0
+	r := len(nums) - 1
+	for l < r { // 在 l == r 的时停止，恰好就是变化点
+		mid := l + (r-l)>>1
+		// 将 mid 与 r 的值进行比较，不能使用 l, 当 l == mid < r，且 mid 值为变化点时，l++ 会漏掉变化点
+		if nums[mid] == nums[r] { // 此时无法知道应该缩减左半边还是右半边，为防止漏掉变化点， r--
+			r--
+		} else if nums[mid] > nums[r] { // 缩减左半边
+			l = mid + 1
+		} else if nums[mid] < nums[r] { // 缩减右半边，如果此时 mid 是变化点，为防止漏掉，r = mid
+			r = mid
+		}
+	}
+	return nums[l]
 }

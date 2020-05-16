@@ -98,3 +98,12 @@ func TestFindMin(t *testing.T) {
 		})
 	}
 }
+
+func TestFindMin2(t *testing.T) {
+	// nums := []int{2, 2, 2, 0, 1}
+	// nums := []int{3, 1, 3}
+	// nums := []int{1, 1}
+	nums := []int{3, 4, 5, 1, 2}
+	// nums := []int{4, 4, 5, 6, 7, 1, 2, 4, 4}
+	t.Log(FindMin2(nums))
+}
