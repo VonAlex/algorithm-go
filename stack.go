@@ -1,6 +1,8 @@
 package leetcode
 
-import "container/list"
+import (
+	"container/list"
+)
 
 /**
  * LeetCode 题 225 用队列实现栈
@@ -46,4 +48,53 @@ func (this *MyStack) Top() int {
 /** Returns whether the stack is empty. */
 func (this *MyStack) Empty() bool {
 	return this.Len() == 0
+}
+
+/**
+ * LeetCode T20. 有效的括号
+ * https://leetcode-cn.com/problems/valid-parentheses/
+ *
+ * 给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
+ * 有效字符串需满足：
+ * 	左括号必须用相同类型的右括号闭合。
+ * 	左括号必须以正确的顺序闭合。
+ *  注意空字符串可被认为是有效字符串。
+ * 示例 1:
+ * 输入: "()"
+ * 输出: true
+ * 示例 2:
+ * 输入: "([)]"
+ * 输出: false
+ */
+// 辅助栈方法
+func IsValid(s string) bool {
+	if len(s) == 0 {
+		return true
+	}
+	if len(s)%2 == 1 {
+		return false
+	}
+	stack := list.New()
+	for _, r := range s {
+		if r == '(' {
+			stack.PushBack(')')
+		} else if r == '[' {
+			stack.PushBack(']')
+		} else if r == '{' {
+			stack.PushBack('}')
+		} else {
+			if stack.Len() == 0 {
+				return false
+			}
+			top := stack.Back()
+			if top.Value.(int32) != r {
+				return false
+			}
+			stack.Remove(top)
+		}
+	}
+	if stack.Len() != 0 {
+		return false
+	}
+	return true
 }

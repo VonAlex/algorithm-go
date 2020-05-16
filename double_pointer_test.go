@@ -69,7 +69,7 @@ func TestBinarySearch(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotIndex := BinarySearch2(tt.args.nums, tt.args.target); gotIndex != tt.wantIndex {
+			if gotIndex := BinarySearch(tt.args.nums, tt.args.target); gotIndex != tt.wantIndex {
 				t.Errorf("BinarySearch() = %v, want %v", gotIndex, tt.wantIndex)
 			}
 		})
