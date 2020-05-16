@@ -50,7 +50,7 @@ func (this *MyStack) Empty() bool {
 	return this.Len() == 0
 }
 
-/**
+/*
  * LeetCode T20. 有效的括号
  * https://leetcode-cn.com/problems/valid-parentheses/
  *
