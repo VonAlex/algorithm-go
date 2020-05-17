@@ -781,7 +781,7 @@ func FindMin(nums []int) int {
 // 如下图所示的旋转数组
 //                 o  o  o
 //              o
-//           o                                o  o  o
+//           o
 //  o  o  o                       o  o  o  o
 //                          o  o
 // 可以发现 153 题是本题的一个特殊情况
@@ -805,3 +805,68 @@ func FindMin2(nums []int) int {
 	}
 	return nums[l]
 }
+
+/*
+ * LeetCode T287. 寻找重复数
+ * 给定一个包含 n + 1 个整数的数组 nums，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。
+ * 假设只有一个重复的整数，找出这个重复的数。
+ * 示例 1:
+ * 输入: [1,3,4,2,2]
+ * 输出: 2
+ *
+ * 说明：
+ * 不能更改原数组（假设数组是只读的）。
+ * 只能使用额外的 O(1) 的空间。
+ * 时间复杂度小于 O(n2) 。
+ * 数组中只有一个重复的数字，但它可能不止重复出现一次。
+ */
+// 方法 1：二分法
+// 元素范围 [1,n]，中位数 mid，根据 mid 与数组中小于等于 mid 的元素数量，判断缩减左半边还是右半边
+// 时间复杂度 O(NlogN)--> 循环的复杂度是 O(N)
+func FindDuplicate(nums []int) int {
+	if len(nums) == 0 {
+		return -1
+	}
+	l := 1
+	r := len(nums) - 1
+	for l < r {
+		mid := l + (r-l)>>1
+		lessCnt := 0
+		for _, i := range nums {
+			if i <= mid {
+				lessCnt++
+			}
+		}
+		if lessCnt > mid { // 缩减右半边
+			r = mid // 有可能 mid 是那个重复的数字，所以 r = mid 而不是 mid -1
+		} else { // 缩减左半边
+			l = mid + 1
+		}
+	}
+	return l
+}
+
+// 方法 2：快慢指针法
+// 数组下标n和数nums[n]建立一个映射关系f(n)
+// 有重复的数，那么就肯定有多个索引指向同一个数，那么问题就转换成求有环链表的环入口
+func FindDuplicate2(nums []int) int {
+	if len(nums) == 0 {
+		return -1
+	}
+	slow := nums[0]
+	fast := nums[nums[0]]
+	for slow != fast {
+		slow = nums[slow]       // 慢指针
+		fast = nums[nums[fast]] // 快指针
+	}
+	curr1 := 0
+	curr2 := slow
+	for curr1 != curr2 {
+		curr1 = nums[curr1]
+		curr2 = nums[curr2]
+	}
+	return curr1
+}
+
+// 方法 3：先排序，再找重复的数，不符合约束条件
+// 方法 4：借助哈希表，不符合约束条件

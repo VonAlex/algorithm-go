@@ -107,3 +107,9 @@ func TestFindMin2(t *testing.T) {
 	// nums := []int{4, 4, 5, 6, 7, 1, 2, 4, 4}
 	t.Log(FindMin2(nums))
 }
+
+func TestFindDuplicate(t *testing.T) {
+	// nums := []int{3, 1, 3, 4, 2}
+	nums := []int{1, 3, 4, 2, 2}
+	t.Log(FindDuplicate2(nums))
+}

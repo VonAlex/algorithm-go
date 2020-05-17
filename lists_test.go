@@ -71,12 +71,12 @@ var head3 = &ListNode{
 	Val: 1,
 	Next: &ListNode{
 		Val: 2,
-		// Next: &ListNode{
-		// 	Val: 2,
-		// 	Next: &ListNode{
-		// 		Val: 1,
-		// 	},
-		// },
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 1,
+			},
+		},
 	},
 }
 
@@ -155,6 +155,11 @@ func TestMergeTwoLists(t *testing.T) {
 }
 
 func TestDeleteMiddleNode(t *testing.T) {
+	ListPrint(head)
+	ListPrint(DeleteMiddleNode2(head))
+}
+
+func TestIsPalindromeList(t *testing.T) {
 	ListPrint(head3)
-	ListPrint(DeleteMiddleNode(head3))
+	t.Log(IsPalindromeList(head3))
 }

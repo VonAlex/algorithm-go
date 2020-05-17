@@ -341,7 +341,7 @@ func ReverseList3(head *ListNode) *ListNode {
 	return head
 }
 
-/**
+/*
  * LeetCode T92. 反转链表 II
  * https://leetcode-cn.com/problems/reverse-linked-list-ii/
  *
@@ -362,7 +362,7 @@ func ReverseBetween(head *ListNode, m int, n int) *ListNode {
 	var prev, next *ListNode
 	curr := head
 	for m > 1 { // 找到反转部分的前一个节点
-		prev = curr
+		prev = curr      // prev 节点
 		if curr == nil { // m 大于链表长度的情况
 			return head
 		}
@@ -388,7 +388,88 @@ func ReverseBetween(head *ListNode, m int, n int) *ListNode {
 	return head
 }
 
-/**
+/*
+ * LeetCode T234. 回文链表
+ * https://leetcode-cn.com/problems/palindrome-linked-list/
+ *
+ * 请判断一个链表是否为回文链表。
+ * 示例 1:
+ * 输入: 1->2
+ * 输出: false
+ * 示例 2:
+ * 输入: 1->2->2->1
+ * 输出: true
+ *
+ */
+// 方法 1 使用栈，借助其先入后出的特点
+// 时/空间复杂度 O(N)
+func IsPalindromeList(head *ListNode) bool {
+	if head == nil {
+		return true
+	}
+	stack := list.New()
+	curr := head
+	for curr != nil {
+		stack.PushBack(curr)
+		curr = curr.Next
+	}
+	curr = head
+	for curr != nil {
+		node := stack.Back()
+		if node.Value.(*ListNode).Val != curr.Val {
+			return false
+		}
+		stack.Remove(node)
+		curr = curr.Next
+	}
+	return true
+}
+
+// 方法 2 反转链表
+// 将链表后半部分反转，从两边遍历，对回文链表链表来说，这两半链表有着相同的遍历
+// 时间复杂度 O(N)，空间复杂度 O(1)
+func IsPalindromeList2(head *ListNode) bool {
+	if head == nil || head.Next == nil { // 讨论链表为空时返回 true 还是 false
+		return true
+	}
+	slow := head
+	fast := head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	var prev, next *ListNode // prev = nil
+	curr := slow             // 找到中间节点
+	for curr != nil {        // 反转后半部分
+		next = curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+	}
+	currL := head
+	revHead := prev // 保存反转后的后半部分头结点，方便后面恢复链表
+	currR := revHead
+	isPalindrome := true
+	for currL != nil && currR != nil {
+		if currL.Val != currR.Val {
+			isPalindrome = false
+			break
+		}
+		currL = currL.Next
+		currR = currR.Next
+	}
+	prev = nil // prev = nil
+	currR = revHead
+	for currR != nil { // 恢复后半部分链表
+		next = currR.Next
+		currR.Next = prev
+		prev = currR
+		currR = next
+	}
+	return isPalindrome
+}
+
+/*
  * 剑指 offer 面试题 18 删除链表的节点
  * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
  *
@@ -881,6 +962,33 @@ func DeleteMiddleNode(head *ListNode) *ListNode {
 		slow.Val = slow.Next.Val
 		slow.Next = slow.Next.Next
 	}
+	return head
+}
+
+// 合理使用 prev 辅助节点
+// ↓
+// 1 → 2 → 3 → 4（偶数）
+//         ↑
+//
+//         ↓
+// 1 → 2 → 3 → 4 → 5（奇数）
+//                 ↑
+func DeleteMiddleNode2(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return nil
+	}
+	var prev *ListNode
+	slow := head
+	fast := head
+	for fast.Next != nil && fast.Next.Next != nil {
+		prev = slow
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	if prev == nil { // list 长度为 2
+		return head.Next
+	}
+	prev.Next = prev.Next.Next
 	return head
 }
 
