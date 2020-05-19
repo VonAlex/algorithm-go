@@ -17,8 +17,6 @@ import (
  */
 
 // 参考文档 https://goa.lenggirl.com/algorithm/sort.html
-// 桶排
-// 基数排序
 
 // 不稳定算法记忆口诀 “快些选队” 快：快速排序 些：希尔排序 选：选择排序 队：堆排序
 // 为什么区分稳定和不稳定？ https://www.cxyxiaowu.com/2573.html
@@ -479,7 +477,135 @@ func heapify2(nums []int, i, length int) {
 	return
 }
 
+/* 参考 https://www.jianshu.com/p/ff1797625d66
+ * 桶排序
+ * 1.创建一数组，里面是各个初始为空的“桶/bucket”
+ * 2.分散：遍历原始数组，将每个对象放入对应的桶中
+ * 3.对每个非空桶进行排序
+ * 4.收集：按顺序访问桶，并将所有元素放回原始数组中
+ *
+ * 如果一个数一个桶，那么对于跨度比较大的数来说，空间消耗就很大了。
+ * 这里桶的划分是一个问题。
+ *
+ * 桶排序的适用场景：数据分布相对比较均匀或者数据跨度范围并不是很大时
+ */
+
+/*
+ * 基数排序
+ * 对于一组数据，我们可以按照每一位对它们进行排序
+ * 先按最后一位从小到大排序,
+ * 再按中间一位从小到大排序，直到最前面一位
+ */
+
+/*
+ * 计数排序（改进版 2 是稳定的）
+ * 参考 https://www.cxyxiaowu.com/5437.html
+ * 以下两种情况不适用于 1）数组最大值和最小值差值过大 2）数组元素不是正整数
+ * 假设辅助数组长度为 k，输入数组长度为 n，时间复杂度为 O(k+n)，在特定场景下比快排算法要快
+ * 空间复杂度 O(n)，（空间换时间）
+ */
+// 朴素版
+func CountSort(nums []int) {
+	if len(nums) == 0 {
+		return
+	}
+	max := nums[0]
+	for _, num := range nums { // 1.找到待排序数组中最大的数
+		if num > max {
+			max = num
+		}
+	}
+	// 创建一个长度为 max+1 的数组，使用数组下标统计出现数的出现次数
+	counts := make([]int, max+1)
+	for _, num := range nums {
+		counts[num]++
+	}
+	idx := 0
+	// 将统计数组counts中不为 0 的下标按照个数输出，即得到原数组的排序
+	for i, cnt := range counts {
+		for j := 0; j < cnt; j++ {
+			nums[idx] = i
+			idx++
+		}
+	}
+	return
+}
+
+// 改进版 1
+// 朴素版中以数组最大值+1做统计数组长度，有可能会浪费很多空间，
+// 比如[95,91,99]，需要创建一个 100 大小的数组，浪费了前面 90+的空间
+// 所以改进以 max - min + 1 做为数组的长度，统计数组中存储 offset，减少空间浪费
+func CountSort2(nums []int) {
+	if len(nums) == 0 {
+		return
+	}
+	max := nums[0]
+	min := nums[0]
+	for _, num := range nums {
+		if num > max {
+			max = num
+		}
+		if num < min {
+			min = num
+		}
+	}
+	// 统计数组长度为 max - min +1，存储 offset
+	counts := make([]int, max-min+1)
+	for _, num := range nums {
+		counts[num-min]++
+	}
+	idx := 0
+	// 将统计数组counts中不为 0 的下标按照个数输出，即得到原数组的排序
+	for i, cnt := range counts {
+		for j := 0; j < cnt; j++ {
+			nums[idx] = i + min
+			idx++
+		}
+	}
+	return
+}
+
+// 改进版 2
+// 改进版 1 不稳定的排序
+// 改进版 2 为稳定排序
+func CountSort3(nums []int) {
+	if len(nums) == 0 {
+		return
+	}
+	max := nums[0]
+	min := nums[0]
+	for _, num := range nums {
+		if num > max {
+			max = num
+		}
+		if num < min {
+			min = num
+		}
+	}
+	countsLen := max - min + 1
+	// 统计数组长度为 max - min +1
+	counts := make([]int, countsLen)
+	for _, num := range nums {
+		counts[num-min]++
+	}
+	// 累加和，counts 数组的值就是 num 在排序数组中的位置
+	for i := 1; i < countsLen; i++ {
+		counts[i] += counts[i-1]
+	}
+	numsLen := len(nums)
+	sorts := make([]int, numsLen)
+	// 为了保序，从 nums 数组后面开始遍历
+	for i := numsLen - 1; i >= 0; i-- {
+		idx := nums[i] - min
+		sorts[counts[idx]-1] = nums[i]
+		counts[idx]--
+	}
+	copy(nums, sorts)
+	return
+}
+
 /********************************************** 以上为各排序算法实现 ***********************************************/
+
 /*
  * LeetCode T215. 数组中的第K个最大元素
  * https://leetcode-cn.com/problems/kth-largest-element-in-an-array/

@@ -61,3 +61,11 @@ func TestHeapSort(t *testing.T) {
 	HeapSort(nums)
 	t.Log(nums)
 }
+
+func TestCountSort(t *testing.T) {
+	// nums := []int{5, 1, 1, 2, 0, 0}
+	// nums := []int{5, 2, 3, 1}
+	nums := []int{6, 1, 2, 7, 9, 3, 4, 5, 10, 8}
+	CountSort3(nums)
+	t.Log(nums)
+}
