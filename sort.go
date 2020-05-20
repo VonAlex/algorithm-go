@@ -502,7 +502,7 @@ func heapify2(nums []int, i, length int) {
  * 参考 https://www.cxyxiaowu.com/5437.html
  * 以下两种情况不适用于 1）数组最大值和最小值差值过大 2）数组元素不是正整数
  * 假设辅助数组长度为 k，输入数组长度为 n，时间复杂度为 O(k+n)，在特定场景下比快排算法要快
- * 空间复杂度 O(n)，（空间换时间）
+ * 空间复杂度 O(n+k)，（空间换时间）
  */
 // 朴素版
 func CountSort(nums []int) {

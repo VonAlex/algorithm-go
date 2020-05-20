@@ -992,6 +992,104 @@ func DeleteMiddleNode2(head *ListNode) *ListNode {
 	return head
 }
 
+/*
+ * LeetCode T25. K 个一组翻转链表
+ * https://leetcode-cn.com/problems/reverse-nodes-in-k-group/
+ *
+ * 给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+ * k 是一个正整数，它的值小于或等于链表的长度。
+ * 如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+ * 示例：
+ * 给你这个链表：1->2->3->4->5
+ * 当 k = 2 时，应当返回: 2->1->4->3->5
+ * 当 k = 3 时，应当返回: 3->2->1->4->5
+ *
+ * 说明：
+ * 你的算法只能使用常数的额外空间。
+ * 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+ */
+// 方法 1：借助栈，时间复杂度 O(N)，空间复杂度 O(K)
+func ReverseKGroup(head *ListNode, k int) *ListNode {
+	if k < 2 {
+		return head
+	}
+	stack := list.New()
+	var pre, next *ListNode
+	curr := head
+	newHead := head
+	for curr != nil {
+		next = curr.Next
+		stack.PushBack(curr)
+		if stack.Len() == k { // 每 k 个反转一次
+			pre = reverseKGroupHelper(stack, pre, next)
+			if newHead == head { // 第一次，更新 newHead
+				newHead = curr
+			}
+		}
+		curr = next
+	}
+	return newHead
+}
+
+// 方法 2：原地反转，时间复杂度 O(N)，空间复杂度 O(1)
+func reverseKGroupHelper(stack *list.List, left, right *ListNode) *ListNode {
+	curr := stack.Remove(stack.Back()).(*ListNode)
+	if left != nil {
+		left.Next = curr
+	}
+	for stack.Len() != 0 {
+		next := stack.Remove(stack.Back()).(*ListNode)
+		curr.Next = next
+		curr = curr.Next
+	}
+	curr.Next = right
+	return curr
+}
+
+func ReverseKGroup2(head *ListNode, k int) *ListNode {
+	if k < 2 {
+		return head
+	}
+	var start, pre, next *ListNode
+	curr := head
+	count := 1
+	for curr != nil {
+		next = curr.Next
+		if count == k {
+			if pre == nil { // 处理第一次反转
+				start = head
+				head = curr // 第一次反转后 curr 成为头结点
+			} else {
+				start = pre.Next
+			}
+			reverseKGroupHelper2(pre, start, curr, next)
+			pre = start // 反转后 start 成为反转部分的尾节点，记录一下 pre，方便后面反转
+			count = 0
+		}
+		curr = next
+		count++
+	}
+	return head
+}
+
+// 反转单链表的一部分，
+// 从 start 节点开始，到 end 节点结束，
+// 这一段的前驱节点是 left，后继节点是 right
+func reverseKGroupHelper2(left, start, end, right *ListNode) {
+	var pre, next *ListNode
+	curr := start
+	for curr != right {
+		next = curr.Next
+		curr.Next = pre
+		pre = curr
+		curr = next
+	}
+	if left != nil {
+		left.Next = end // 反转后 end 成为首节点
+	}
+	start.Next = right // 反转后 start 成为尾节点
+}
+
 /***************************** 辅助函数 *********************************/
 
 // ListPrint 正向打印 list

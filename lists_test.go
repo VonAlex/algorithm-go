@@ -163,3 +163,8 @@ func TestIsPalindromeList(t *testing.T) {
 	ListPrint(head3)
 	t.Log(IsPalindromeList(head3))
 }
+
+func TestReverseKGroup(t *testing.T) {
+	ListPrint(head)
+	ListPrint(ReverseKGroup2(head, 2))
+}
