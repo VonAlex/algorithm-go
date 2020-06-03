@@ -35,13 +35,13 @@ func TestAddTwoNumbers(t *testing.T) {
 var head = &ListNode{
 	Val: 1,
 	Next: &ListNode{
-		Val: 2,
+		Val: 3,
 		Next: &ListNode{
-			Val: 3,
+			Val: 5,
 			Next: &ListNode{
 				Val: 4,
 				Next: &ListNode{
-					Val: 5,
+					Val: 2,
 				},
 			},
 		},
@@ -68,13 +68,13 @@ var head2 = &ListNode{
 }
 
 var head3 = &ListNode{
-	Val: 1,
+	Val: 4,
 	Next: &ListNode{
 		Val: 2,
 		Next: &ListNode{
-			Val: 2,
+			Val: 1,
 			Next: &ListNode{
-				Val: 1,
+				Val: 3,
 			},
 		},
 	},
@@ -167,4 +167,9 @@ func TestIsPalindromeList(t *testing.T) {
 func TestReverseKGroup(t *testing.T) {
 	ListPrint(head)
 	ListPrint(ReverseKGroup2(head, 2))
+}
+
+func TestSortList(t *testing.T) {
+	ListPrint(head3)
+	ListPrint(SortList(head3))
 }

@@ -1005,8 +1005,7 @@ func DeleteMiddleNode2(head *ListNode) *ListNode {
  * 当 k = 3 时，应当返回: 3->2->1->4->5
  *
  * 说明：
- * 你的算法只能使用常数的额外空间。
- * 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+ * 你的算法只能使用常数的额外空间。你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
  */
 // 方法 1：借助栈，时间复杂度 O(N)，空间复杂度 O(K)
 func ReverseKGroup(head *ListNode, k int) *ListNode {
@@ -1031,7 +1030,6 @@ func ReverseKGroup(head *ListNode, k int) *ListNode {
 	return newHead
 }
 
-// 方法 2：原地反转，时间复杂度 O(N)，空间复杂度 O(1)
 func reverseKGroupHelper(stack *list.List, left, right *ListNode) *ListNode {
 	curr := stack.Remove(stack.Back()).(*ListNode)
 	if left != nil {
@@ -1046,6 +1044,7 @@ func reverseKGroupHelper(stack *list.List, left, right *ListNode) *ListNode {
 	return curr
 }
 
+// 方法 2：原地反转，时间复杂度 O(N)，空间复杂度 O(1)
 func ReverseKGroup2(head *ListNode, k int) *ListNode {
 	if k < 2 {
 		return head
@@ -1055,6 +1054,7 @@ func ReverseKGroup2(head *ListNode, k int) *ListNode {
 	count := 1
 	for curr != nil {
 		next = curr.Next
+		// 需要记录 start 位置
 		if count == k {
 			if pre == nil { // 处理第一次反转
 				start = head
@@ -1063,6 +1063,7 @@ func ReverseKGroup2(head *ListNode, k int) *ListNode {
 				start = pre.Next
 			}
 			reverseKGroupHelper2(pre, start, curr, next)
+			// 记录 pre 位置
 			pre = start // 反转后 start 成为反转部分的尾节点，记录一下 pre，方便后面反转
 			count = 0
 		}
@@ -1088,6 +1089,39 @@ func reverseKGroupHelper2(left, start, end, right *ListNode) {
 		left.Next = end // 反转后 end 成为首节点
 	}
 	start.Next = right // 反转后 start 成为尾节点
+}
+
+func SortList(head *ListNode) *ListNode {
+	if head.Next == nil {
+		return head
+	}
+	sortListHelper(head, nil)
+	return head
+}
+
+func sortListHelper(head, tail *ListNode) {
+	if head == tail {
+		return
+	}
+	pivot := listPartition(head, tail)
+	sortListHelper(head, pivot)
+	sortListHelper(pivot.Next, tail)
+	return
+}
+
+func listPartition(head, tail *ListNode) *ListNode {
+	pivotVal := head.Val
+	left := head
+	right := head.Next
+	for right != tail {
+		if right.Val < pivotVal {
+			left = left.Next
+			left.Val, right.Val = right.Val, left.Val
+		}
+		right = right.Next
+	}
+	head.Val, left.Val = left.Val, head.Val
+	return left
 }
 
 /***************************** 辅助函数 *********************************/

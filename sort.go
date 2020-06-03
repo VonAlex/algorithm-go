@@ -422,7 +422,7 @@ func HeapSort(nums []int) {
 	for i := length - 1; i > 0; i-- {
 		nums[0], nums[i] = nums[i], nums[0]
 		length--
-		heapify(nums, 0, length)
+		heapify3(nums, 0, length)
 	}
 }
 
@@ -430,7 +430,7 @@ func HeapSort(nums []int) {
 func buildMaxHeap(nums []int, length int) {
 	// 二叉堆第一个非叶子节点
 	for i := length/2 - 1; i >= 0; i-- {
-		heapify2(nums, i, length)
+		heapify3(nums, i, length)
 	}
 	return
 }
@@ -475,6 +475,27 @@ func heapify2(nums []int, i, length int) {
 		i = largest // 堆化 swap 过的节点
 	}
 	return
+}
+
+// 参考 go heap 源码
+func heapify3(nums []int, i0, n int) bool {
+	i := i0
+	for {
+		j1 := 2*i + 1
+		if j1 >= n || j1 < 0 {
+			break
+		}
+		j := j1
+		if j2 := j1 + 1; j2 < n && nums[j2] > nums[j1] {
+			j = j2
+		}
+		if nums[i] > nums[j] {
+			break
+		}
+		nums[i], nums[j] = nums[j], nums[i]
+		i = j
+	}
+	return i > i0
 }
 
 /* 参考 https://www.jianshu.com/p/ff1797625d66
