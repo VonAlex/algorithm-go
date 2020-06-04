@@ -282,3 +282,61 @@ func LevelOrderTraversal2(root *TreeNode) [][]int {
 	}
 	return res
 }
+
+// 方法 1：递归法 DFS
+// 空间复杂度为 O(n)，n 是树的高度
+// 如果树很高，可能导致递归栈溢出
+func InvertTree(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	left := root.Left
+	right := root.Right
+	root.Left = InvertTree(right)
+	root.Right = InvertTree(left)
+	return root
+}
+
+// 方法 2：迭代1 后序遍历
+func InvertTree2(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	curr := root
+	stack := []*TreeNode{}
+	stack = append(stack, curr)
+	for len(stack) != 0 {
+		curr = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		curr.Left, curr.Right = curr.Right, curr.Left
+		if curr.Left != nil {
+			stack = append(stack, curr.Left)
+		}
+		if curr.Right != nil {
+			stack = append(stack, curr.Right)
+		}
+	}
+	return root
+}
+
+// 方法 2：迭代2 层序遍历 BFS
+func InvertTree3(root *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+	curr := root
+	queue := []*TreeNode{}
+	queue = append(queue, curr)
+	for len(queue) != 0 {
+		curr = queue[0]
+		queue = queue[1:]
+		curr.Left, curr.Right = curr.Right, curr.Left
+		if curr.Left != nil {
+			queue = append(queue, curr.Left)
+		}
+		if curr.Right != nil {
+			queue = append(queue, curr.Right)
+		}
+	}
+	return root
+}
