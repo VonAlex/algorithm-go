@@ -173,3 +173,8 @@ func TestSortList(t *testing.T) {
 	ListPrint(head3)
 	ListPrint(SortList(head3))
 }
+
+func TestOddEvenList(t *testing.T) {
+	ListPrint(head3)
+	ListPrint(OddEvenList(head3))
+}
