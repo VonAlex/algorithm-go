@@ -173,3 +173,8 @@ func TestSortList(t *testing.T) {
 	ListPrint(head3)
 	ListPrint(SortList(head3))
 }
+
+func TestReverseN(t *testing.T) {
+	ListPrint(head3)
+	ListPrint(ReverseN(head3, 4))
+}

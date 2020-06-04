@@ -341,6 +341,34 @@ func ReverseList3(head *ListNode) *ListNode {
 	return head
 }
 
+// 递归实现反转前 N 个节点
+func ReverseN(head *ListNode, n int) *ListNode {
+	var healper func(*ListNode, int) *ListNode
+	var suc *ListNode
+	healper = func(node *ListNode, n int) *ListNode {
+		if n == 1 {
+			// 记录第 n+1 个节点
+			suc = node.Next
+			return node
+		}
+		// 反转后的尾节点
+		//      node  next
+		//       ↓     ↓
+		// 1  →  2  →  3  →  4
+		next := node.Next
+		// 以 node.next 为起点，需要反转 n-1 个节点
+		newHead := healper(next, n-1)
+
+		// 连上 node
+		next.Next = node
+
+		// 连上未反转的节点
+		node.Next = suc
+		return newHead
+	}
+	return healper(head, n)
+}
+
 /*
  * LeetCode T92. 反转链表 II
  * https://leetcode-cn.com/problems/reverse-linked-list-ii/
@@ -379,12 +407,13 @@ func ReverseBetween(head *ListNode, m int, n int) *ListNode {
 		curr = next
 		n--
 	}
+	// prev 成为汉反转后链表的头部
 	if con != nil {
 		con.Next = prev
 	} else {
 		head = prev // 从头开始反转，即 m = 1 的情况
 	}
-	tail.Next = curr
+	tail.Next = curr // 连接
 	return head
 }
 
