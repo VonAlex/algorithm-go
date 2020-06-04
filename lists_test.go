@@ -68,11 +68,11 @@ var head2 = &ListNode{
 }
 
 var head3 = &ListNode{
-	Val: 4,
+	Val: 1,
 	Next: &ListNode{
 		Val: 2,
 		Next: &ListNode{
-			Val: 1,
+			Val: 2,
 			Next: &ListNode{
 				Val: 3,
 			},
@@ -177,4 +177,13 @@ func TestSortList(t *testing.T) {
 func TestReverseN(t *testing.T) {
 	ListPrint(head3)
 	ListPrint(ReverseN(head3, 4))
+}
+func TestOddEvenList(t *testing.T) {
+	ListPrint(head3)
+	ListPrint(OddEvenList(head3))
+}
+
+func TestDeleteDuplicates(t *testing.T) {
+	ListPrint(head3)
+	ListPrint(DeleteDuplicates(head3))
 }

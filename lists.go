@@ -444,11 +444,10 @@ func IsPalindromeList(head *ListNode) bool {
 	}
 	curr = head
 	for curr != nil {
-		node := stack.Back()
-		if node.Value.(*ListNode).Val != curr.Val {
+		node := stack.Remove(stack.Back())
+		if node.(*ListNode).Val != curr.Val {
 			return false
 		}
-		stack.Remove(node)
 		curr = curr.Next
 	}
 	return true
@@ -475,8 +474,9 @@ func IsPalindromeList2(head *ListNode) bool {
 		prev = curr
 		curr = next
 	}
-	currL := head
 	revHead := prev // 保存反转后的后半部分头结点，方便后面恢复链表
+
+	currL := head // 链表两头
 	currR := revHead
 	isPalindrome := true
 	for currL != nil && currR != nil {
@@ -548,7 +548,7 @@ func DeleteNode2(head *ListNode, val int) *ListNode {
 	return head
 }
 
-/**
+/*
  * LeetCode T203. 删除链表中等于给定值 val 的所有节点。
  * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
  *
@@ -598,6 +598,46 @@ func RemoveElements2(head *ListNode, val int) *ListNode {
 			prev = curr
 		}
 		curr = curr.Next
+	}
+	return dummy.Next
+}
+
+/*
+ * LeetCode T82. 删除排序链表中的重复元素 II
+ * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/
+ *
+ * 给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中没有重复出现的数字
+ *
+ * 示例 1:
+ * 输入: 1->2->3->3->4->4->5
+ * 输出: 1->2->5
+ *
+ * 示例 2:
+ * 输入: 1->1->1->2->3
+ * 输出: 2->3
+ */
+func DeleteDuplicates(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev := dummy
+	curr := head
+	var next *ListNode
+	for curr != nil {
+		next = curr.Next
+		for next != nil && curr.Val == next.Val {
+			curr = curr.Next
+			next = next.Next
+		}
+		if prev.Next == curr {
+			prev = curr
+		} else {
+			prev.Next = next
+		}
+		curr = next
 	}
 	return dummy.Next
 }
@@ -890,8 +930,11 @@ func DetectCycle(head *ListNode) *ListNode {
 }
 
 /*
- * LeetCode T面试题52. 两个链表的第一个公共节点
+ * LeetCode 面试题52. 两个链表的第一个公共节点
  * https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/
+ * LeetCode 面试题 02.07. 链表相交
+ * https://leetcode-cn.com/problems/intersection-of-two-linked-lists-lcci/
+ *
  * 输入两个链表，找出它们的第一个公共节点。
  */
 // 方法 1：双指针法
@@ -1151,6 +1194,31 @@ func listPartition(head, tail *ListNode) *ListNode {
 	}
 	head.Val, left.Val = left.Val, head.Val
 	return left
+}
+
+/*
+ * LeetCode T328. 奇偶链表
+ * https://leetcode-cn.com/problems/odd-even-linked-list/
+ *
+ * 给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。
+ * 请注意，这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
+ * 请尝试使用原地算法完成。你的算法的空间复杂度应为 O(1)，时间复杂度应为 O(nodes)，nodes 为节点总数。
+ */
+func OddEvenList(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	odd := head
+	evenHead := head.Next
+	even := evenHead
+	for odd.Next != nil && even.Next != nil {
+		odd.Next = even.Next
+		odd = odd.Next
+		even.Next = odd.Next
+		even = even.Next
+	}
+	odd.Next = evenHead
+	return head
 }
 
 /***************************** 辅助函数 *********************************/
