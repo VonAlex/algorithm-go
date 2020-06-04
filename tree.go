@@ -1,6 +1,9 @@
 package leetcode
 
-import "container/list"
+import (
+	"container/list"
+	"math"
+)
 
 type TreeNode struct {
 	Val   int
@@ -8,7 +11,14 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-/**
+// 二叉树框架
+// func Traverse(root *TreeNode) {
+// 	// root 需要做什么
+// 	Traverse(root.Left)
+// 	Traverse(root.Right)
+// }
+
+/*
  * LeetCode 题144 二叉树的前序遍历
  * https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
  * 前序遍历：中 → 左 → 右
@@ -228,9 +238,9 @@ func PostorderTraversal2(root *TreeNode) []int {
 	return res
 }
 
-/**
+/*
  * LeetCode 题102 二叉树的层遍历
- * hhttps://leetcode-cn.com/problems/binary-tree-level-order-traversal/
+ * https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
  */
 // 解法 1：递归法
 // 深度遍历 DFS
@@ -281,4 +291,78 @@ func LevelOrderTraversal2(root *TreeNode) [][]int {
 		res = append(res, currLevel)
 	}
 	return res
+}
+
+// 判断两棵二叉树是否完全相同
+func IsSameTree(root1, root2 *TreeNode) bool {
+	// 都为空
+	if root1 == nil && root2 == nil {
+		return true
+	}
+	// 只有一个为空
+	if root1 == nil || root2 == nil {
+		return false
+	}
+	// 都不为空，但是 val 不等
+	if root1.Val != root2.Val {
+		return false
+	}
+	// 比较完本节点，比较左右子节点
+	return IsSameTree(root1.Left, root2.Left) &&
+		IsSameTree(root1.Right, root2.Right)
+}
+
+/*
+ * LeetCode T98. 验证二叉搜索树
+ * https://leetcode-cn.com/problems/validate-binary-search-tree/
+ * 给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+ *
+ * 假设一个二叉搜索树具有如下特征：
+ * 		节点的左子树只包含小于当前节点的数。
+ * 		节点的右子树只包含大于当前节点的数。
+ * 		所有左子树和右子树自身必须也是二叉搜索树。
+ */
+// 二叉搜索树(Binary Search Tree，简称 BST)
+
+// 方法 1：递归法
+func IsValidBST(root *TreeNode) bool {
+	return IsValidBSTHelper(root, math.MinInt64, math.MaxInt64)
+}
+
+func IsValidBSTHelper(root *TreeNode, min, max int) bool {
+	if root == nil {
+		return true
+	}
+	if root.Val <= min || root.Val >= max {
+		return false
+	}
+	// 左子树上所有节点的值均小于它的根节点的值
+	// 右子树上所有节点的值均大于它的根节点的值
+	return IsValidBSTHelper(root.Left, min, root.Val) &&
+		IsValidBSTHelper(root.Right, root.Val, max)
+}
+
+// 方法 2：中序遍历
+// BST 的中序遍历是一个升序数组，如果遍历的时候发现，当前的 node 值<= 前一个，那就表示这不是一个 BST
+func IsValidBST2(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	stack := []*TreeNode{}
+	prev := math.MinInt64 // 起始值
+	for len(stack) != 0 || root != nil {
+		for root != nil {
+			stack = append(stack, root.Left)
+			root = root.Left
+		}
+		root = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if root.Val <= prev {
+			return false
+		}
+		prev = root.Val
+		root = root.Right
+	}
+	return true
 }
