@@ -1,6 +1,9 @@
 package leetcode
 
-import "container/list"
+import (
+	"container/list"
+	"math"
+)
 
 type TreeNode struct {
 	Val   int
@@ -8,7 +11,14 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-/**
+// 二叉树框架
+// func Traverse(root *TreeNode) {
+// 	// root 需要做什么
+// 	Traverse(root.Left)
+// 	Traverse(root.Right)
+// }
+
+/*
  * LeetCode 题144 二叉树的前序遍历
  * https://leetcode-cn.com/problems/binary-tree-preorder-traversal/
  * 前序遍历：中 → 左 → 右
@@ -228,9 +238,9 @@ func PostorderTraversal2(root *TreeNode) []int {
 	return res
 }
 
-/**
+/*
  * LeetCode 题102 二叉树的层遍历
- * hhttps://leetcode-cn.com/problems/binary-tree-level-order-traversal/
+ * https://leetcode-cn.com/problems/binary-tree-level-order-traversal/
  */
 // 解法 1：递归法
 // 深度遍历 DFS
@@ -339,4 +349,271 @@ func InvertTree3(root *TreeNode) *TreeNode {
 		}
 	}
 	return root
+}
+
+// 判断两棵二叉树是否完全相同
+func IsSameTree(root1, root2 *TreeNode) bool {
+	// 都为空
+	if root1 == nil && root2 == nil {
+		return true
+	}
+	// 只有一个为空
+	if root1 == nil || root2 == nil {
+		return false
+	}
+	// 都不为空，但是 val 不等
+	if root1.Val != root2.Val {
+		return false
+	}
+	// 比较完本节点，比较左右子节点
+	return IsSameTree(root1.Left, root2.Left) &&
+		IsSameTree(root1.Right, root2.Right)
+}
+
+/*
+ * LeetCode T98. 验证二叉搜索树
+ * https://leetcode-cn.com/problems/validate-binary-search-tree/
+ * 给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+ *
+ * 假设一个二叉搜索树具有如下特征：
+ * 		节点的左子树只包含小于当前节点的数。
+ * 		节点的右子树只包含大于当前节点的数。
+ * 		所有左子树和右子树自身必须也是二叉搜索树。
+ */
+// 二叉搜索树(Binary Search Tree，简称 BST)
+
+// 方法 1：递归法
+// 时间复杂度和空间复杂度都是 O(n)， n 为节点个数
+// 在递归调用的时候二叉树的每个节点最多被访问一次，因此时间复杂度为 O(n)。
+// 递归函数在递归过程中需要为每一层递归函数分配栈空间，所以这里需要额外的空间且该空间取决于递归的深度，即二叉树的高度。
+// 最坏情况下二叉树为一条链，树的高度为 n ，递归最深达到 n 层，故最坏情况下空间复杂度为 O(n)
+func IsValidBST(root *TreeNode) bool {
+	return IsValidBSTHelper(root, math.MinInt64, math.MaxInt64)
+}
+
+func IsValidBSTHelper(root *TreeNode, min, max int) bool {
+	if root == nil {
+		return true
+	}
+	if root.Val <= min || root.Val >= max {
+		return false
+	}
+	// 左子树上所有节点的值均小于它的根节点的值
+	// 右子树上所有节点的值均大于它的根节点的值
+	return IsValidBSTHelper(root.Left, min, root.Val) &&
+		IsValidBSTHelper(root.Right, root.Val, max)
+}
+
+// 方法 2：中序遍历
+// BST 的中序遍历是一个升序数组，如果遍历的时候发现，当前的 node 值<= 前一个，那就表示这不是一个 BST
+func IsValidBST2(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	stack := []*TreeNode{}
+	prev := math.MinInt64 // 起始值
+	for len(stack) != 0 || root != nil {
+		for root != nil {
+			stack = append(stack, root.Left)
+			root = root.Left
+		}
+		root = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		if root.Val <= prev {
+			return false
+		}
+		prev = root.Val
+		root = root.Right
+	}
+	return true
+}
+
+/*
+ * LeetCode T700. 二叉搜索树中的搜索
+ * https://leetcode-cn.com/problems/search-in-a-binary-search-tree/
+ * 给定二叉搜索树（BST）的根节点和一个值。 你需要在BST中找到节点值等于给定值的节点。
+ * 返回以该节点为根的子树。 如果节点不存在，则返回 NULL。
+ */
+// 方法 1：递归法
+func SearchBST(root *TreeNode, target int) *TreeNode {
+	if root == nil {
+		return root
+	}
+	if root.Val == target {
+		return root
+	}
+	if root.Val < target { // 右子树
+		return SearchBST(root.Right, target)
+	}
+	return SearchBST(root.Left, target) // 左子树
+}
+
+// 方法 2：迭代法
+func SearchBST2(root *TreeNode, val int) *TreeNode {
+	if root == nil {
+		return root
+	}
+	curr := root
+	for curr != nil {
+		if curr.Val == val {
+			return curr
+		}
+		if curr.Val < val {
+			curr = curr.Right
+		} else {
+			curr = curr.Left
+		}
+	}
+	return nil
+}
+
+/*
+ * LeetCode T701. 二叉搜索树中的插入操作
+ * https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/
+ * 给定二叉搜索树（BST）的根节点和要插入树中的值，将值插入二叉搜索树。
+ * 返回插入后二叉搜索树的根节点。
+ * 保证原始二叉搜索树中不存在新值。
+ */
+// 方法 1：递归法
+// 递归的深度取决于 BST 的深度，最坏的时间复杂度为 n（n=节点数量），此时 BST 退化成一个链表
+func InsertIntoBST(root *TreeNode, val int) *TreeNode {
+	if root == nil { // 插入位置
+		return &TreeNode{
+			Val: val,
+		}
+	}
+	if root.Val < val {
+		root.Right = InsertIntoBST(root.Right, val)
+	}
+	if root.Val > val {
+		root.Left = InsertIntoBST(root.Left, val)
+	}
+	return root // 返回节点
+}
+
+// 方法 2：迭代法
+func InsertIntoBST2(root *TreeNode, val int) *TreeNode {
+	if root == nil {
+		return &TreeNode{
+			Val: val,
+		}
+	}
+	curr := root
+	var parent *TreeNode
+
+	// 找到插入位置的父节点
+	for curr != nil {
+		parent = curr
+		if curr.Val < val {
+			curr = curr.Right
+		} else {
+			curr = curr.Left
+		}
+	}
+	newNode := &TreeNode{
+		Val: val,
+	}
+	if parent.Val < val {
+		parent.Right = newNode
+	} else {
+		parent.Left = newNode
+	}
+	return root
+}
+
+/*
+ * LeetCode T450. 删除二叉搜索树中的节点
+ * https://leetcode-cn.com/problems/delete-node-in-a-bst/
+ * 给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，
+ * 并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。
+ *
+ * 一般来说，删除节点可分为两个步骤：
+ * 首先找到需要删除的节点；
+ * 如果找到了，删除它。
+ * 说明： 要求算法时间复杂度为 O(h)，h 为树的高度。
+ */
+func DelFromBST(root *TreeNode, target int) *TreeNode {
+	if root == nil {
+		return nil
+	}
+	// 三种情况处理
+	if root.Val == target {
+		if root.Left == nil {
+			return root.Right
+		}
+		if root.Right == nil {
+			return root.Left
+		}
+		// 找到右子树的最小值
+		minNode := getBSTMinNode(root.Right)
+		// 与当前节点交换，因为要删掉当前节点，又要不破坏 BST 的性质，因此需要找到右子树的最小值
+		root.Val, minNode.Val = minNode.Val, root.Val
+		// 在右子树中删掉 target
+		root.Right = DelFromBST(root.Right, target)
+	} else if root.Val < target {
+		root.Right = DelFromBST(root.Right, target)
+	} else {
+		root.Left = DelFromBST(root.Left, target)
+	}
+	return root
+}
+
+// BST 中最小的值就是最左节点，也就是中序遍历的第一个值
+func getBSTMinNode(node *TreeNode) *TreeNode {
+	if node == nil {
+		return nil
+	}
+	for node.Left != nil {
+		node = node.Left
+	}
+	return node
+}
+
+/*
+ * LeetCode 面试题54. 二叉搜索树的第k大节点
+ * 给定一棵二叉搜索树，请找出其中第k大的节点
+ */
+// 根据 BTS 的性质，中序遍历是一个递增数组，所以中序遍历的逆序就是一个递减数组（右 → 中 → 左）
+// 方法 1：迭代法
+func KthLargest(root *TreeNode, k int) int {
+	if root == nil {
+		return -1
+	}
+	curr := root
+	stack := []*TreeNode{}
+	for len(stack) != 0 || curr != nil {
+		for curr != nil { // 先找到最右节点
+			stack = append(stack, curr)
+			curr = curr.Right
+		}
+		curr = stack[len(stack)-1] // 再遍历本节点
+		stack = stack[:len(stack)-1]
+		k--
+		if k == 0 {
+			return curr.Val
+		}
+		curr = curr.Left // 再找到左孩子
+	}
+	return -1 // 考虑不符合条件的返回值
+}
+
+// 方法 2：递归法
+func KthLargest2(root *TreeNode, k int) int {
+	var result int
+	var healper func(*TreeNode)
+	healper = func(node *TreeNode) {
+		if node == nil {
+			return
+		}
+		healper(node.Right)
+		k--
+		if k == 0 {
+			result = node.Val
+			return
+		}
+		healper(node.Left)
+	}
+	healper(root)
+	return result
 }
