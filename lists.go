@@ -466,36 +466,20 @@ func IsPalindromeList2(head *ListNode) bool {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-	var prev, next *ListNode // prev = nil
-	curr := slow             // 找到中间节点
-	for curr != nil {        // 反转后半部分
-		next = curr.Next
-		curr.Next = prev
-		prev = curr
-		curr = next
-	}
-	revHead := prev // 保存反转后的后半部分头结点，方便后面恢复链表
-
-	currL := head // 链表两头
+	revHead := ReverseList(slow) // 保存反转后的后半部分头结点，方便后面恢复链表
+	currL := head                // 链表两头
 	currR := revHead
-	isPalindrome := true
+	res := true
 	for currL != nil && currR != nil {
 		if currL.Val != currR.Val {
-			isPalindrome = false
+			res = false
 			break
 		}
 		currL = currL.Next
 		currR = currR.Next
 	}
-	prev = nil // prev = nil
-	currR = revHead
-	for currR != nil { // 恢复后半部分链表
-		next = currR.Next
-		currR.Next = prev
-		prev = currR
-		currR = next
-	}
-	return isPalindrome
+	ReverseList(revHead) // 恢复后半段list
+	return res
 }
 
 /*
@@ -1204,6 +1188,11 @@ func listPartition(head, tail *ListNode) *ListNode {
  * 请注意，这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
  * 请尝试使用原地算法完成。你的算法的空间复杂度应为 O(1)，时间复杂度应为 O(nodes)，nodes 为节点总数。
  */
+// 分别考虑链表奇偶数个节点
+//   ______           ______
+// |       ↓        |       ↓
+// 1 → 2 → 3        1 → 2 → 3 → 4
+//     | __↑            |_______↑
 func OddEvenList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
@@ -1217,8 +1206,104 @@ func OddEvenList(head *ListNode) *ListNode {
 		even.Next = odd.Next
 		even = even.Next
 	}
+	odd.Next = nil // 清理最后一个节点
 	odd.Next = evenHead
 	return head
+}
+
+/*
+ * LeetCode T138. 复制带随机指针的链表
+ * https://leetcode-cn.com/problems/copy-list-with-random-pointer/
+ *
+ * 给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。
+ * 要求返回这个链表的深拷贝。
+ */
+type ComplexNode struct {
+	Val    int
+	Next   *ComplexNode
+	Random *ComplexNode
+}
+
+// 方法 1：时间复杂度 O(N)，空间复杂度 O(N)
+func CopyRandomList(head *ComplexNode) *ComplexNode {
+	if head == nil {
+		return head
+	}
+	copyHead := &ComplexNode{
+		Val: head.Val,
+	}
+	curr := head
+	prev := copyHead // 要有一个 prev 节点，来 next 连接 copy 节点
+	curr = curr.Next
+	// 1. 复制有一个 random 为空的单链表
+	for curr != nil {
+		copyNode := &ComplexNode{
+			Val: curr.Val,
+		}
+		prev.Next = copyNode
+		prev = prev.Next
+		curr = curr.Next
+	}
+	// 2. 映射 A → A'
+	nodes := make(map[*ComplexNode]*ComplexNode)
+	curr = head
+	copyCurr := copyHead
+	for curr != nil {
+		nodes[curr] = copyCurr
+		curr = curr.Next
+		copyCurr = copyCurr.Next
+	}
+	// 3. 根据映射，赋值 random
+	curr = head
+	copyCurr = copyHead
+	for curr != nil {
+		if curr.Random != nil {
+			copyCurr.Random = nodes[curr.Random]
+		}
+		curr = curr.Next
+		copyCurr = copyCurr.Next
+	}
+	return copyHead
+}
+
+// 方法 2：奇偶分离法
+// 时间复杂度 O(N)，空间复杂度O(1)
+func CopyRandomList2(head *ComplexNode) *ComplexNode {
+	if head == nil {
+		return head
+	}
+	curr := head
+	// 1. 先拷贝当前节点，作为当前节点的下一个节点
+	// A → A' → B → B‘
+	for curr != nil {
+		currCloned := &ComplexNode{
+			Val:  curr.Val,
+			Next: curr.Next,
+		}
+		curr.Next = currCloned
+		curr = currCloned.Next
+	}
+	curr = head
+	// 2. 将 copy 节点的 random 指针赋值
+	for curr != nil {
+		currCloned := curr.Next
+		if curr.Random != nil {
+			currCloned.Random = curr.Random.Next
+		}
+		curr = currCloned.Next
+	}
+	// 3. 分离奇偶数节点组成的链表
+	odd := head
+	evenHead := head.Next
+	even := evenHead
+	for odd.Next != nil && even.Next != nil {
+		odd.Next = even.Next
+		odd = odd.Next
+		even.Next = odd.Next
+		even = even.Next
+	}
+	odd.Next = nil
+	return evenHead
 }
 
 /***************************** 辅助函数 *********************************/

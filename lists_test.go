@@ -187,3 +187,56 @@ func TestDeleteDuplicates(t *testing.T) {
 	ListPrint(head3)
 	ListPrint(DeleteDuplicates(head3))
 }
+
+func TestCopyRandomList(t *testing.T) {
+	head := &ComplexNode{
+		Val: 7,
+	}
+	node1 := &ComplexNode{
+		Val:    13,
+		Random: head,
+	}
+	node4 := &ComplexNode{
+		Val:    1,
+		Random: head,
+	}
+	node2 := &ComplexNode{
+		Val:    11,
+		Random: node4,
+	}
+	node3 := &ComplexNode{
+		Val:    10,
+		Random: node2,
+	}
+	head.Next = node1
+	node1.Next = node2
+	node2.Next = node3
+	node3.Next = node4
+
+	printComplexList(head)
+	copyList := CopyRandomList(head)
+	printComplexList(head)
+	printComplexList(copyList)
+}
+
+func printComplexList(node *ComplexNode) {
+	curr := node
+	nodes := make(map[int]int)
+	idx := 0
+	for curr != nil {
+		nodes[curr.Val] = idx
+		idx++
+		curr = curr.Next
+	}
+	curr = node
+	var res [][]interface{}
+	for curr != nil {
+		if curr.Random != nil {
+			res = append(res, []interface{}{curr.Val, nodes[curr.Random.Val]})
+		} else {
+			res = append(res, []interface{}{curr.Val, nil})
+		}
+		curr = curr.Next
+	}
+	fmt.Println(res)
+}
