@@ -21,9 +21,7 @@ type ListNode struct {
 // 本题的关键点是链表遍历，
 // 注意：1. 两个链表有长有短
 //      2. 求和运算最后可能出现额外的进位
-
-// AddTwoNumbers ..
-func AddTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	node := &ListNode{}
 	sum := node
 	carry := 0
@@ -55,8 +53,8 @@ func AddTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 	return sum
 }
 
-// AddTwoNumbers2 使用了 dummy head 简化了链表遍历的处理
-func AddTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
+// 使用 dummy head 简化了链表遍历的处理
+func addTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
 	dummy := &ListNode{}
 	pre := dummy // 前一个节点
 	carry := 0
@@ -98,7 +96,7 @@ func AddTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
 
 // 方法 1：迭代法
 // 时间复杂度：O(n + m), 空间复杂度：O(1)
-func MergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
+func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 	if l1 == nil {
 		return l2
 	}
@@ -130,7 +128,7 @@ func MergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 
 // 方法 2：递归法
 // 时间/空间复杂度都是O(n + m)
-func MergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
+func mergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
 	if l1 == nil {
 		return l2
 	}
@@ -138,10 +136,10 @@ func MergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
 		return l1
 	}
 	if l1.Val < l2.Val {
-		l1.Next = MergeTwoLists2(l1.Next, l2)
+		l1.Next = mergeTwoLists2(l1.Next, l2)
 		return l1
 	}
-	l2.Next = MergeTwoLists2(l1, l2.Next)
+	l2.Next = mergeTwoLists2(l1, l2.Next)
 	return l2
 }
 
@@ -156,7 +154,7 @@ func MergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
 
 // 解法1 使用栈结构，这是最容易想到的
 // 时间复杂度和空间复杂度都是 O(n)
-func ReversePrint(head *ListNode) []int {
+func reversePrint(head *ListNode) []int {
 	if head == nil {
 		return nil
 	}
@@ -175,7 +173,7 @@ func ReversePrint(head *ListNode) []int {
 
 // 解法2 两次循环，先获得 list 的节点个数，然后倒着放置节点
 // 时间复杂度 O(n)，空间复杂度 O(1)
-func ReversePrint2(head *ListNode) []int {
+func reversePrint2(head *ListNode) []int {
 	if head == nil {
 		return nil
 	}
@@ -197,7 +195,7 @@ func ReversePrint2(head *ListNode) []int {
 }
 
 // 解法3 翻转数组
-func ReversePrint3(head *ListNode) []int {
+func reversePrint3(head *ListNode) []int {
 	if head == nil {
 		return nil
 	}
@@ -220,7 +218,7 @@ func ReversePrint3(head *ListNode) []int {
 
 // 解法4 翻转链表
 // 这个方法有个弊端，就是会修改原始 list，这很有可能不合题意
-func ReversePrint4(head *ListNode) []int {
+func reversePrint4(head *ListNode) []int {
 	if head == nil {
 		return nil
 	}
@@ -245,7 +243,7 @@ func ReversePrint4(head *ListNode) []int {
 
 // 解法5 递归法
 // 当链表过长时，可能出现函数调用栈溢出的异常
-func ReversePrint5(head *ListNode) []int {
+func reversePrint5(head *ListNode) []int {
 	if head == nil {
 		return nil
 	}
@@ -276,7 +274,7 @@ func reversePrintHelper(node *ListNode, res *[]int) int {
 
 // 解法 1 迭代
 // 时间复杂度 O(n)，空间复杂度 O(1)
-func ReverseList(head *ListNode) *ListNode {
+func reverseList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
@@ -307,12 +305,12 @@ func ReverseList(head *ListNode) *ListNode {
 // 调用反转函数，2->3->4->5 反转成 2 ← 3 ← 4 ← 5， newHead 是 5
 // 那么现在就要把 1 和新的 list 关联起来，这时候之前记录的 tail 节点派上了用场。
 // 以此类推
-func ReverseList2(head *ListNode) *ListNode {
+func reverseList2(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
 	next := head.Next // next 是新 list 的尾结点
-	newHead := ReverseList2(next)
+	newHead := reverseList2(next)
 	next.Next = head // 将传入的节点接在新 list 的后面
 	head.Next = nil  // 清空指针域，成为新的尾结点
 	return newHead   // 返回新头结点
@@ -325,7 +323,7 @@ func ReverseList2(head *ListNode) *ListNode {
 // 我们需要一个变量记住头部的位置，即 head，不断更新传入的 head 变量即可
 // 同时需要记住下一个节点的位置，即 next
 // 以此类推，直到 curr 的下一个节点是 nil 了，说明到最后一个节点了，此时的 curr 正好在 tail 节点上
-func ReverseList3(head *ListNode) *ListNode {
+func reverseList3(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
@@ -342,7 +340,7 @@ func ReverseList3(head *ListNode) *ListNode {
 }
 
 // 递归实现反转前 N 个节点
-func ReverseN(head *ListNode, n int) *ListNode {
+func reverseN(head *ListNode, n int) *ListNode {
 	var healper func(*ListNode, int) *ListNode
 	var suc *ListNode
 	healper = func(node *ListNode, n int) *ListNode {
@@ -379,7 +377,7 @@ func ReverseN(head *ListNode, n int) *ListNode {
  *
  * 说明: 1 ≤ m ≤ n ≤ 链表长度。
  */
-func ReverseBetween(head *ListNode, m int, n int) *ListNode {
+func reverseBetween(head *ListNode, m int, n int) *ListNode {
 	if head == nil {
 		return head
 	}
@@ -432,7 +430,7 @@ func ReverseBetween(head *ListNode, m int, n int) *ListNode {
  */
 // 方法 1 使用栈，借助其先入后出的特点
 // 时/空间复杂度 O(N)
-func IsPalindromeList(head *ListNode) bool {
+func isPalindromeList(head *ListNode) bool {
 	if head == nil {
 		return true
 	}
@@ -456,7 +454,7 @@ func IsPalindromeList(head *ListNode) bool {
 // 方法 2 反转链表
 // 将链表后半部分反转，从两边遍历，对回文链表链表来说，这两半链表有着相同的遍历
 // 时间复杂度 O(N)，空间复杂度 O(1)
-func IsPalindromeList2(head *ListNode) bool {
+func isPalindromeList2(head *ListNode) bool {
 	if head == nil || head.Next == nil { // 讨论链表为空时返回 true 还是 false
 		return true
 	}
@@ -466,7 +464,7 @@ func IsPalindromeList2(head *ListNode) bool {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-	revHead := ReverseList(slow) // 保存反转后的后半部分头结点，方便后面恢复链表
+	revHead := reverseList(slow) // 保存反转后的后半部分头结点，方便后面恢复链表
 	currL := head                // 链表两头
 	currR := revHead
 	res := true
@@ -478,7 +476,7 @@ func IsPalindromeList2(head *ListNode) bool {
 		currL = currL.Next
 		currR = currR.Next
 	}
-	ReverseList(revHead) // 恢复后半段list
+	reverseList(revHead) // 恢复后半段list
 	return res
 }
 
@@ -491,7 +489,7 @@ func IsPalindromeList2(head *ListNode) bool {
  *
  * 说明：题目保证链表中节点的值互不相同
  */
-func DeleteNode(head *ListNode, val int) *ListNode {
+func deleteNode(head *ListNode, val int) *ListNode {
 	if head == nil {
 		return head
 	}
@@ -513,7 +511,7 @@ func DeleteNode(head *ListNode, val int) *ListNode {
 }
 
 // 不使用 dummy 结点
-func DeleteNode2(head *ListNode, val int) *ListNode {
+func deleteNode2(head *ListNode, val int) *ListNode {
 	var prev *ListNode
 	curr := head
 	for curr != nil {
@@ -543,7 +541,7 @@ func DeleteNode2(head *ListNode, val int) *ListNode {
  */
 // 本题是上面一题的升级版
 // 方法 1: 不使用 dummy 结点
-func RemoveElements(head *ListNode, val int) *ListNode {
+func removeElements(head *ListNode, val int) *ListNode {
 	var prev *ListNode
 	curr := head
 	for curr != nil {
@@ -569,7 +567,7 @@ func RemoveElements(head *ListNode, val int) *ListNode {
 }
 
 // 方法 2：使用 dummy 结点简化特殊情况
-func RemoveElements2(head *ListNode, val int) *ListNode {
+func removeElements2(head *ListNode, val int) *ListNode {
 	dummy := &ListNode{
 		Next: head,
 	}
@@ -600,7 +598,7 @@ func RemoveElements2(head *ListNode, val int) *ListNode {
  * 输入: 1->1->1->2->3
  * 输出: 2->3
  */
-func DeleteDuplicates(head *ListNode) *ListNode {
+func deleteDuplicates(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
 	}
@@ -630,7 +628,7 @@ func DeleteDuplicates(head *ListNode) *ListNode {
  * 打印两个有序链表的公共部分
  */
 // 既然是有序链表，那么此题难度就很低了
-func PrintCommonPart(head1 *ListNode, head2 *ListNode) {
+func printCommonPart(head1 *ListNode, head2 *ListNode) {
 	curr1 := head1
 	curr2 := head2
 	for curr1 != nil && curr2 != nil {
@@ -659,7 +657,7 @@ func PrintCommonPart(head1 *ListNode, head2 *ListNode) {
 // 假设链表长度是 N，倒数第 K 个节点的前一个节点就是第 N - K 个节点
 // 第 1 次遍历，每个节点 -1，到最后一个节点，该值为 K - N
 // 第 2 次遍历，每个节点 +1，当值为 0 时，就找到了要找的节点
-func RemoveLastKthNode(head *ListNode, n int) *ListNode {
+func removeLastKthNode(head *ListNode, n int) *ListNode {
 	if head == nil || n < 0 {
 		return head
 	}
@@ -687,7 +685,7 @@ func RemoveLastKthNode(head *ListNode, n int) *ListNode {
 }
 
 // 解法 2：两遍遍历链表 2 (跟上面的解法类似，核心是找到第 N - K + 1 个节点)
-func RemoveLastKthNode2(head *ListNode, n int) *ListNode {
+func removeLastKthNode2(head *ListNode, n int) *ListNode {
 	if head == nil || n < 0 {
 		return head
 	}
@@ -715,7 +713,7 @@ func RemoveLastKthNode2(head *ListNode, n int) *ListNode {
 
 // 解法 3 一次遍历法
 // 使用快慢指针法
-func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
+func removeLastKthNode3(head *ListNode, n int) *ListNode {
 	if head == nil || n < 0 {
 		return head
 	}
@@ -741,7 +739,7 @@ func RemoveLastKthNode3(head *ListNode, n int) *ListNode {
 }
 
 // 解法 4：快慢指针 - 去掉 dummy 节点
-func RemoveLastKthNode4(head *ListNode, n int) *ListNode {
+func removeLastKthNode4(head *ListNode, n int) *ListNode {
 	if head == nil || n < 0 {
 		return head
 	}
@@ -777,7 +775,7 @@ func RemoveLastKthNode4(head *ListNode, n int) *ListNode {
  * 为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。
  */
 // 方法 1：快慢指针法
-func GetKthFromEnd(head *ListNode, k int) *ListNode {
+func getKthFromEnd(head *ListNode, k int) *ListNode {
 	if head == nil || k < 0 { // 参数不合理
 		return head
 	}
@@ -811,7 +809,7 @@ func GetKthFromEnd(head *ListNode, k int) *ListNode {
  */
 // 方法 1：快慢指针法
 // 实际上，要有异常情况的考虑，head 为空是返回什么值？k 为负数返回什么值？k 超过链表长度返回什么值？
-func KthToLast(head *ListNode, k int) int {
+func kthToLast(head *ListNode, k int) int {
 	fast := head
 	for k > 0 { // fast 先走 k 步
 		fast = fast.Next
@@ -825,7 +823,7 @@ func KthToLast(head *ListNode, k int) int {
 	return slow.Val
 }
 
-func RemoveDuplicateNodes(head *ListNode) *ListNode {
+func removeDuplicateNodes(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
@@ -853,7 +851,7 @@ func RemoveDuplicateNodes(head *ListNode) *ListNode {
  */
 // 方法 1：快慢指针法
 // 假设非环部分长 N，环形部分长 K，那么时间复杂度为 O(N+K)，也就是 O(n)
-func HasCycle(head *ListNode) bool {
+func hasCycle(head *ListNode) bool {
 	if head == nil {
 		return false
 	}
@@ -871,7 +869,7 @@ func HasCycle(head *ListNode) bool {
 
 // 方法 2：哈希表法
 // 时间复杂度和空间复杂度都是 O(n)
-func HasCycle2(head *ListNode) bool {
+func hasCycle2(head *ListNode) bool {
 	return false
 }
 
@@ -887,7 +885,7 @@ func HasCycle2(head *ListNode) bool {
 // 假设相遇时，slow 走了 K 步（起点到相遇点的距离），那两倍速的 fast 走了 2K 步
 // fast 多走的部分就是环的长度，即 2K-K = K
 // 假设相遇点离环开始处 M 步，那么起点距离环开始处为 K-M，因此 fast 和 slow 同步走，在交点处相遇
-func DetectCycle(head *ListNode) *ListNode {
+func detectCycle(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
 	}
@@ -922,7 +920,7 @@ func DetectCycle(head *ListNode) *ListNode {
  * 输入两个链表，找出它们的第一个公共节点。
  */
 // 方法 1：双指针法
-func GetIntersectionNode(headA, headB *ListNode) *ListNode {
+func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	currA := headA
 	currB := headB
 	if currA == nil || currB == nil {
@@ -959,7 +957,7 @@ func GetIntersectionNode(headA, headB *ListNode) *ListNode {
  */
 // 方法 1：快慢指针法
 // 时间复杂度 O(N)，空间复杂度 O(1)
-func MiddleNode(head *ListNode) *ListNode {
+func middleNode(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
 	}
@@ -988,7 +986,7 @@ func MiddleNode(head *ListNode) *ListNode {
  * 结果：不返回任何数据，但该链表变为a->b->d->e->f
  */
 // 实例本题提示了一种删除链表节点的方法，不要找到前一个节点，而是后一个节点覆盖要删除的节点，然后改变指针
-func DeleteSomeNode(node *ListNode) {
+func deleteSomeNode(node *ListNode) {
 	if node == nil || node.Next == nil {
 		return
 	}
@@ -999,7 +997,7 @@ func DeleteSomeNode(node *ListNode) {
 // 删除链表的中间节点
 // Q1：确认偶数节点的时候删哪个（前 or 后）
 // Q2: 确认只有一个节点怎么处理
-func DeleteMiddleNode(head *ListNode) *ListNode {
+func deleteMiddleNode(head *ListNode) *ListNode {
 	if head == nil {
 		return head
 	}
@@ -1029,7 +1027,7 @@ func DeleteMiddleNode(head *ListNode) *ListNode {
 //         ↓
 // 1 → 2 → 3 → 4 → 5（奇数）
 //                 ↑
-func DeleteMiddleNode2(head *ListNode) *ListNode {
+func deleteMiddleNode2(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return nil
 	}
@@ -1064,7 +1062,7 @@ func DeleteMiddleNode2(head *ListNode) *ListNode {
  * 你的算法只能使用常数的额外空间。你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
  */
 // 方法 1：借助栈，时间复杂度 O(N)，空间复杂度 O(K)
-func ReverseKGroup(head *ListNode, k int) *ListNode {
+func reverseKGroup(head *ListNode, k int) *ListNode {
 	if k < 2 {
 		return head
 	}
@@ -1101,7 +1099,7 @@ func reverseKGroupHelper(stack *list.List, left, right *ListNode) *ListNode {
 }
 
 // 方法 2：原地反转，时间复杂度 O(N)，空间复杂度 O(1)
-func ReverseKGroup2(head *ListNode, k int) *ListNode {
+func reverseKGroup2(head *ListNode, k int) *ListNode {
 	if k < 2 {
 		return head
 	}
@@ -1147,39 +1145,6 @@ func reverseKGroupHelper2(left, start, end, right *ListNode) {
 	start.Next = right // 反转后 start 成为尾节点
 }
 
-func SortList(head *ListNode) *ListNode {
-	if head.Next == nil {
-		return head
-	}
-	sortListHelper(head, nil)
-	return head
-}
-
-func sortListHelper(head, tail *ListNode) {
-	if head == tail {
-		return
-	}
-	pivot := listPartition(head, tail)
-	sortListHelper(head, pivot)
-	sortListHelper(pivot.Next, tail)
-	return
-}
-
-func listPartition(head, tail *ListNode) *ListNode {
-	pivotVal := head.Val
-	left := head
-	right := head.Next
-	for right != tail {
-		if right.Val < pivotVal {
-			left = left.Next
-			left.Val, right.Val = right.Val, left.Val
-		}
-		right = right.Next
-	}
-	head.Val, left.Val = left.Val, head.Val
-	return left
-}
-
 /*
  * LeetCode T328. 奇偶链表
  * https://leetcode-cn.com/problems/odd-even-linked-list/
@@ -1193,7 +1158,7 @@ func listPartition(head, tail *ListNode) *ListNode {
 // |       ↓        |       ↓
 // 1 → 2 → 3        1 → 2 → 3 → 4
 //     | __↑            |_______↑
-func OddEvenList(head *ListNode) *ListNode {
+func oddEvenList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
@@ -1214,6 +1179,8 @@ func OddEvenList(head *ListNode) *ListNode {
 /*
  * LeetCode T138. 复制带随机指针的链表
  * https://leetcode-cn.com/problems/copy-list-with-random-pointer/
+ * LeetCode 面试题35. 复杂链表的复制
+ * https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/
  *
  * 给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。
  * 要求返回这个链表的深拷贝。
@@ -1225,7 +1192,7 @@ type ComplexNode struct {
 }
 
 // 方法 1：时间复杂度 O(N)，空间复杂度 O(N)
-func CopyRandomList(head *ComplexNode) *ComplexNode {
+func copyRandomList(head *ComplexNode) *ComplexNode {
 	if head == nil {
 		return head
 	}
@@ -1268,7 +1235,7 @@ func CopyRandomList(head *ComplexNode) *ComplexNode {
 
 // 方法 2：奇偶分离法
 // 时间复杂度 O(N)，空间复杂度O(1)
-func CopyRandomList2(head *ComplexNode) *ComplexNode {
+func copyRandomList2(head *ComplexNode) *ComplexNode {
 	if head == nil {
 		return head
 	}
@@ -1304,21 +1271,4 @@ func CopyRandomList2(head *ComplexNode) *ComplexNode {
 	}
 	odd.Next = nil
 	return evenHead
-}
-
-/***************************** 辅助函数 *********************************/
-
-// ListPrint 正向打印 list
-func ListPrint(node *ListNode) {
-	if node == nil {
-		return
-	}
-	for node != nil {
-		fmt.Print(node.Val)
-		if node.Next != nil {
-			fmt.Print("->")
-		}
-		node = node.Next
-	}
-	fmt.Println()
 }
