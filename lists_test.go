@@ -27,7 +27,7 @@ func TestAddTwoNumbers(t *testing.T) {
 		// },
 	}
 
-	sum := AddTwoNumbers2(l1, l2)
+	sum := addTwoNumbers2(l1, l2)
 	s, _ := json.Marshal(sum)
 	t.Log(string(s))
 }
@@ -85,51 +85,51 @@ var oneNodeHead = &ListNode{
 }
 
 func TestListPrint(t *testing.T) {
-	ListPrint(head)
+	listPrint(head)
 }
 
 func TestReversePrint(t *testing.T) {
-	ListPrint(head)
-	fmt.Println(ReversePrint4(head))
-	ListPrint(oneNodeHead)
-	fmt.Println(ReversePrint4(oneNodeHead))
+	listPrint(head)
+	fmt.Println(reversePrint4(head))
+	listPrint(oneNodeHead)
+	fmt.Println(reversePrint4(oneNodeHead))
 }
 
 func TestReverseList(t *testing.T) {
-	ListPrint(head)
-	ListPrint(ReverseList(head))
+	listPrint(head)
+	listPrint(reverseList(head))
 }
 
 func TestDeleteNode(t *testing.T) {
-	ListPrint(head3)
-	ListPrint(DeleteNode(head3, 2))
+	listPrint(head3)
+	listPrint(deleteNode(head3, 2))
 }
 
 func TestRemoveElements(t *testing.T) {
-	ListPrint(head3)
+	listPrint(head3)
 	// 2->1->1->2
 	// 1->1
 	// 1
-	ListPrint(RemoveElements(head3, 1))
+	listPrint(removeElements(head3, 1))
 }
 
 func TestPrintCommonPart(t *testing.T) {
-	PrintCommonPart(head, head2)
+	printCommonPart(head, head2)
 }
 
 func TestRemoveLastKthNode(t *testing.T) {
-	ListPrint(head)
-	ListPrint(RemoveLastKthNode4(head, 1))
+	listPrint(head)
+	listPrint(removeLastKthNode4(head, 1))
 }
 
 func TestRemoveDuplicateNodes(t *testing.T) {
-	ListPrint(head2)
-	RemoveDuplicateNodes(head2)
-	ListPrint(head2)
+	listPrint(head2)
+	removeDuplicateNodes(head2)
+	listPrint(head2)
 }
 
 func TestDetectCycle(t *testing.T) {
-	ListPrint(DetectCycle(oneNodeHead))
+	listPrint(detectCycle(oneNodeHead))
 }
 
 func TestMergeTwoLists(t *testing.T) {
@@ -151,41 +151,41 @@ func TestMergeTwoLists(t *testing.T) {
 			},
 		},
 	}
-	ListPrint(MergeTwoLists(l1, l2))
+	listPrint(mergeTwoLists(l1, l2))
 }
 
 func TestDeleteMiddleNode(t *testing.T) {
-	ListPrint(head)
-	ListPrint(DeleteMiddleNode2(head))
+	listPrint(head)
+	listPrint(deleteMiddleNode2(head))
 }
 
 func TestIsPalindromeList(t *testing.T) {
-	ListPrint(head3)
-	t.Log(IsPalindromeList(head3))
+	listPrint(head3)
+	t.Log(isPalindromeList(head3))
 }
 
 func TestReverseKGroup(t *testing.T) {
-	ListPrint(head)
-	ListPrint(ReverseKGroup2(head, 2))
+	listPrint(head)
+	listPrint(reverseKGroup2(head, 2))
 }
 
 func TestSortList(t *testing.T) {
-	ListPrint(head3)
-	ListPrint(SortList(head3))
+	// listPrint(head)
+	listPrint(sortList3(head3))
 }
 
 func TestReverseN(t *testing.T) {
-	ListPrint(head3)
-	ListPrint(ReverseN(head3, 4))
+	listPrint(head3)
+	listPrint(reverseN(head3, 4))
 }
 func TestOddEvenList(t *testing.T) {
-	ListPrint(head3)
-	ListPrint(OddEvenList(head3))
+	listPrint(head3)
+	listPrint(oddEvenList(head3))
 }
 
 func TestDeleteDuplicates(t *testing.T) {
-	ListPrint(head3)
-	ListPrint(DeleteDuplicates(head3))
+	listPrint(head3)
+	listPrint(deleteDuplicates(head3))
 }
 
 func TestCopyRandomList(t *testing.T) {
@@ -214,7 +214,7 @@ func TestCopyRandomList(t *testing.T) {
 	node3.Next = node4
 
 	printComplexList(head)
-	copyList := CopyRandomList(head)
+	copyList := copyRandomList(head)
 	printComplexList(head)
 	printComplexList(copyList)
 }
