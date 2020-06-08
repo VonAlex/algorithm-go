@@ -80,6 +80,28 @@ var head3 = &ListNode{
 	},
 }
 
+var oddEvenHead = &ListNode{
+	Val: 1,
+	Next: &ListNode{
+		Val: 8,
+		Next: &ListNode{
+			Val: 3,
+			Next: &ListNode{
+				Val: 6,
+				Next: &ListNode{
+					Val: 5,
+					Next: &ListNode{
+						Val: 4,
+						Next: &ListNode{
+							Val: 7,
+						},
+					},
+				},
+			},
+		},
+	},
+}
+
 var oneNodeHead = &ListNode{
 	Val: 1,
 }
@@ -166,7 +188,7 @@ func TestIsPalindromeList(t *testing.T) {
 
 func TestReverseKGroup(t *testing.T) {
 	listPrint(head)
-	listPrint(reverseKGroup2(head, 2))
+	listPrint(reverseKGroup2(head, 3))
 }
 
 func TestSortList(t *testing.T) {
@@ -219,24 +241,7 @@ func TestCopyRandomList(t *testing.T) {
 	printComplexList(copyList)
 }
 
-func printComplexList(node *ComplexNode) {
-	curr := node
-	nodes := make(map[int]int)
-	idx := 0
-	for curr != nil {
-		nodes[curr.Val] = idx
-		idx++
-		curr = curr.Next
-	}
-	curr = node
-	var res [][]interface{}
-	for curr != nil {
-		if curr.Random != nil {
-			res = append(res, []interface{}{curr.Val, nodes[curr.Random.Val]})
-		} else {
-			res = append(res, []interface{}{curr.Val, nil})
-		}
-		curr = curr.Next
-	}
-	fmt.Println(res)
+func TestDivideOddEvenList(t *testing.T) {
+	listPrint(oddEvenHead)
+	listPrint(oddEvenSortlist(oddEvenHead))
 }

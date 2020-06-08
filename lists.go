@@ -1103,34 +1103,37 @@ func reverseKGroup2(head *ListNode, k int) *ListNode {
 	if k < 2 {
 		return head
 	}
-	var start, pre, next *ListNode
+	// start 本次翻转头结点
+	// next 本次翻转尾节点下一个节点
+	// newHead 新链表头部
+	// lastTail 上一次翻转的尾部
+	var lastTail, start, next, newHead *ListNode
 	curr := head
-	count := 1
+	count := 0
 	for curr != nil {
+		count++
 		next = curr.Next
-		// 需要记录 start 位置
 		if count == k {
-			if pre == nil { // 处理第一次反转
-				start = head
-				head = curr // 第一次反转后 curr 成为头结点
+			if lastTail == nil { // 处理第一次反转
+				start = head   // 本次从 head 开始翻转
+				newHead = curr // 第一次反转后 curr 成为头结点
 			} else {
-				start = pre.Next
+				start = lastTail.Next // 本次从上一次尾结点的下一节点开始翻转
 			}
-			reverseKGroupHelper2(pre, start, curr, next)
-			// 记录 pre 位置
-			pre = start // 反转后 start 成为反转部分的尾节点，记录一下 pre，方便后面反转
+			reversePartlist(lastTail, start, curr, next)
+			// 记录 lastTail 位置
+			lastTail = start // 反转后 start 成为反转部分的尾节点，记录一下 pre，方便后面反转
 			count = 0
 		}
 		curr = next
-		count++
 	}
-	return head
+	return newHead
 }
 
 // 反转单链表的一部分，
 // 从 start 节点开始，到 end 节点结束，
 // 这一段的前驱节点是 left，后继节点是 right
-func reverseKGroupHelper2(left, start, end, right *ListNode) {
+func reversePartlist(left, start, end, right *ListNode) {
 	var pre, next *ListNode
 	curr := start
 	for curr != right {
@@ -1139,10 +1142,33 @@ func reverseKGroupHelper2(left, start, end, right *ListNode) {
 		pre = curr
 		curr = next
 	}
-	if left != nil {
+	if left != nil { // 是否需要连接头部
 		left.Next = end // 反转后 end 成为首节点
 	}
 	start.Next = right // 反转后 start 成为尾节点
+}
+
+/*
+ * 跟 LeetCode T25. K 个一组翻转链表题目类似，
+ * 题目要求换成，如果节点总数不是 k 的整数倍，那么请头部剩余的节点保持原有顺序
+ */
+func reverseKGroup3(head *ListNode, k int) *ListNode {
+	if k < 2 {
+		return head
+	}
+	lens := getListLen(head)
+	offset := lens % k
+
+	curr := head
+	var prev *ListNode
+	for offset > 0 {
+		prev = curr
+		curr = curr.Next
+		offset--
+	}
+	// 先把头部的余数节点放过，然后走入正常的逻辑，每 k 个一组进行翻转
+	prev.Next = reverseKGroup(curr, k)
+	return head
 }
 
 /*
@@ -1174,6 +1200,29 @@ func oddEvenList(head *ListNode) *ListNode {
 	odd.Next = nil // 清理最后一个节点
 	odd.Next = evenHead
 	return head
+}
+
+// 分离出奇数节点和偶数节点组成的单链表
+func divideOddEvenList(head *ListNode) (oddHead, evenHead *ListNode) {
+	if head == nil {
+		return
+	}
+	if head.Next == nil {
+		oddHead = head
+		return
+	}
+	oddHead = head
+	odd := oddHead
+	evenHead = head.Next
+	even := evenHead
+	for odd.Next != nil && even.Next != nil {
+		odd.Next = even.Next
+		odd = odd.Next
+		even.Next = odd.Next
+		even = even.Next
+	}
+	odd.Next = nil
+	return
 }
 
 /*
@@ -1271,4 +1320,19 @@ func copyRandomList2(head *ComplexNode) *ComplexNode {
 	}
 	odd.Next = nil
 	return evenHead
+}
+
+/*
+ * 头条面试题:
+ * 一个链表，奇数位升序偶数位降序，让链表变成升序的。
+ * 例如：1->8->2->7->3->6->4->5，变为 1->2->3->4->5->6->7->8
+ */
+func oddEvenSortlist(head *ListNode) *ListNode {
+	// 1. 抽出奇数节点组成的升序链表 L1 和偶数节点组成的降序链表 L2
+	odd, even := divideOddEvenList(head)
+	// 2. 将 L2 反转成升序链表
+	even = reverseList(even)
+	// 3. 合并 L1 和 L2 两个有序链表
+	newHead := mergeTwoLists(odd, even)
+	return newHead
 }
