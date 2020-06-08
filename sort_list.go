@@ -4,7 +4,7 @@ package leetcode
  * LeetCode T148. 排序链表
  * https://leetcode-cn.com/problems/sort-list/
  *
- * 在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序。
+ * 在 O(nlogn) 时间复杂度和常数级空间复杂度下，对链表进行排序。
  */
 
 // 方法1：快速排序
@@ -43,6 +43,8 @@ func listPartition(head, tail *ListNode) *ListNode {
 }
 
 // 方法2：（自上而下）归并排序
+// 递归带来 O(logn) 的空间复杂度
+// 时间复杂度为 O(nlogn)，这并不符合题目要求
 func sortList2(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
@@ -74,6 +76,7 @@ func getMidNode(head *ListNode) *ListNode {
 }
 
 // 方法2：（自下而上）归并排序
+// 时间复杂度 O(nlogn)，空间复杂度 O(1)
 func sortList3(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
