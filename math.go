@@ -19,7 +19,7 @@ package leetcode
  */
 // 意识到我们实际有个链表，那么这个问题就可以转换为检测一个链表是否有环。
 // 时间复杂度：O(logn)
-func IsHappy(n int) bool {
+func isHappy(n int) bool {
 	_step := func(n int) int {
 		sum := 0
 		for n != 0 {
