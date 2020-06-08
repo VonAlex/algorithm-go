@@ -18,19 +18,30 @@ func HammingWeight(n int) int {
  */
 // 提示：如果一个数是 2 的幂次方，那么它的二进制表示一定只含有 1 个 1
 
-// 方法 1：位运算：去除二进制中最右边的 1
+// 方法 1：迭代不断地除 2，符合条件的结果是 1
+func isPowerOfTwo(n int) bool {
+	if n <= 0 {
+		return false
+	}
+	for n%2 == 0 {
+		n /= 2
+	}
+	return n == 1
+}
+
+// 方法 2：位运算：去除二进制中最右边的 1
 // 使用 n&(n-1) 可以把 n 最右边的 1 抹掉，所以符合条件时，结果为 0
-func IsPowerOfTwo(n int) bool {
+func isPowerOfTwo2(n int) bool {
 	if n <= 0 {
 		return false
 	}
 	return n&(n-1) == 0
 }
 
-// 方法 2：位运算：获取二进制中最右边的 1
+// 方法 3：位运算：获取二进制中最右边的 1
 // 在补码表示法中，-n = ~n + 1, n 的按位取反加 1
 // 2 的幂次方二进制表示只有一个 1，取到这个 1，跟原数值相等
-func IsPowerOfTwo2(n int) bool {
+func isPowerOfTwo3(n int) bool {
 	if n <= 0 {
 		return false
 	}
@@ -39,7 +50,7 @@ func IsPowerOfTwo2(n int) bool {
 
 // 判断两个数是否异号
 // 使用 x*y 有可能造成数值溢出
-func IsOppositeSign(x, y int) bool {
+func isOppositeSign(x, y int) bool {
 	return (x ^ y) < 0
 }
 
