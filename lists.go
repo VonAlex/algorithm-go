@@ -143,6 +143,41 @@ func mergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
 	return l2
 }
 
+/*
+ * 将两个递增排序的链表合并成一个递减排序的链表
+ */
+// 方法1： 先合并成一个递增链表，然后反正翻转
+// 方法2： 头插法
+func mergeTwoLists3(head1 *ListNode, head2 *ListNode) *ListNode {
+	var curr, newHead, next *ListNode
+	curr1 := head1
+	curr2 := head2
+	for curr1 != nil && curr2 != nil {
+		if curr1.Val < curr2.Val { // 头插法
+			curr = curr1
+			curr1 = curr1.Next
+		} else {
+			curr = curr2
+			curr2 = curr2.Next
+		}
+		curr.Next = newHead
+		newHead = curr
+	}
+
+	if curr1 != nil {
+		curr = curr1
+	} else {
+		curr = curr2
+	}
+	for curr != nil {
+		next = curr.Next
+		curr.Next = newHead
+		newHead = curr // 更新 head
+		curr = next
+	}
+	return newHead
+}
+
 /**
  * 剑指 offer 面试题06 从尾到头打印链表
  * 输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
@@ -341,9 +376,9 @@ func reverseList3(head *ListNode) *ListNode {
 
 // 递归实现反转前 N 个节点
 func reverseN(head *ListNode, n int) *ListNode {
-	var healper func(*ListNode, int) *ListNode
 	var suc *ListNode
-	healper = func(node *ListNode, n int) *ListNode {
+	var _healper func(*ListNode, int) *ListNode
+	_healper = func(node *ListNode, n int) *ListNode {
 		if n == 1 {
 			// 记录第 n+1 个节点
 			suc = node.Next
@@ -355,7 +390,7 @@ func reverseN(head *ListNode, n int) *ListNode {
 		// 1  →  2  →  3  →  4
 		next := node.Next
 		// 以 node.next 为起点，需要反转 n-1 个节点
-		newHead := healper(next, n-1)
+		newHead := _healper(next, n-1)
 
 		// 连上 node
 		next.Next = node
@@ -364,7 +399,7 @@ func reverseN(head *ListNode, n int) *ListNode {
 		node.Next = suc
 		return newHead
 	}
-	return healper(head, n)
+	return _healper(head, n)
 }
 
 /*

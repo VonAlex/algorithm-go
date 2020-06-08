@@ -158,22 +158,28 @@ func TestMergeTwoLists(t *testing.T) {
 	l1 := &ListNode{
 		Val: 1,
 		Next: &ListNode{
-			Val: 2,
+			Val: 3,
 			Next: &ListNode{
-				Val: 3,
+				Val: 9,
+				Next: &ListNode{
+					Val: 10,
+				},
 			},
 		},
 	}
 	l2 := &ListNode{
-		Val: 1,
+		Val: 2,
 		Next: &ListNode{
-			Val: 3,
+			Val: 4,
 			Next: &ListNode{
-				Val: 4,
+				Val: 5,
+				Next: &ListNode{
+					Val: 7,
+				},
 			},
 		},
 	}
-	listPrint(mergeTwoLists(l1, l2))
+	listPrint(mergeTwoLists3(l1, l2))
 }
 
 func TestDeleteMiddleNode(t *testing.T) {
