@@ -73,7 +73,7 @@ func TwoSum3(nums []int, target int) []int {
  * 必须在原数组上操作，不能拷贝额外的数组。
  * 尽量减少操作次数。
  */
-// 方法 1：双指针法
+// 方法 1：双指针法1
 // 先找出移动后，非零元素的右边界，然后在剩余位置填 0
 // 时间复杂度 O(n)，需要做数组写入的次数为数组长度
 func MoveZeroes(nums []int) {
@@ -88,20 +88,15 @@ func MoveZeroes(nums []int) {
 			l++
 		}
 	}
-	for l < numsLen {
+	for l < numsLen { // 后面的填充 0
 		nums[l] = 0
 		l++
 	}
 	return
 }
 
-// 方法 2：快慢指针法
-// 如果当前元素是非 0 的，那么它的正确位置最多可以是当前位置或者更早的位置。
-// 如果是后者，则当前位置最终将被非 0 或 0 占据，该非 0 或 0 位于大于 “cur” 索引的索引处。
-// 我们马上用 0 填充当前位置，这样不像以前的解决方案，我们不需要在下一个迭代中回到这里。
-// 慢指针（l）之前的所有元素都是非零的
-// 当前指针和慢速指针之间的所有元素都是零。
-// 时间复杂度 O(n)，需要做数组写入的次数为数组中非 0 元素的个数
+// 方法 2：双指针法2
+// 0 元素比较多时效果比上一个 solution 要好
 func MoveZeroes2(nums []int) {
 	numsLen := len(nums)
 	if numsLen == 0 {
@@ -121,8 +116,8 @@ func MoveZeroes2(nums []int) {
 /**
  * LeetCode T27. 移除元素
  * https://leetcode-cn.com/problems/remove-element/
- * 给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
- * 不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+ * 给你一个数组 nums 和一个值 val，你需要原地移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+ * 不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并原地修改输入数组。
  * 元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
  * 示例:
  * 		给定 nums = [3,2,2,3], val = 3,
@@ -164,7 +159,7 @@ func RemoveElement2(nums []int, val int) int {
 	return l
 }
 
-/**
+/*
  * LeetCode T26. 删除排序数组中的重复项
  * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/
  *
@@ -180,8 +175,7 @@ func RemoveDuplicates(nums []int) int {
 	if numsLen == 0 {
 		return 0
 	}
-	l := 0
-	r := 1 // 第一个元素不能修改
+	var l, r int
 	for r < numsLen {
 		if nums[l] != nums[r] {
 			l++ // 左指针先往前移动一个，错开上一次处理过的
@@ -218,6 +212,70 @@ func RemoveDuplicates2(nums []int) int {
 		r++
 	}
 	return l
+}
+
+/**
+ * LeetCode T217. 存在重复元素
+ * https://leetcode-cn.com/problems/contains-duplicate/
+ *
+ * 给定一个整数数组，判断是否存在重复元素。
+ * 如果任意一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。
+ * 示例:
+ * 		输入: [1,2,3,1]
+ *      输出: true
+ */
+
+// 方法1：暴力法
+func containsDuplicate(nums []int) bool {
+	lens := len(nums)
+	if lens == 0 {
+		return false
+	}
+
+	for i := 0; i < lens-1; i++ {
+		for j := i + 1; j < lens; j++ {
+			if nums[i] == nums[j] {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// 方法2：排序法
+func containsDuplicate2(nums []int) bool {
+	lens := len(nums)
+	if lens == 0 {
+		return false
+	}
+
+	sort.SliceStable(nums, func(i, j int) bool {
+		return nums[i] < nums[j]
+	})
+
+	for i := 0; i < lens-1; i++ {
+		if nums[i] == nums[i+1] {
+			return true
+		}
+	}
+	return false
+}
+
+// 方法3：哈希表法
+func containsDuplicate3(nums []int) bool {
+	lens := len(nums)
+	if lens == 0 {
+		return false
+	}
+
+	numSet := make(map[int]struct{})
+	for _, num := range nums {
+		if _, ok := numSet[num]; ok {
+			return true
+		}
+		numSet[num] = struct{}{}
+	}
+	return false
 }
 
 /**
