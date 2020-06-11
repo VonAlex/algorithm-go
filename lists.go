@@ -516,6 +516,77 @@ func isPalindromeList2(head *ListNode) bool {
 }
 
 /*
+ * LeetCode T61. 旋转链表
+ * https://leetcode-cn.com/problems/rotate-list/
+ * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+ *
+ * 示例 1:
+ * 输入: 1->2->3->4->5->NULL, k = 2
+ * 输出: 4->5->1->2->3->NULL
+ *
+ * 解释:
+ * 向右旋转 1 步: 5->1->2->3->4->NULL
+ * 向右旋转 2 步: 4->5->1->2->3->NULL
+ */
+
+// 方法1：截取法
+// 将链表后 k 个节点组成的子链作为新链表的头部
+func rotateRight(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k <= 0 { // 单节点、空链表不需要翻转
+		return head
+	}
+	lens := getListLen(head)
+	k %= lens
+
+	if k == 0 { // 整除，不需要翻转
+		return head
+	}
+	fast := head
+	for k > 0 { // fast 指针先走 k 步
+		if fast == nil {
+			return head
+		}
+		fast = fast.Next
+		k--
+	}
+
+	slow := head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+
+	newHead := slow.Next // 新链表的头部在 slow 的下一个节点
+	slow.Next = nil
+	fast.Next = head
+	return newHead
+}
+
+// 方法2：切环法
+// 将单链表收尾相连成环，然后在 len - k%len - 1 位置切断
+func rotateRight2(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k <= 0 { // 单节点、空链表不需要翻转
+		return head
+	}
+	listLen := 1
+	curr := head
+	for curr.Next != nil {
+		curr = curr.Next
+		listLen++
+	}
+	curr.Next = head
+	tailIdx := listLen - k%listLen - 1 // 新的 tail 节点在链表中的位置
+
+	newTail := head
+	for i := 1; i <= tailIdx; i++ {
+		newTail = newTail.Next
+	}
+	newHead := newTail.Next
+	newTail.Next = nil
+	return newHead
+}
+
+/*
  * 剑指 offer 面试题 18 删除链表的节点
  * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
  *

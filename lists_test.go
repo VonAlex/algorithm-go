@@ -251,3 +251,8 @@ func TestDivideOddEvenList(t *testing.T) {
 	listPrint(oddEvenHead)
 	listPrint(oddEvenSortlist(oddEvenHead))
 }
+
+func TestRotateRight(t *testing.T) {
+	listPrint(oddEvenHead)
+	listPrint(rotateRight2(oddEvenHead, 3))
+}
