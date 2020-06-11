@@ -11,7 +11,7 @@ import (
  * 请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。
  */
 // 这里的数组应该是不含相同元素的数组
-// TwoSum 暴力法
+// TwoSum 暴力法 Brute Force
 // 时间复杂度 O(n^2)，空间复杂度 O(1)
 func TwoSum(nums []int, target int) []int {
 	len := len(nums)
@@ -60,6 +60,62 @@ func TwoSum3(nums []int, target int) []int {
 		return []int{i, j}
 	}
 	return nil
+}
+
+/**
+ * LeetCode T189. 旋转数组
+ * https://leetcode-cn.com/problems/rotate-array/
+ * 给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。
+ *
+ * 示例 1:
+ * 输入: [1,2,3,4,5,6,7] 和 k = 3
+ * 输出: [5,6,7,1,2,3,4]
+ *
+ * 解释:
+ * 向右旋转 1 步: [7,1,2,3,4,5,6]
+ * 向右旋转 2 步: [6,7,1,2,3,4,5]
+ * 向右旋转 3 步: [5,6,7,1,2,3,4]
+ */
+// 方法1：使用额外的数组
+// 时/空间复杂度都是 O(n)
+// 原本数组里下标为 i 的，我们把它放到 (i+k)%数组长度的位置
+func rotate(nums []int, k int) {
+	if k <= 0 {
+		return
+	}
+	lens := len(nums)
+	res := make([]int, lens, lens)
+	for i, num := range nums {
+		res[(i+k)%lens] = num
+	}
+	for j, num := range res {
+		nums[j] = num
+	}
+	return
+}
+
+// 方法2：反转法
+// 时间复杂度 O(n)，空间复杂度 O(1)
+func rotate2(nums []int, k int) {
+	if k <= 0 {
+		return
+	}
+	r := len(nums)
+	k %= r
+	l := 0
+	reverseArr(nums, l, r-1) // 整体翻转
+	reverseArr(nums, l, k-1) // 前 k 个数翻转
+	reverseArr(nums, k, r-1) // 后面的数进行翻转
+	return
+}
+
+func reverseArr(nums []int, l, r int) {
+	for l < r {
+		nums[l], nums[r] = nums[r], nums[l]
+		l++
+		r--
+	}
+	return
 }
 
 /**

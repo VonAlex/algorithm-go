@@ -375,3 +375,10 @@ func TestMaxSubArray(t *testing.T) {
 		})
 	}
 }
+
+func TestRotate(t *testing.T) {
+	nums := []int{1, 2}
+	k := 3
+	rotate(nums, k)
+	t.Log(nums)
+}
