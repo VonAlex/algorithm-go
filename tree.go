@@ -617,3 +617,62 @@ func KthLargest2(root *TreeNode, k int) int {
 	healper(root)
 	return result
 }
+
+/*
+ * LeetCode T105. 从前序与中序遍历序列构造二叉树
+ * https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+ *
+ * 根据一棵树的前序遍历与中序遍历构造二叉树。
+ * 注意: 你可以假设树中没有重复的元素。
+ *
+ * 例如，给出
+ * 前序遍历 preorder = [3,9,20,15,7]
+ * 中序遍历 inorder = [9,3,15,20,7]
+ * 返回如下的二叉树：
+ *     3
+ *    / \
+ *   9  20
+ *     /  \
+ *    15   7
+ */
+// 前序遍历的形式总是 [ 根节点, [左子树的前序遍历结果], [右子树的前序遍历结果] ], 即根节点总是前序遍历中的第一个节点。
+// 而中序遍历的形式总是 [ [左子树的中序遍历结果], 根节点, [右子树的中序遍历结果] ]
+// 只要我们在中序遍历中定位到根节点，那么我们就可以分别知道左子树和右子树中的节点数目
+func buildTree(preorder []int, inorder []int) *TreeNode {
+	preorderLen := len(preorder)
+	inorderLen := len(inorder)
+	if preorderLen == 0 || inorderLen == 0 {
+		return nil
+	}
+	if preorderLen != inorderLen {
+		return nil
+	}
+	// 使用 hash 表辅助定位根节点在 inorder 数组中的 idx
+	// 空间复杂度 O(n)
+	valsInorder := make(map[int]int)
+	for i, val := range inorder {
+		valsInorder[val] = i
+	}
+
+	var _build func(int, int, int) *TreeNode
+	// 递归构建左右子树
+	// 空间复杂度 O(h), h 为树的高度
+	// preRootIdx 表示 root 节点在 preorder 数组中的 idx
+	// inLeftIdx 表示中序遍历左边界
+	// inRightIdx 表示中序遍历右边界
+	_build = func(preRootIdx, inLeftIdx, inRightIdx int) *TreeNode {
+		if inLeftIdx > inRightIdx {
+			return nil
+		}
+		root := &TreeNode{
+			Val: preorder[preRootIdx],
+		}
+		inRootIdx := valsInorder[root.Val]
+		// 在 inorder 的 [inLeftIdx,inRootIdx-1] 范围构建左子树，在 preorder 的根节点索引是 preRootIdx+1
+		root.Left = _build(preRootIdx+1, inLeftIdx, inRootIdx-1)
+		// 在 inorder 的 [inRootIdx+1, inRightIdx] 范围构建右子树
+		root.Right = _build(preRootIdx+(inRootIdx-inLeftIdx)+1, inRootIdx+1, inRightIdx)
+		return root
+	}
+	return _build(0, 0, inorderLen-1)
+}
