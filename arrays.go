@@ -952,7 +952,7 @@ func SubarraySum4(nums []int, k int) int {
 	return res
 }
 
-/**
+/*
  * LeetCode T75. 颜色分类
  * https://leetcode-cn.com/problems/sort-colors/
  *
@@ -1010,4 +1010,65 @@ func SortColors2(nums []int) {
 			curr++
 		}
 	}
+}
+
+/**
+ * LeetCode T350. 两个数组的交集 II
+ * https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/
+ *
+ * 示例 1:
+ * 输入: nums1 = [1,2,2,1], nums2 = [2,2]
+ * 输出: [2,2]
+ * 示例 2:
+ * 输入: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+ * 输出: [4,9]
+ * 说明：
+ * 输出结果中每个元素出现的次数，应与元素在两个数组中出现的次数一致。
+ * 我们可以不考虑输出结果的顺序。
+ */
+
+// 方法 1：哈希映射
+// 时间复杂度 O(m+n)，空间复杂度 O(n)
+func intersect(nums1 []int, nums2 []int) []int {
+	var res []int
+	if len(nums1) == 0 || len(nums2) == 0 {
+		return res
+	}
+	nums1Map := make(map[int]int)
+	for _, num := range nums1 { // 可以选长度短的数组做 map
+		nums1Map[num]++
+	}
+	for _, num := range nums2 {
+		cnt := nums1Map[num]
+		if cnt > 0 {
+			res = append(res, num)
+			nums1Map[num]--
+		}
+	}
+	return res
+}
+
+// 方法 2：排序法
+// 时间复杂度：O(nlogn+mlogm)，空间复杂度 O(1)
+func intersect2(nums1 []int, nums2 []int) []int {
+	var res []int
+	if len(nums1) == 0 || len(nums2) == 0 {
+		return res
+	}
+	sort.Ints(nums1)
+	sort.Ints(nums2)
+	len1 := len(nums1)
+	len2 := len(nums2)
+	for i, j := 0, 0; i < len1 && j < len2; {
+		if nums1[i] < nums2[j] {
+			i++
+		} else if nums1[i] > nums2[j] {
+			j++
+		} else {
+			res = append(res, nums1[i])
+			i++
+			j++
+		}
+	}
+	return res
 }

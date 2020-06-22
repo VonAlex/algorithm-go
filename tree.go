@@ -638,6 +638,7 @@ func KthLargest2(root *TreeNode, k int) int {
 // 前序遍历的形式总是 [ 根节点, [左子树的前序遍历结果], [右子树的前序遍历结果] ], 即根节点总是前序遍历中的第一个节点。
 // 而中序遍历的形式总是 [ [左子树的中序遍历结果], 根节点, [右子树的中序遍历结果] ]
 // 只要我们在中序遍历中定位到根节点，那么我们就可以分别知道左子树和右子树中的节点数目
+// 参考 https://mp.weixin.qq.com/s/QHt9fGP-q8RAs8GI7fP3hw
 func buildTree(preorder []int, inorder []int) *TreeNode {
 	preorderLen := len(preorder)
 	inorderLen := len(inorder)
