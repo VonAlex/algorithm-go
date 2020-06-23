@@ -692,3 +692,43 @@ func CountFields(s string) int {
 	}
 	return n
 }
+
+/*
+ * LeetCode T67. 二进制求和
+ * https://leetcode-cn.com/problems/add-binary/
+ *
+ * 给给你两个二进制字符串，返回它们的和（用二进制表示）。
+ * 输入为 非空 字符串且只包含数字 1 和 0。
+ * 示例：
+ * 输入: a = "11", b = "1"
+ * 输出: "100"
+ */
+func addBinary(a string, b string) string {
+	if a == "" {
+		return b
+	}
+	if b == "" {
+		return a
+	}
+	sum := ""
+	alen, blen := len(a), len(b)
+	maxlen := alen
+	if blen > maxlen {
+		maxlen = blen
+	}
+	carry := 0
+	for i := 0; i < maxlen; i++ {
+		if i < alen {
+			carry += int(a[alen-i-1] - '0')
+		}
+		if i < blen {
+			carry += int(b[blen-i-1] - '0')
+		}
+		sum = strconv.Itoa(carry%2) + sum
+		carry /= 2
+	}
+	if carry > 0 {
+		sum = "1" + sum
+	}
+	return sum
+}
