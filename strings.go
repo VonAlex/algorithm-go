@@ -703,6 +703,7 @@ func CountFields(s string) int {
  * 输入: a = "11", b = "1"
  * 输出: "100"
  */
+// 方法 1：逐位相加
 func addBinary(a string, b string) string {
 	if a == "" {
 		return b
@@ -731,4 +732,27 @@ func addBinary(a string, b string) string {
 		sum = "1" + sum
 	}
 	return sum
+}
+
+// 方法 2： 位运算
+// 计算 x 和 y 的无进位相加结果：answer = x ^ y
+// 计算 x 和 y 的进位：carry = (x & y) << 1
+// 在第一轮计算中，answer 的最后一位是 x 和 y 相加之后的结果，carry 的倒数第二位是 x 和 y 最后一位相加的进位。
+// 接着每一轮中，由于 carry 是由 x 和 y 按位与并且左移得到的，那么最后会补零，所以在下面计算的过程中后面的数位不受影响，
+// s而每一轮都可以得到一个低 i 位的答案和它向低 i+1 位的进位，也就模拟了加法的过程。
+func addBinary2(a string, b string) string {
+	if a == "" {
+		return b
+	}
+	if b == "" {
+		return a
+	}
+	ai, _ := strconv.ParseInt(a, 2, 10)
+	bi, _ := strconv.ParseInt(b, 2, 10)
+	for bi != 0 {
+		carry := ai & bi
+		ai ^= bi
+		bi = carry << 1
+	}
+	return strconv.FormatInt(ai, 2)
 }

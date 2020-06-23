@@ -625,39 +625,35 @@ func DominantIndex2(nums []int) int {
 	return -1
 }
 
-/*
- * 加一(数组的加法)
+/* leetcode T66. 加一(数组的加法)
+ * https://leetcode-cn.com/problems/plus-one/
+
  * 给定一个由整数组成的非空数组所表示的非负整数，在该数的基础上加一。
  * 最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
  * 你可以假设除了整数 0 之外，这个整数不会以零开头
- * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/772/
  *
  * 示例：
  * 输入: [1,2,3]
  * 输出: [1,2,4]
  */
-func PlusOne(digits []int) []int {
-	length := len(digits)
-	if length == 0 {
-		return []int{}
+// 加 1 问题最需要注意的就是，最后一位是否产生进位
+func plusOne(digits []int) []int {
+	dlen := len(digits)
+	if dlen == 0 {
+		return []int{1}
 	}
-	carry := 1 // 末尾 + 1
-	lastIdx := length - 1
-	for i := lastIdx; i >= 0; i-- {
-		num := digits[i] + carry
-		if num < 10 { // 不再产生进位了，就可以返回了
-			digits[i] = num
-			return digits
-		}
-		if num >= 10 {
-			carry = num / 10
-			digits[i] = num % 10 // 在原数组改，或者是新申请一个结果数组，go 是参数传值，在 digits 数组修改不会影响调用者
+	carry := 1
+	for i := 0; i < dlen; i++ {
+		num := digits[dlen-i-1] + carry
+		digits[dlen-i-1] = num % 10
+		carry = num / 10
+		if carry == 0 {
+			break
 		}
 	}
-	// 最高位有进位的时候，结果肯定要多一位，原来的 digits 数组已经无法容纳了，所以需要再申请一个 +1 长度的数组
 	if carry > 0 {
-		res := make([]int, length+1)
-		res[0] = carry
+		res := make([]int, dlen+1)
+		res[0] = 1
 		copy(res[1:], digits)
 		return res
 	}
@@ -730,7 +726,7 @@ func SingleNumber22(nums []int) int {
 }
 
 /*
- * leetcode 169. 多数元素（众数）
+ * leetcode T169. 多数元素（众数）
  *
  * https://leetcode-cn.com/problems/majority-element/
  * 给给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。
@@ -1121,4 +1117,31 @@ func maxProfit2(prices []int) int {
 		maxProfit += peak - valley
 	}
 	return maxProfit
+}
+
+/*
+ * LeetCode T48. 旋转图像
+ * https://leetcode-cn.com/problems/rotate-image/
+ *
+ * 给定一个 n × n 的二维矩阵表示一个图像，将图像顺时针旋转 90 度。
+ * 你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。
+ */
+// 时间复杂度：O(N^2)，空间复杂度：O(1)
+func rotateMatrix(matrix [][]int) {
+	rols := len(matrix)
+	if rols == 0 {
+		return
+	}
+	for i := 0; i < rols; i++ { // 先把矩阵转置
+		for j := 0; j < i; j++ {
+			matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+		}
+	}
+	cols := len(matrix[0])
+	for i := 0; i < rols; i++ { // 然后逐行反转
+		for j := 0; j < cols/2; j++ {
+			matrix[i][j], matrix[i][cols-j-1] = matrix[i][cols-j-1], matrix[i][j]
+		}
+	}
+	return
 }

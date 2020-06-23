@@ -92,25 +92,6 @@ func TestDominantIndex(t *testing.T) {
 	t.Log(DominantIndex2(nums))
 }
 
-func TestPlusOne(t *testing.T) {
-	type test struct {
-		input []int
-		want  []int
-	}
-	tests := []test{
-		{[]int{9}, []int{1, 0}}, // 注意这种最高位有进位的情况
-		{[]int{1, 2, 3}, []int{1, 2, 4}},
-		{[]int{}, []int{}},
-		{[]int{1, 2, 9}, []int{1, 3, 0}},
-	}
-	for _, tc := range tests {
-		got := PlusOne(tc.input)
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Log(cmp.Diff(tc.want, got))
-		}
-	}
-}
-
 func TestSingleNumber(t *testing.T) {
 	type test struct {
 		input []int
@@ -389,4 +370,45 @@ func Test_intersect(t *testing.T) {
 	// nums1 := []int{4, 9, 5}
 	// nums2 := []int{9, 4, 9, 8, 4}
 	t.Log(intersect2(nums1, nums2))
+}
+
+func Test_plusOne(t *testing.T) {
+	type args struct {
+		digits []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{"case1", args{[]int{9}}, []int{1, 0}},
+		{"case2", args{[]int{1, 2, 3}}, []int{1, 2, 4}},
+		{"case3", args{[]int{1, 2, 9}}, []int{1, 3, 0}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := plusOne(tt.args.digits); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("plusOne() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_rotateMatrix(t *testing.T) {
+	matrix1 := [][]int{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+	}
+	rotateMatrix(matrix1)
+	t.Log(matrix1)
+
+	matrix2 := [][]int{
+		{5, 1, 9, 11},
+		{2, 4, 8, 10},
+		{13, 3, 6, 7},
+		{15, 14, 12, 16},
+	}
+	rotateMatrix(matrix2)
+	t.Log(matrix2)
 }
