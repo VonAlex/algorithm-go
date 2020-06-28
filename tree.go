@@ -69,11 +69,10 @@ func PreorderTraversal3(root *TreeNode) []int {
 	curr := root
 	stack = append(stack, curr)
 	for len(stack) != 0 {
-		index := len(stack) - 1
-		curr = stack[index] // 栈顶
-		res = append(res, curr.Val)
-		stack = stack[:index] // 出栈
+		curr = stack[len(stack)-1]   // 栈顶
+		stack = stack[:len(stack)-1] // 出栈
 
+		res = append(res, curr.Val)
 		if curr.Right != nil {
 			stack = append(stack, curr.Right) // 右孩子后遍历，先入栈
 		}
@@ -146,17 +145,15 @@ func InorderTraversal2(root *TreeNode) []int {
 	var stack []*TreeNode
 	curr := root
 	for len(stack) > 0 || curr != nil {
-		if curr != nil {
+		for curr != nil {
 			stack = append(stack, curr)
 			curr = curr.Left // 找到最深的左孩子
-		} else {
-			index := len(stack) - 1
-			curr = stack[index] // 栈顶
-			res = append(res, curr.Val)
-			stack = stack[:index] // 出栈
-
-			curr = curr.Right // 最后遍历右孩子
 		}
+		curr = stack[len(stack)-1]   // 栈顶
+		stack = stack[:len(stack)-1] // 出栈
+
+		res = append(res, curr.Val)
+		curr = curr.Right // 最后遍历右孩子
 	}
 	return res
 }
@@ -388,43 +385,53 @@ func IsSameTree(root1, root2 *TreeNode) bool {
 // 递归函数在递归过程中需要为每一层递归函数分配栈空间，所以这里需要额外的空间且该空间取决于递归的深度，即二叉树的高度。
 // 最坏情况下二叉树为一条链，树的高度为 n ，递归最深达到 n 层，故最坏情况下空间复杂度为 O(n)
 func IsValidBST(root *TreeNode) bool {
-	return IsValidBSTHelper(root, math.MinInt64, math.MaxInt64)
-}
-
-func IsValidBSTHelper(root *TreeNode, min, max int) bool {
-	if root == nil {
+	var _helper func(*TreeNode, int, int) bool
+	_helper = func(t *TreeNode, max, min int) bool {
+		if t == nil {
+			return true
+		}
+		if t.Val >= max || t.Val <= min {
+			return false
+		}
+		// 左子树上所有节点的值均小于它的根节点的值
+		if !_helper(t.Left, t.Val, min) {
+			return false
+		}
+		// 右子树上所有节点的值均大于它的根节点的值
+		if !_helper(t.Right, max, t.Val) {
+			return false
+		}
 		return true
 	}
-	if root.Val <= min || root.Val >= max {
-		return false
-	}
-	// 左子树上所有节点的值均小于它的根节点的值
-	// 右子树上所有节点的值均大于它的根节点的值
-	return IsValidBSTHelper(root.Left, min, root.Val) &&
-		IsValidBSTHelper(root.Right, root.Val, max)
+	curr := root
+	return _helper(curr, math.MaxInt64, math.MinInt64)
+
 }
 
 // 方法 2：中序遍历
 // BST 的中序遍历是一个升序数组，如果遍历的时候发现，当前的 node 值<= 前一个，那就表示这不是一个 BST
-func IsValidBST2(root *TreeNode) bool {
+func isValidBST2(root *TreeNode) bool {
 	if root == nil {
 		return true
 	}
-	stack := []*TreeNode{}
+	var stack []*TreeNode
 	prev := math.MinInt64 // 起始值
-	for len(stack) != 0 || root != nil {
-		for root != nil {
-			stack = append(stack, root.Left)
-			root = root.Left
+
+	curr := root
+	for len(stack) != 0 || curr != nil {
+		for curr != nil {
+			stack = append(stack, curr)
+			curr = curr.Left
 		}
-		root = stack[len(stack)-1]
+
+		curr = stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 
-		if root.Val <= prev {
+		if curr.Val <= prev {
 			return false
 		}
-		prev = root.Val
-		root = root.Right
+		prev = curr.Val
+		curr = curr.Right
 	}
 	return true
 }
