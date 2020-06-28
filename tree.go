@@ -712,19 +712,113 @@ func maxDepth2(root *TreeNode) int {
 	maxDepth := 0
 	curr := root
 	q := list.New()
-	q.PushFront(curr)
+	q.PushBack(curr)
 	for q.Len() > 0 {
 		maxDepth++
 		size := q.Len()
 		for i := 0; i < size; i++ {
-			c := q.Remove(q.Back()).(*TreeNode)
+			// 队列先进先出
+			c := q.Remove(q.Front()).(*TreeNode)
 			if c.Left != nil {
-				q.PushFront(c.Left)
+				q.PushBack(c.Left)
 			}
 			if c.Right != nil {
-				q.PushFront(c.Right)
+				q.PushBack(c.Right)
 			}
 		}
 	}
 	return maxDepth
+}
+
+/* LeetCode T226. 翻转二叉树
+ * https://leetcode-cn.com/problems/invert-binary-tree/
+ * 剑指 Offer 27. 二叉树的镜像
+ * https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/
+ * 请完成一个函数，输入一个二叉树，该函数输出它的镜像。(翻转一棵二叉树)
+ */
+// 思路：先前序遍历这棵树，如果遍历到的节点有子节点，那么就交换它的两个子节点。
+// 当交换完所有非叶子节点的左右子节点后，就可以得到树的镜像
+func mirrorTree(root *TreeNode) *TreeNode {
+	var _mirrorTreeRecur func(*TreeNode)
+	_mirrorTreeRecur = func(t *TreeNode) {
+		if t == nil {
+			return
+		}
+		if t.Left == nil && t.Right == nil {
+			return
+		}
+		t.Left, t.Right = t.Right, t.Left
+		if t.Left != nil {
+			_mirrorTreeRecur(t.Left)
+		}
+		if t.Right != nil {
+			_mirrorTreeRecur(t.Right)
+		}
+		return
+	}
+	curr := root
+	_mirrorTreeRecur(curr)
+	return root
+}
+
+/*
+ * LeetCode T101. 对称二叉树
+ * https://leetcode-cn.com/problems/symmetric-tree/
+ * 剑指 Offer 28. 对称的二叉树
+ * https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/
+ * 给定一个二叉树，检查它是否是镜像对称的。
+ * (请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。)
+ */
+// 方法 1：递归法
+// 时/空间复杂度 O(n)
+func isSymmetric(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	curr := root
+	var _ismirror func(*TreeNode, *TreeNode) bool
+	_ismirror = func(curr1, curr2 *TreeNode) bool {
+		if curr1 == nil && curr2 == nil {
+			return true
+		}
+		if curr1 == nil || curr2 == nil {
+			return false
+		}
+		if curr1.Val != curr2.Val {
+			return false
+		}
+		return _ismirror(curr1.Left, curr2.Right) && _ismirror(curr1.Right, curr2.Left)
+	}
+	return _ismirror(curr, curr)
+}
+
+// 方法 2：迭代法
+// 需要借助队列做层遍历，也可以使用数组代替
+// 时/空间复杂度 O(n)
+func isSymmetric2(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	q := list.New()
+	curr := root
+	q.PushBack(curr)
+	q.PushBack(curr)
+	for q.Len() > 0 {
+		t1 := q.Remove(q.Front()).(*TreeNode)
+		t2 := q.Remove(q.Front()).(*TreeNode)
+		if t1 == nil && t2 == nil {
+			continue
+		}
+		if t1 == nil || t2 == nil {
+			return false
+		}
+		if t1.Val != t2.Val {
+			return false
+		}
+		q.PushBack(t1.Left)
+		q.PushBack(t2.Right)
+		q.PushBack(t1.Right)
+		q.PushBack(t2.Left)
+	}
+	return true
 }
