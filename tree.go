@@ -861,3 +861,51 @@ func sortedArrayToBST(nums []int) *TreeNode {
 	}
 	return _helper(0, len(nums)-1)
 }
+
+/*
+ * LeetCode T109. 有序链表转换二叉搜索树
+ * https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/
+ *
+ * 给定一个单链表，其中的元素按升序排序，将其转换为高度平衡的二叉搜索树。
+ * 本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+ */
+func sortedListToBST(head *ListNode) *TreeNode {
+	if head == nil {
+		return nil
+	}
+	var _helper func(*ListNode) *TreeNode
+	_helper = func(node *ListNode) *TreeNode {
+		if node == nil {
+			return nil
+		}
+		mid := getMidNodeAndCut(node)
+		root := &TreeNode{
+			Val: mid.Val,
+		}
+		if mid == node { // 单节点
+			return root
+		}
+		root.Left = _helper(node)
+		root.Right = _helper(mid.Next)
+		return root
+	}
+	return _helper(head)
+}
+
+// 获得链表中间节点，并分成两段
+func getMidNodeAndCut(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	var prev *ListNode
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		prev = slow
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	if prev != nil {
+		prev.Next = nil // 断开
+	}
+	return slow
+}
