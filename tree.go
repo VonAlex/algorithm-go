@@ -829,3 +829,35 @@ func isSymmetric2(root *TreeNode) bool {
 	}
 	return true
 }
+
+/*
+ * LeetCode T108. 将有序数组转换为二叉搜索树
+ * https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
+ *
+ * 将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
+ * 本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+ */
+// 一个 BST 的中序遍历是个有序数组，中序遍历结果不足以确定一颗 BST
+// 中 + 前，或中 + 后，都可以确定一棵树，但是前 + 后不能
+// 高度平衡意味着每次必须选择中间数字作为根节点。
+// 可以参考解析 https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/solution/jiang-you-xu-shu-zu-zhuan-huan-wei-er-cha-sou-s-15/
+func sortedArrayToBST(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	var _helper func(int, int) *TreeNode
+	_helper = func(left, right int) *TreeNode {
+		if right < left {
+			return nil
+		}
+		// 始终选择中间位置左边元素作为根节点
+		mid := left + (right-left)>>1
+		root := &TreeNode{
+			Val: nums[mid],
+		}
+		root.Left = _helper(left, mid-1)
+		root.Right = _helper(mid+1, right)
+		return root
+	}
+	return _helper(0, len(nums)-1)
+}

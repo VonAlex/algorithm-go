@@ -161,3 +161,9 @@ func TestBST(t *testing.T) {
 	// t.Log(InorderTraversal(DelFromBST(BSTroot, 2)))
 	t.Log(isValidBST2(BSTroot))
 }
+
+func Test_sortedArrayToBST(t *testing.T) {
+	nums := []int{-10, -3, 0, 5, 9}
+	root := sortedArrayToBST(nums)
+	t.Log(LevelOrderTraversal(root))
+}
