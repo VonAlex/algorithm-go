@@ -43,7 +43,8 @@ func ReplaceSpace(s string) string {
 	return string(res)
 }
 
-/**
+/* leetcode Ts387. 字符串中的第一个唯一字符
+ * https://leetcode-cn.com/problems/first-unique-character-in-a-string/
  * 剑指 offer 面试题 50. 第一个只出现一次的字符
  * https://leetcode-cn.com/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/
  * s = "abaccdeff"
@@ -97,7 +98,7 @@ func FirstUniqChar2(s string) byte {
 /****************************************************************************************/
 
 /*
- * leetcode 题 131 分割回文串
+ * leetcode T131 分割回文串
  * https://leetcode-cn.com/problems/palindrome-partitioning/
  * 给定一个字符串 s，将 s 分割成一些子串，使每个子串都是回文串。
  * 返回 s 所有可能的分割方案。

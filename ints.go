@@ -157,3 +157,9 @@ func reverseInt(x int) int {
 	}
 	return res
 }
+
+// func myAtoi(str string) int {
+// 	if len(str) == 0 {
+// 		return 0
+// 	}
+// }

@@ -450,6 +450,28 @@ func Merge(nums1 []int, m int, nums2 []int, n int) {
 	return
 }
 
+func mergeArr(nums1 []int, m int, nums2 []int, n int) {
+	i, j := m-1, n-1
+	idx := m + n - 1
+	for i >= 0 && j >= 0 {
+		if nums1[i] > nums2[j] {
+			nums1[idx] = nums1[i]
+			i--
+		} else {
+			nums1[idx] = nums2[j]
+			j--
+		}
+		idx--
+	}
+	if i >= 0 {
+		return
+	}
+	if j >= 0 {
+		copy(nums1[:idx+1], nums2[:j+1])
+	}
+	return
+}
+
 // 方法 2：双指针法，从前向后
 // 时间复杂度: O(m + n)，空间复杂度: O(m + n), 需要一个中间数组
 func Merge2(nums1 []int, m int, nums2 []int, n int) {

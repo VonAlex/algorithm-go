@@ -677,3 +677,54 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 	}
 	return _build(0, 0, inorderLen-1)
 }
+
+/*
+ * LeetCode T104. 二叉树的最大深度
+ * https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+ * 给定一个二叉树，找出其最大深度。
+ * 二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+ * 说明: 叶子节点是指没有子节点的节点。
+ */
+// 方法 1：递归 DFS
+// 时间复杂度 O(n), 空间复杂度最差 O(n)，O(logn)
+func maxDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	lh := maxDepth(root.Left)
+	rh := maxDepth(root.Right)
+	return maxInt(lh, rh) + 1
+}
+
+func maxInt(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+// 方法 2：迭代 BFS
+// 时/空间复杂度 O(n)，实际上就是层序遍历
+func maxDepth2(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	maxDepth := 0
+	curr := root
+	q := list.New()
+	q.PushFront(curr)
+	for q.Len() > 0 {
+		maxDepth++
+		size := q.Len()
+		for i := 0; i < size; i++ {
+			c := q.Remove(q.Back()).(*TreeNode)
+			if c.Left != nil {
+				q.PushFront(c.Left)
+			}
+			if c.Right != nil {
+				q.PushFront(c.Right)
+			}
+		}
+	}
+	return maxDepth
+}

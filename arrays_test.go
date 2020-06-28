@@ -412,3 +412,10 @@ func Test_rotateMatrix(t *testing.T) {
 	rotateMatrix(matrix2)
 	t.Log(matrix2)
 }
+
+func Test_mergeArr(t *testing.T) {
+	nums1 := []int{1, 2, 3, 0, 0, 0}
+	nums2 := []int{2, 5, 6}
+	mergeArr(nums1, 3, nums2, 3)
+	t.Log(nums1)
+}

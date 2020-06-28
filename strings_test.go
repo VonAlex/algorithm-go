@@ -32,21 +32,21 @@ func TestFirstUniqChar(t *testing.T) {
 }
 
 func TestReverse(t *testing.T) {
-	type test struct {
-		input int
-		want  int
-	}
-	tests := []test{
-		{input: 1234, want: 4321},
-		{input: -1234, want: -4321},
-		{input: 120, want: 21},
-	}
-	for _, tc := range tests {
-		got := Reverse2(tc.input)
-		if got != tc.want {
-			t.Log(cmp.Diff(tc.want, got))
-		}
-	}
+	// type test struct {
+	// 	input int
+	// 	want  int
+	// }
+	// tests := []test{
+	// 	{input: 1234, want: 4321},
+	// 	{input: -1234, want: -4321},
+	// 	{input: 120, want: 21},
+	// }
+	// for _, tc := range tests {
+	// 	got := reverse2(tc.input)
+	// 	if got != tc.want {
+	// 		t.Log(cmp.Diff(tc.want, got))
+	// 	}
+	// }
 }
 
 func TestIsPalindrome(t *testing.T) {
