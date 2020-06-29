@@ -53,3 +53,8 @@ func Test_climbStairs(t *testing.T) {
 	n := 3
 	t.Log(climbStairs(n))
 }
+
+func Test_rob(t *testing.T) {
+	nums := []int{2, 7, 9, 3, 1}
+	t.Log(rob2(nums))
+}

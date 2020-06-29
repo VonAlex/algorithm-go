@@ -271,12 +271,82 @@ func climbStairs(n int) int {
 	if n == 0 || n == 1 {
 		return 1
 	}
-	prevprev, prev := 1, 1
+	first, second := 1, 1
 	res := 0
 	for i := 2; i <= n; i++ {
-		res = prevprev + prev
-		prevprev = prev
-		prev = res
+		res = first + second
+		first = second
+		second = res
 	}
 	return res
+}
+
+// 方法 1：dp table，自底而上
+// 状态:i，f(i) = max(f(i-1), nums[i]+f(i-2))
+// 选择: 第 i 间房屋，偷还是不偷
+// 偷窃第 i 间房屋，那么就不能偷窃第 i−1 间房屋，偷窃总金额为前 i−2 间房屋的最高总金额与第 i 间房屋的金额之和。
+// 不偷窃第 i 间房屋，偷窃总金额为前 i−1 间房屋的最高总金额
+// 边界条件：只有1间房屋，则偷窃该房屋; 只有两间房屋，选择其中金额较高的房屋进行偷窃
+// 状态 -> 选择 -> 状态转移方程 -> 边界条件
+func rob(nums []int) int {
+	n := len(nums)
+	if n == 0 {
+		return 0
+	}
+	if n == 1 {
+		return nums[0]
+	}
+	dp := make([]int, n)
+	// 边界条件
+	dp[0] = nums[0]
+	dp[1] = maxInt(nums[0], nums[1])
+	for i := 2; i < n; i++ {
+		dp[i] = maxInt(dp[i-1], nums[i]+dp[i-2])
+	}
+	return dp[n-1]
+}
+
+// 因为 dp[i] 只与dp[i-1] 和 dp[i-2] 有关，所以可以使用滚动数组存储前两次的结果，
+// 使空间复杂度从 O(n) 降为 O(1)
+func rob2(nums []int) int {
+	n := len(nums)
+	if n == 0 {
+		return 0
+	}
+	if n == 1 {
+		return nums[0]
+	}
+	first := nums[0]
+	second := maxInt(nums[0], nums[1])
+	for i := 2; i < n; i++ {
+		temp := maxInt(second, nums[i]+first)
+		first = second
+		second = temp
+	}
+	return second
+}
+
+// 方法 3：memo 备忘录，自顶而下
+func rob3(nums []int) int {
+	n := len(nums)
+	memo := make([]int, n)
+	for i := range memo {
+		memo[i] = -1
+	}
+	var _dp func(int) int
+	_dp = func(i int) int {
+		if i >= n || i < 0 {
+			return 0
+		}
+		if i == 0 {
+			return nums[0]
+		}
+		if memo[i] != -1 {
+			return memo[i]
+		}
+		res := maxInt(_dp(i-1), nums[i]+_dp(i-2))
+		memo[i] = res
+		return res
+	}
+	return _dp(n - 1)
 }
