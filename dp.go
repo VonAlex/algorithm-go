@@ -1,6 +1,6 @@
 package leetcode
 
-/**
+/*
  * LeetCode T509. 斐波那契数
  * https://leetcode-cn.com/problems/fibonacci-number/
  * 面试题10- I. 斐波那契数列
@@ -27,7 +27,7 @@ func Fib(n int) int {
 // 当数组中有的话，直接从数组中取到，否则进行递归运算
 // 时间复杂度和空间复杂度为 O(N)
 func Fib2(n int) int {
-	res := make([]int, n+1)
+	memo := make([]int, n+1)
 
 	var _helper func(int) int
 	_helper = func(n int) int {
@@ -37,11 +37,11 @@ func Fib2(n int) int {
 		if n == 1 || n == 2 {
 			return 1
 		}
-		if res[n] != 0 {
-			return res[n]
+		if memo[n] != 0 {
+			return memo[n]
 		}
-		res[n] = (_helper(n-1) + _helper(n-2)) % 1000000007
-		return res[n]
+		memo[n] = (_helper(n-1) + _helper(n-2)) % 1000000007
+		return memo[n]
 	}
 	return _helper(n)
 }
@@ -248,10 +248,35 @@ func MaxSubArray3(nums []int) int {
 
 // 方法 3：分治法
 // 时间复杂度 O(nlogn)
-
 func min(x, y int) int {
 	if x < y {
 		return x
 	}
 	return y
+}
+
+/*
+ * LeetCode T70. 爬楼梯
+ * https://leetcode-cn.com/problems/climbing-stairs/
+ *
+ * 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+ * 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+ * 注意：给定 n 是一个正整数。
+ */
+// 状态 n，n 阶台阶共有 f(n) 种不同的方法
+// dp 状态转移方程，f(n) = f(n-1) + f(n-2)，一次只能走 1 或 2 个台阶，所以 f(n) 可以从 f(n-1) 到达，也可以从 f(n-2)到达
+// 边界值 f(0) = 1, f(1) = 1
+// 这个问题转换完跟斐波拉契数列是一样的，其他解法可以参考
+func climbStairs(n int) int {
+	if n == 0 || n == 1 {
+		return 1
+	}
+	prevprev, prev := 1, 1
+	res := 0
+	for i := 2; i <= n; i++ {
+		res = prevprev + prev
+		prevprev = prev
+		prev = res
+	}
+	return res
 }

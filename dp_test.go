@@ -48,3 +48,8 @@ func TestCoinChange(t *testing.T) {
 		})
 	}
 }
+
+func Test_climbStairs(t *testing.T) {
+	n := 3
+	t.Log(climbStairs(n))
+}
