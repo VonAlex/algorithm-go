@@ -334,7 +334,9 @@ func TestFindKthLargest(t *testing.T) {
 	// nums := []int{1}
 	// k := 1
 
-	t.Log(FindKthLargest3(nums, k))
+	nums = []int{3, 2, 3, 1, 2, 4, 5, 5, 6}
+	k = 4
+	t.Log(findKthLargest(nums, k))
 }
 
 func TestMaxSubArray(t *testing.T) {
@@ -418,4 +420,10 @@ func Test_mergeArr(t *testing.T) {
 	nums2 := []int{2, 5, 6}
 	mergeArr(nums1, 3, nums2, 3)
 	t.Log(nums1)
+}
+
+func Test_maxProfit(t *testing.T) {
+	// prices := []int{7, 1, 5, 3, 6, 4}
+	prices := []int{7, 1, 5, 3, 6, 2}
+	t.Log(maxProfit3(prices))
 }

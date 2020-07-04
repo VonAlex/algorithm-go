@@ -1,6 +1,7 @@
 package leetcode
 
 import (
+	"math"
 	"math/rand"
 	"sort"
 )
@@ -1091,6 +1092,48 @@ func intersect2(nums1 []int, nums2 []int) []int {
 }
 
 /*
+ * LeetCode T121. 买卖股票的最佳时机
+ * https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
+ *
+ * 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+ * 如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
+ * 注意：你不能在买入股票前卖出股票。
+ */
+// 方法 1：暴力法
+func maxProfit(prices []int) int {
+	maxProfit := 0
+	lens := len(prices)
+	for i := 0; i < lens-1; i++ {
+		// i 买 j 卖
+		for j := i + 1; j < lens; j++ {
+			profit := prices[j] - prices[i]
+			if profit > maxProfit {
+				maxProfit = profit
+			}
+		}
+	}
+	return maxProfit
+}
+
+// 方法 2：一次遍历法
+// 找到最低历史价格
+func maxProfit2(prices []int) int {
+	maxProfit := 0
+	minPrice := math.MaxInt32
+	for _, price := range prices {
+		if price < minPrice {
+			minPrice = price
+			continue
+		}
+		profit := price - minPrice // 最低价格时，为 0
+		if profit > maxProfit {
+			maxProfit = profit
+		}
+	}
+	return maxProfit
+}
+
+/*
  * LeetCode T122. 买卖股票的最佳时机 II
  * https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/
  *
@@ -1104,7 +1147,7 @@ func intersect2(nums1 []int, nums2 []int) []int {
 // 等价于每天都买卖,即 pn-p1 = (p2-p1)+(p3-p2)+...+(pn-pn-1)
 // 从贪心算法思路看，就是逢低就买入，逢高就卖出。贪心算法就是说一个目光短浅的贪心的人，只会考虑下一步的得失，从不考虑长远的利益
 // 时间复杂度：O(n),空间复杂度：O(1)
-func maxProfit(prices []int) int {
+func maxProfit3(prices []int) int {
 	maxProfit := 0
 	lens := len(prices)
 	for i := 0; i < lens-1; i++ {
@@ -1119,7 +1162,7 @@ func maxProfit(prices []int) int {
 // 方法 2：峰谷法
 // 时间复杂度：O(n),空间复杂度：O(1)
 // 所有的波峰 - 波谷
-func maxProfit2(prices []int) int {
+func maxProfit4(prices []int) int {
 	maxProfit := 0
 	lens := len(prices)
 	if lens == 0 {

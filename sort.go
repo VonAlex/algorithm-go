@@ -639,7 +639,7 @@ func CountSort3(nums []int) {
  * 输出: 5
  */
 // 方法1： 冒泡法
-func FindKthLargest(nums []int, k int) int {
+func findKthLargest(nums []int, k int) int {
 	maxIdx := len(nums) - 1
 	for i := 0; i < maxIdx; i++ { // 趟数从 0 开始
 		for j := 0; j < maxIdx-i; j++ {
@@ -660,39 +660,39 @@ func FindKthLargest(nums []int, k int) int {
 // 简便起见，注意到第 k 个最大元素也就是第 N - k (数组位置)个最小元素，因此可以用第 k 小算法来解决本问题。
 // 也可以将数组从大到小排列， 第 K 大在数组中的位置就是 K-1
 //
-func FindKthLargest2(nums []int, k int) int {
-	l := 0
-	numsLen := len(nums)
-	r := numsLen - 1
-	ksmall := numsLen - k
-	return quickSelect(nums, l, r, ksmall)
-}
+func findKthLargest2(nums []int, k int) int {
+	lens := len(nums)
+	ksmallIdx := lens - k
 
-func quickSelect(nums []int, lo, hi, ksmall int) int {
 	// 单路快排
-	random := lo + rand.Intn(hi-lo+1)
-	if random != lo {
-		nums[lo], nums[random] = nums[random], nums[lo]
-	}
-	pivot := nums[lo]
-	l := lo
-	r := l + 1
-	for r <= hi {
-		if nums[r] < pivot {
-			l++
-			nums[l], nums[r] = nums[r], nums[l]
+	var _quick func(int, int) int
+	_quick = func(lo, hi int) int {
+		random := lo + rand.Intn(hi-lo+1)
+		if lo != random {
+			nums[lo], nums[random] = nums[random], nums[lo]
 		}
-		r++
-	}
-	nums[lo], nums[l] = nums[l], nums[lo]
+		pivot := nums[lo]
+		left := lo
+		right := left + 1
+		for right <= hi {
+			if nums[right] < pivot {
+				left++
+				nums[left], nums[right] = nums[right], nums[left]
+			}
+			right++
+		}
+		nums[lo], nums[left] = nums[left], nums[lo]
 
-	// 根据 l 与 ksmall 的大小决定，要继续处理左半边还是右半边
-	if l == ksmall {
-		return nums[l]
-	} else if l < ksmall {
-		return quickSelect(nums, l+1, hi, ksmall)
+		// 根据 l 与 ksmall 的大小决定，要继续处理左半边还是右半边
+		if left == ksmallIdx {
+			return nums[left]
+		}
+		if left < ksmallIdx {
+			return _quick(left+1, hi)
+		}
+		return _quick(lo, left-1)
 	}
-	return quickSelect(nums, lo, l-1, ksmall)
+	return _quick(0, lens-1)
 }
 
 type intheap []int

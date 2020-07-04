@@ -229,16 +229,10 @@ func MaxSubArray2(nums []int) int {
 
 // 方法 2：Kadane算法
 func MaxSubArray3(nums []int) int {
-	_max := func(x, y int) int {
-		if x > y {
-			return x
-		}
-		return y
-	}
 	sum := nums[0]
 	maxSum := nums[0]
 	for _, num := range nums {
-		sum = _max(num, sum+num) // sum 能否提供正增益，与 dp 解法其实是一致的
+		sum = maxInt(num, sum+num) // sum 能否提供正增益，与 dp 解法其实是一致的
 		if maxSum < sum {
 			maxSum = sum
 		}
