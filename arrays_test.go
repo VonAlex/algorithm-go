@@ -80,7 +80,7 @@ func TestPivotIndex(t *testing.T) {
 		{[]int{}, -1},
 	}
 	for _, tc := range tests {
-		got := PivotIndex(tc.input)
+		got := pivotIndex(tc.input)
 		if got != tc.want {
 			t.Log(tc.want, got)
 		}
@@ -229,7 +229,7 @@ func TestSubarraySum(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SubarraySum3(tt.args.nums, tt.args.k); got != tt.want {
+			if got := subarraySum4(tt.args.nums, tt.args.k); got != tt.want {
 				t.Errorf("SubarraySum() = %v, want %v", got, tt.want)
 			}
 		})
@@ -426,4 +426,12 @@ func Test_maxProfit(t *testing.T) {
 	// prices := []int{7, 1, 5, 3, 6, 4}
 	prices := []int{7, 1, 5, 3, 6, 2}
 	t.Log(maxProfit3(prices))
+}
+
+func Test_SumRange(t *testing.T) {
+	nums := []int{-2, 0, 3, -5, 2, -1}
+	sumArr := Constructor2(nums)
+	t.Log(sumArr.SumRange(0, 2) == 1)
+	t.Log(sumArr.SumRange(2, 5) == -1)
+	t.Log(sumArr.SumRange(0, 5) == -3)
 }

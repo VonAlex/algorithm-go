@@ -569,27 +569,179 @@ func Exchange(nums []int) []int {
 }
 
 /*
- * 寻找数组的中心索引
+ * LeetCode T303. 区域和检索 - 数组不可变
+ * https://leetcode-cn.com/problems/range-sum-query-immutable/
+ *
+ * 给定一个整数数组  nums，求出数组从索引 i 到 j  (i ≤ j) 范围内元素的总和，包含 i,  j 两点。
+ * 说明:
+ * 你可以假设数组不可变。
+ * 会多次调用 sumRange 方法。
+ *
+ */
+// 参考 https://mp.weixin.qq.com/s/lg4tZUfGcXoKq1jOQtpKJw
+// 方法 1：前缀和，空间复杂度 O(N), 查找时间复杂度为 O(1)
+// 所谓前缀和（prefix sum），就是数组开头的若干连续元素的和。
+// 数组 a[0..n], 前缀和 s[0..n+1], s[0]=0
+// s[3] = a[0] + a[1] + a[2], 即 a[0..3) 不包含 3，左闭右开区间，这种表示方法的优点之一是很容易做区间的减法。例如：nums[0..j) - nums[0..i) 可以得到 nums[i..j)
+// s[2] = a[0] + a[1]
+// s[0] = 0
+// range(0,2) = a[0]+a[1]+a[2] = s[3] - s[0]
+type NumArray struct {
+	preSum []int
+}
+
+func Constructor2(nums []int) NumArray {
+	lens := len(nums)
+	numArr := NumArray{
+		preSum: make([]int, lens+1),
+	}
+	for i := 0; i < lens; i++ {
+		numArr.preSum[i+1] = nums[i] + numArr.preSum[i]
+	}
+	return numArr
+}
+
+func (this *NumArray) SumRange(i int, j int) int {
+	return this.preSum[j+1] - this.preSum[i]
+}
+
+// 方法 2：可以使用二维数组 s[i][j] 表示 range(i, j)
+// 但是求值 s[i][j] 空/时间复杂度为 O(N^2)，查找时间复杂度为 O(1)
+
+// 方法 3：暴力法
+// 每次重复计算，range(i,j) = a[i]+...+a[j]
+// 时间复杂度 O(N)， 空间复杂度 O(1)，但是如果多次调用的话，很明显比较浪费时间
+
+/*
+ * LeetCode T724. 寻找数组的中心索引
  * 中心索引：数组中心索引的左侧所有元素相加的和等于右侧所有元素相加的和
- * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/770/
+ * https://leetcode-cn.com/problems/find-pivot-index/
  *
  * 示例：
  * 输入: nums = [1, 7, 3, 6, 5, 6]
  * 输出: 3
  */
-func PivotIndex(nums []int) int {
+// 假设和为 S，左边和为 A，中心索引位置元素为 X，那么 S = 2X+A
+func pivotIndex(nums []int) int {
 	sum := 0
-	for _, num := range nums {
-		sum += num
+	// 先计算前缀和
+	for _, n := range nums {
+		sum += n
 	}
 	leftSum := 0
-	for i := range nums {
-		if sum-nums[i] == 2*leftSum {
+	for i, n := range nums {
+		if sum-n == 2*leftSum {
 			return i
 		}
-		leftSum += nums[i]
+		leftSum += n
 	}
 	return -1
+}
+
+/*
+ * LeetCode T560. 和为K的子数组
+ * https://leetcode-cn.com/problems/subarray-sum-equals-k/
+ * 给定一个整数数组和一个整数 k，你需要找到该数组中和为 k 的连续的子数组的个数。
+ * 示例：
+ * 输入: :nums = [1,1,1], k = 2
+ * 输出: 2 , [1,1] 与 [1,1] 为两种不同的情况。
+ */
+// 方法 1：暴力法
+// 最简单的方法是考虑给定 nums 数组的每个可能的子数组，找到每个子数组的元素总和，
+// 并检查使用给定 k 获得的总和是否相等。
+// 当总和等于 k 时，递增用于存储所需结果的 count。
+// 时间复杂度：O(n^3)，会超时，空间复杂度：O(1)
+func SubarraySum(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	for start := 0; start < numsLen; start++ {
+		for end := start + 1; end <= numsLen; end++ {
+			sum := 0
+			for i := start; i < end; i++ {
+				sum += nums[i]
+			}
+			if sum == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 2：暴力法 2
+func SubarraySum2(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	for start := 0; start < numsLen; start++ {
+		sum := 0
+		for end := start; end < numsLen; end++ {
+			sum += nums[end]
+			if sum == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 3：前缀和解法 1
+// 时间复杂度：O(n^2), 空间复杂度：O(n)
+func SubarraySum3(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	count := 0
+	presum := make([]int, numsLen+1)
+	presum[0] = 0
+	for i := 0; i < numsLen; i++ {
+		presum[i+1] = presum[i] + nums[i]
+	}
+
+	// sum of nums[i..j) = sum of nums[0..j) - sum of nums[0..i)
+	for i := 0; i < numsLen; i++ {
+		for j := i + 1; j <= numsLen; j++ {
+
+			// presum[j]-presum[i] 表示 nums[i] 到 nums[j-1]
+			if presum[j]-presum[i] == k {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+// 方法 4：前缀和解法 2
+// 时间复杂度：O(n)，空间复杂度 O(n)
+// 该方法是方法 3 的一个改进，方法 3 中的 2 个 for 的内层循环，寻找 end 的过程.
+//
+// 针对方法 3，内层循环实际上是在求「有多少个 满足 presum[i] 的值为 presum[j] - k」。
+// 而我们可以通过用哈希表存储每一个 presum[i] 的值，直接找到满足条件的 presum[i] 的个数，而不需要写一个循环。
+func subarraySum4(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	// 前缀和：该前缀和出现的次数
+	presum := map[int]int{
+		0: 1,
+	}
+	var sum, count int
+	for _, n := range nums {
+		sum += n
+		// 查找有多少个 sum[i] 等于 sum[j] - k
+		if _, ok := presum[sum-k]; ok {
+			count += presum[sum-k]
+		}
+		presum[sum]++
+	}
+	return count
 }
 
 /*
@@ -873,102 +1025,6 @@ func CountPrimes(n int) int {
 		}
 	}
 	return cnt
-}
-
-// 方法 1：暴力法
-// 最简单的方法是考虑给定 nums 数组的每个可能的子数组，找到每个子数组的元素总和，
-// 并检查使用给定 k 获得的总和是否相等。
-// 当总和等于 k 时，递增用于存储所需结果的 count。
-// 时间复杂度：O(n^3)，会超时，空间复杂度：O(1)
-func SubarraySum(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	res := 0
-	for start := 0; start < numsLen; start++ {
-		for end := start + 1; end <= numsLen; end++ {
-			sum := 0
-			for i := start; i < end; i++ {
-				sum += nums[i]
-			}
-			if sum == k {
-				res++
-			}
-		}
-	}
-	return res
-}
-
-// 方法 2：暴力法 2
-func SubarraySum2(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	res := 0
-	for start := 0; start < numsLen; start++ {
-		sum := 0
-		for end := start; end < numsLen; end++ {
-			sum += nums[end]
-			if sum == k {
-				res++
-			}
-		}
-	}
-	return res
-}
-
-// 方法 3：前缀和解法 1
-// 时间复杂度：O(n^2), 空间复杂度：O(n)
-func SubarraySum3(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	res := 0
-	// 前缀和数组长度比 nums 多 1，0 位置数为 0
-	// 构造前缀和
-	presums := make([]int, numsLen+1)
-	presums[0] = 0
-	for i := 1; i <= numsLen; i++ {
-		presums[i] = presums[i-1] + nums[i-1]
-	}
-	for start := 0; start < numsLen; start++ {
-		for end := start + 1; end <= numsLen; end++ {
-
-			// presums[end]-presums[start] 表示 nums[start] 到 nums[end-1]
-			if presums[end]-presums[start] == k {
-				res++
-			}
-		}
-	}
-	return res
-}
-
-// 方法 4：前缀和解法 2
-// 时间复杂度：O(n)，空间复杂度 O(n)
-// 该方法是方法 3 的一个改进，方法 3 中的 2 个 for 的内层循环，寻找 end 的过程，
-// 实际上可以使用一个 map 来统计不同前缀和出现的频度
-func SubarraySum4(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	// 前缀和：该前缀和出现的次数
-	preSums := map[int]int{
-		0: 1,
-	}
-	var sum, res int
-	for i := 0; i < numsLen; i++ {
-		sum += nums[i] // 和的统计
-		subSum := sum - k
-		if _, ok := preSums[subSum]; ok {
-			res += preSums[subSum]
-		}
-		preSums[sum]++
-	}
-	return res
 }
 
 /*
