@@ -35,13 +35,13 @@ func TestAddTwoNumbers(t *testing.T) {
 var head = &ListNode{
 	Val: 1,
 	Next: &ListNode{
-		Val: 3,
+		Val: 2,
 		Next: &ListNode{
-			Val: 5,
+			Val: 3,
 			Next: &ListNode{
 				Val: 4,
 				Next: &ListNode{
-					Val: 2,
+					Val: 5,
 				},
 			},
 		},
@@ -255,4 +255,18 @@ func TestDivideOddEvenList(t *testing.T) {
 func TestRotateRight(t *testing.T) {
 	listPrint(oddEvenHead)
 	listPrint(rotateRight2(oddEvenHead, 3))
+}
+
+func Test_reorderList(t *testing.T) {
+	// 1->2->3->4->5
+	listPrint(head)
+	reorderList(head)
+	// 1->5->2->4->3
+	listPrint(head)
+
+	// 1->2->2->3
+	listPrint(head3)
+	reorderList(head3)
+	// 1->3->2->2
+	listPrint(head3)
 }

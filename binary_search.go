@@ -89,11 +89,7 @@ func search(nums []int, target int) int {
 		if nums[mid] == target {
 			return mid
 		}
-		if nums[mid] == nums[l] { // 无法判断舍弃左边还是右边，左边界加 1
-			l++
-			continue
-		}
-		if nums[mid] > nums[l] { // 左半边有序
+		if nums[mid] >= nums[l] { // 左半边有序
 			if nums[l] <= target && nums[mid] > target { // 包含左边界
 				r = mid - 1
 			} else {
@@ -159,15 +155,10 @@ func search2(nums []int, target int) bool {
  * 输入: [3,4,5,1,2]
  * 输出: 1
  */
+// 特殊 case：已排序数组（包含单元素数组）
 func findMin(nums []int) int {
-	if len(nums) == 1 { // 单节点数组
-		return nums[0]
-	}
 	l, r := 0, len(nums)-1
-	if nums[r] > nums[0] { // 已经排好序的数组
-		return nums[0]
-	}
-	for l < r {
+	for l < r { // l < r 是为了规避已排序数组是 mid+1或者mid-1出现数组越界的情况
 		mid := l + (r-l)>>1
 		if nums[mid] > nums[mid+1] {
 			return nums[mid+1]
@@ -181,7 +172,7 @@ func findMin(nums []int) int {
 			r = mid - 1
 		}
 	}
-	return -1
+	return nums[l]
 }
 
 /*
@@ -199,7 +190,7 @@ func findMin(nums []int) int {
 // 本题题解同样适用于上一题，只是在上一题中遇到特殊情况会提前结束循环
 func findMin2(nums []int) int {
 	l, r := 0, len(nums)-1
-	// l == r 时退出，即变化点
+	// l = r 时退出，即变化点
 	for l < r {
 		mid := l + (r-l)>>1
 		if nums[mid] == nums[r] { // 此时无法知道应该缩减左半边还是右半边，为防止漏掉变化点， r--

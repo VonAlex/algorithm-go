@@ -516,6 +516,61 @@ func isPalindromeList2(head *ListNode) bool {
 }
 
 /*
+ * LeetCode T143. 重排链表
+ * https://leetcode-cn.com/problems/reorder-list/
+ *
+ * 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+ * 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+ * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+ * 示例 1:
+ * 给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+ *
+ */
+func reorderList(head *ListNode) {
+	if head == nil || head.Next == nil {
+		return
+	}
+	// 1. 找到中间节点
+	slow := head
+	fast := head.Next
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+
+	// 2. 反转后半部分
+	curr := slow.Next
+	slow.Next = nil
+	var prev, next *ListNode
+	for curr != nil {
+		next = curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+	}
+
+	// 3. 合并两部分
+	second := prev
+	first := head
+	dummy := &ListNode{}
+	curr = dummy
+	for first != nil && second != nil {
+		curr.Next = first
+		first = first.Next
+		curr = curr.Next
+		curr.Next = second
+		second = second.Next
+		curr = curr.Next
+	}
+	// len(前半部分) >= len(后半部分)
+	if first != nil {
+		curr.Next = first
+	}
+	head = dummy.Next
+	return
+}
+
+/*
  * LeetCode T61. 旋转链表
  * https://leetcode-cn.com/problems/rotate-list/
  * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
