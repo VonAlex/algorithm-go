@@ -1043,13 +1043,7 @@ func hasCycle2(head *ListNode) bool {
  * 给定一个有环链表，实现一个算法返回环路的开头节点。
  */
 // 方法 1：快慢指针法
-// 假设相遇时，slow 走了 K 步（起点到相遇点的距离），那两倍速的 fast 走了 2K 步
-// fast 多走的部分就是环的长度，即 2K-K = K
-// 假设相遇点离环开始处 M 步，那么起点距离环开始处为 K-M，因此 fast 和 slow 同步走，在交点处相遇
 func detectCycle(head *ListNode) *ListNode {
-	if head == nil {
-		return nil
-	}
 	slow := head
 	fast := head
 	for fast != nil && fast.Next != nil {
@@ -1063,7 +1057,7 @@ func detectCycle(head *ListNode) *ListNode {
 	if fast == nil || fast.Next == nil {
 		return nil
 	}
-	slow = head // slow 从头开始走
+	fast = head // fast 从头开始走
 	for slow != fast {
 		slow = slow.Next
 		fast = fast.Next
@@ -1087,20 +1081,20 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	if currA == nil || currB == nil {
 		return nil
 	}
-	var loop int
+	var end int
 	for currA != currB {
 		currA = currA.Next
 		if currA == nil {
 			currA = headB
-			loop++
+			end++
 		}
 		currB = currB.Next
 		if currB == nil {
 			currB = headA
-			loop++
+			end++
 		}
-		// 当两个指针同时到达结尾时，loop = 4，没有公共部分，返回 nil
-		if loop > 2 {
+		// 当两个指针同时到达结尾时，end = 4，没有公共部分，返回 nil
+		if end > 2 {
 			return nil
 		}
 	}
@@ -1108,6 +1102,33 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 
 // 方法 2：哈希表法
+
+/*
+ * 求两个链表的第一个公共节点。
+ * 两个链表，可能有环，可能无环
+ */
+func getListIntersection(headA, headB *ListNode) *ListNode {
+	loopA := detectCycle(headA)
+	loopB := detectCycle(headB)
+	if loopA == nil && loopB == nil { // AB 都无环
+		return getIntersectionNode(headA, headB)
+	}
+	if loopA != nil && loopB != nil { // AB 都有环
+		if loopA == loopB { // 入环处相同
+			return loopA
+		}
+		// 入环处不同
+		curr := loopA.Next
+		for curr != loopA {
+			if curr == loopB { // curr 在环内转了一圈，能找到 loopB，说明 loopB 也在环上
+				return curr
+			}
+			curr = curr.Next
+		}
+		return nil // loopB 不在环上，说明不相交
+	}
+	return nil // 一个有环，一个无环
+}
 
 /*
  * LeetCode T876 链表的中间结点

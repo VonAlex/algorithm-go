@@ -270,3 +270,76 @@ func Test_reorderList(t *testing.T) {
 	// 1->3->2->2
 	listPrint(head3)
 }
+
+func Test_getIntersectionNode2(t *testing.T) {
+	common := &ListNode{
+		Val: 7,
+		Next: &ListNode{
+			Val: 9,
+			Next: &ListNode{
+				Val: 10,
+			},
+		},
+	}
+	l1 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val:  2,
+			Next: common,
+		},
+	}
+	l2 := &ListNode{
+		Val:  5,
+		Next: common,
+	}
+	// 都无环，相交
+	n := getIntersectionNode2(l1, l2)
+	if n == nil {
+		t.Log(n)
+	} else {
+		t.Log(n.Val)
+	}
+
+	l3 := &ListNode{
+		Val: 5,
+		Next: &ListNode{
+			Val: 6,
+			Next: &ListNode{
+				Val: 10,
+			},
+		},
+	}
+	// 都无环，不相交
+	n = getIntersectionNode2(l1, l3)
+	if n == nil {
+		t.Log(n)
+	} else {
+		t.Log(n.Val)
+	}
+
+	n1 := &ListNode{Val: 1}
+	n2 := &ListNode{Val: 2}
+	n3 := &ListNode{Val: 3}
+	n4 := &ListNode{Val: 4}
+	n5 := &ListNode{Val: 5}
+	n6 := &ListNode{Val: 6}
+	n7 := &ListNode{Val: 7}
+	n8 := &ListNode{Val: 8}
+
+	n1.Next = n2
+	n2.Next = n3
+	n3.Next = n4
+	n4.Next = n5
+	n5.Next = n3
+
+	n6.Next = n7
+	n7.Next = n8
+	n8.Next = n4
+
+	n = getIntersectionNode2(n1, n6)
+	if n == nil {
+		t.Log(n)
+	} else {
+		t.Log(n.Val)
+	}
+}
