@@ -1,6 +1,7 @@
 package leetcode
 
 import (
+	"math"
 	"math/rand"
 	"sort"
 )
@@ -450,6 +451,28 @@ func Merge(nums1 []int, m int, nums2 []int, n int) {
 	return
 }
 
+func mergeArr(nums1 []int, m int, nums2 []int, n int) {
+	i, j := m-1, n-1
+	idx := m + n - 1
+	for i >= 0 && j >= 0 {
+		if nums1[i] > nums2[j] {
+			nums1[idx] = nums1[i]
+			i--
+		} else {
+			nums1[idx] = nums2[j]
+			j--
+		}
+		idx--
+	}
+	if i >= 0 {
+		return
+	}
+	if j >= 0 {
+		copy(nums1[:idx+1], nums2[:j+1])
+	}
+	return
+}
+
 // 方法 2：双指针法，从前向后
 // 时间复杂度: O(m + n)，空间复杂度: O(m + n), 需要一个中间数组
 func Merge2(nums1 []int, m int, nums2 []int, n int) {
@@ -546,27 +569,179 @@ func Exchange(nums []int) []int {
 }
 
 /*
- * 寻找数组的中心索引
+ * LeetCode T303. 区域和检索 - 数组不可变
+ * https://leetcode-cn.com/problems/range-sum-query-immutable/
+ *
+ * 给定一个整数数组  nums，求出数组从索引 i 到 j  (i ≤ j) 范围内元素的总和，包含 i,  j 两点。
+ * 说明:
+ * 你可以假设数组不可变。
+ * 会多次调用 sumRange 方法。
+ *
+ */
+// 参考 https://mp.weixin.qq.com/s/lg4tZUfGcXoKq1jOQtpKJw
+// 方法 1：前缀和，空间复杂度 O(N), 查找时间复杂度为 O(1)
+// 所谓前缀和（prefix sum），就是数组开头的若干连续元素的和。
+// 数组 a[0..n], 前缀和 s[0..n+1], s[0]=0
+// s[3] = a[0] + a[1] + a[2], 即 a[0..3) 不包含 3，左闭右开区间，这种表示方法的优点之一是很容易做区间的减法。例如：nums[0..j) - nums[0..i) 可以得到 nums[i..j)
+// s[2] = a[0] + a[1]
+// s[0] = 0
+// range(0,2) = a[0]+a[1]+a[2] = s[3] - s[0]
+type NumArray struct {
+	preSum []int
+}
+
+func Constructor2(nums []int) NumArray {
+	lens := len(nums)
+	numArr := NumArray{
+		preSum: make([]int, lens+1),
+	}
+	for i := 0; i < lens; i++ {
+		numArr.preSum[i+1] = nums[i] + numArr.preSum[i]
+	}
+	return numArr
+}
+
+func (this *NumArray) SumRange(i int, j int) int {
+	return this.preSum[j+1] - this.preSum[i]
+}
+
+// 方法 2：可以使用二维数组 s[i][j] 表示 range(i, j)
+// 但是求值 s[i][j] 空/时间复杂度为 O(N^2)，查找时间复杂度为 O(1)
+
+// 方法 3：暴力法
+// 每次重复计算，range(i,j) = a[i]+...+a[j]
+// 时间复杂度 O(N)， 空间复杂度 O(1)，但是如果多次调用的话，很明显比较浪费时间
+
+/*
+ * LeetCode T724. 寻找数组的中心索引
  * 中心索引：数组中心索引的左侧所有元素相加的和等于右侧所有元素相加的和
- * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/770/
+ * https://leetcode-cn.com/problems/find-pivot-index/
  *
  * 示例：
  * 输入: nums = [1, 7, 3, 6, 5, 6]
  * 输出: 3
  */
-func PivotIndex(nums []int) int {
+// 假设和为 S，左边和为 A，中心索引位置元素为 X，那么 S = 2X+A
+func pivotIndex(nums []int) int {
 	sum := 0
-	for _, num := range nums {
-		sum += num
+	// 先计算前缀和
+	for _, n := range nums {
+		sum += n
 	}
 	leftSum := 0
-	for i := range nums {
-		if sum-nums[i] == 2*leftSum {
+	for i, n := range nums {
+		if sum-n == 2*leftSum {
 			return i
 		}
-		leftSum += nums[i]
+		leftSum += n
 	}
 	return -1
+}
+
+/*
+ * LeetCode T560. 和为K的子数组
+ * https://leetcode-cn.com/problems/subarray-sum-equals-k/
+ * 给定一个整数数组和一个整数 k，你需要找到该数组中和为 k 的连续的子数组的个数。
+ * 示例：
+ * 输入: :nums = [1,1,1], k = 2
+ * 输出: 2 , [1,1] 与 [1,1] 为两种不同的情况。
+ */
+// 方法 1：暴力法
+// 最简单的方法是考虑给定 nums 数组的每个可能的子数组，找到每个子数组的元素总和，
+// 并检查使用给定 k 获得的总和是否相等。
+// 当总和等于 k 时，递增用于存储所需结果的 count。
+// 时间复杂度：O(n^3)，会超时，空间复杂度：O(1)
+func SubarraySum(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	for start := 0; start < numsLen; start++ {
+		for end := start + 1; end <= numsLen; end++ {
+			sum := 0
+			for i := start; i < end; i++ {
+				sum += nums[i]
+			}
+			if sum == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 2：暴力法 2
+func SubarraySum2(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	res := 0
+	for start := 0; start < numsLen; start++ {
+		sum := 0
+		for end := start; end < numsLen; end++ {
+			sum += nums[end]
+			if sum == k {
+				res++
+			}
+		}
+	}
+	return res
+}
+
+// 方法 3：前缀和解法 1
+// 时间复杂度：O(n^2), 空间复杂度：O(n)
+func SubarraySum3(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	count := 0
+	presum := make([]int, numsLen+1)
+	presum[0] = 0
+	for i := 0; i < numsLen; i++ {
+		presum[i+1] = presum[i] + nums[i]
+	}
+
+	// sum of nums[i..j) = sum of nums[0..j) - sum of nums[0..i)
+	for i := 0; i < numsLen; i++ {
+		for j := i + 1; j <= numsLen; j++ {
+
+			// presum[j]-presum[i] 表示 nums[i] 到 nums[j-1]
+			if presum[j]-presum[i] == k {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+// 方法 4：前缀和解法 2
+// 时间复杂度：O(n)，空间复杂度 O(n)
+// 该方法是方法 3 的一个改进，方法 3 中的 2 个 for 的内层循环，寻找 end 的过程.
+//
+// 针对方法 3，内层循环实际上是在求「有多少个 满足 presum[i] 的值为 presum[j] - k」。
+// 而我们可以通过用哈希表存储每一个 presum[i] 的值，直接找到满足条件的 presum[i] 的个数，而不需要写一个循环。
+func subarraySum4(nums []int, k int) int {
+	numsLen := len(nums)
+	if numsLen == 0 {
+		return 0
+	}
+	// 前缀和：该前缀和出现的次数
+	presum := map[int]int{
+		0: 1,
+	}
+	var sum, count int
+	for _, n := range nums {
+		sum += n
+		// 查找有多少个 sum[i] 等于 sum[j] - k
+		if _, ok := presum[sum-k]; ok {
+			count += presum[sum-k]
+		}
+		presum[sum]++
+	}
+	return count
 }
 
 /*
@@ -625,39 +800,35 @@ func DominantIndex2(nums []int) int {
 	return -1
 }
 
-/*
- * 加一(数组的加法)
+/* leetcode T66. 加一(数组的加法)
+ * https://leetcode-cn.com/problems/plus-one/
+
  * 给定一个由整数组成的非空数组所表示的非负整数，在该数的基础上加一。
  * 最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
  * 你可以假设除了整数 0 之外，这个整数不会以零开头
- * https://leetcode-cn.com/explore/learn/card/array-and-string/198/introduction-to-array/772/
  *
  * 示例：
  * 输入: [1,2,3]
  * 输出: [1,2,4]
  */
-func PlusOne(digits []int) []int {
-	length := len(digits)
-	if length == 0 {
-		return []int{}
+// 加 1 问题最需要注意的就是，最后一位是否产生进位
+func plusOne(digits []int) []int {
+	dlen := len(digits)
+	if dlen == 0 {
+		return []int{1}
 	}
-	carry := 1 // 末尾 + 1
-	lastIdx := length - 1
-	for i := lastIdx; i >= 0; i-- {
-		num := digits[i] + carry
-		if num < 10 { // 不再产生进位了，就可以返回了
-			digits[i] = num
-			return digits
-		}
-		if num >= 10 {
-			carry = num / 10
-			digits[i] = num % 10 // 在原数组改，或者是新申请一个结果数组，go 是参数传值，在 digits 数组修改不会影响调用者
+	carry := 1
+	for i := 0; i < dlen; i++ {
+		num := digits[dlen-i-1] + carry
+		digits[dlen-i-1] = num % 10
+		carry = num / 10
+		if carry == 0 {
+			break
 		}
 	}
-	// 最高位有进位的时候，结果肯定要多一位，原来的 digits 数组已经无法容纳了，所以需要再申请一个 +1 长度的数组
 	if carry > 0 {
-		res := make([]int, length+1)
-		res[0] = carry
+		res := make([]int, dlen+1)
+		res[0] = 1
 		copy(res[1:], digits)
 		return res
 	}
@@ -730,7 +901,7 @@ func SingleNumber22(nums []int) int {
 }
 
 /*
- * leetcode 169. 多数元素（众数）
+ * leetcode T169. 多数元素（众数）
  *
  * https://leetcode-cn.com/problems/majority-element/
  * 给给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。
@@ -856,102 +1027,6 @@ func CountPrimes(n int) int {
 	return cnt
 }
 
-// 方法 1：暴力法
-// 最简单的方法是考虑给定 nums 数组的每个可能的子数组，找到每个子数组的元素总和，
-// 并检查使用给定 k 获得的总和是否相等。
-// 当总和等于 k 时，递增用于存储所需结果的 count。
-// 时间复杂度：O(n^3)，会超时，空间复杂度：O(1)
-func SubarraySum(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	res := 0
-	for start := 0; start < numsLen; start++ {
-		for end := start + 1; end <= numsLen; end++ {
-			sum := 0
-			for i := start; i < end; i++ {
-				sum += nums[i]
-			}
-			if sum == k {
-				res++
-			}
-		}
-	}
-	return res
-}
-
-// 方法 2：暴力法 2
-func SubarraySum2(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	res := 0
-	for start := 0; start < numsLen; start++ {
-		sum := 0
-		for end := start; end < numsLen; end++ {
-			sum += nums[end]
-			if sum == k {
-				res++
-			}
-		}
-	}
-	return res
-}
-
-// 方法 3：前缀和解法 1
-// 时间复杂度：O(n^2), 空间复杂度：O(n)
-func SubarraySum3(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	res := 0
-	// 前缀和数组长度比 nums 多 1，0 位置数为 0
-	// 构造前缀和
-	presums := make([]int, numsLen+1)
-	presums[0] = 0
-	for i := 1; i <= numsLen; i++ {
-		presums[i] = presums[i-1] + nums[i-1]
-	}
-	for start := 0; start < numsLen; start++ {
-		for end := start + 1; end <= numsLen; end++ {
-
-			// presums[end]-presums[start] 表示 nums[start] 到 nums[end-1]
-			if presums[end]-presums[start] == k {
-				res++
-			}
-		}
-	}
-	return res
-}
-
-// 方法 4：前缀和解法 2
-// 时间复杂度：O(n)，空间复杂度 O(n)
-// 该方法是方法 3 的一个改进，方法 3 中的 2 个 for 的内层循环，寻找 end 的过程，
-// 实际上可以使用一个 map 来统计不同前缀和出现的频度
-func SubarraySum4(nums []int, k int) int {
-	numsLen := len(nums)
-	if numsLen == 0 {
-		return 0
-	}
-	// 前缀和：该前缀和出现的次数
-	preSums := map[int]int{
-		0: 1,
-	}
-	var sum, res int
-	for i := 0; i < numsLen; i++ {
-		sum += nums[i] // 和的统计
-		subSum := sum - k
-		if _, ok := preSums[subSum]; ok {
-			res += preSums[subSum]
-		}
-		preSums[sum]++
-	}
-	return res
-}
-
 /*
  * LeetCode T75. 颜色分类
  * https://leetcode-cn.com/problems/sort-colors/
@@ -1013,36 +1088,181 @@ func SortColors2(nums []int) {
 }
 
 /*
- * LeetCode T349. 两个数组的交集
- * https://leetcode-cn.com/problems/intersection-of-two-arrays/
+ * LeetCode T350. 两个数组的交集 II
+ * https://leetcode-cn.com/problems/intersection-of-two-arrays-ii/
  *
- * 给定两个数组，编写一个函数来计算它们的交集
- * 输入：nums1 = [1,2,2,1], nums2 = [2,2]
- * 输出：[2]
- *
- * 输入：nums1 = [4,9,5], nums2 = [9,4,9,8,4]
- * 输出：[9,4]
- *
- * 输入: [2,0,2,1,1,0]
- * 输出: [0,0,1,1,2,2]
- *
+ * 示例 1:
+ * 输入: nums1 = [1,2,2,1], nums2 = [2,2]
+ * 输出: [2,2]
+ * 示例 2:
+ * 输入: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+ * 输出: [4,9]
  * 说明：
- * 输出结果中的每个元素一定是唯一的。
- * 我们可以不考虑输出结果的顺序
+ * 输出结果中每个元素出现的次数，应与元素在两个数组中出现的次数一致。
+ * 我们可以不考虑输出结果的顺序。
  */
-// 假设 nums1/2 长度分别为m/n,
-// 空间复杂度为 O(m),m 可以取两者较小值，时间复杂度为 O(m+n)
-func intersection(nums1 []int, nums2 []int) []int {
-	nums1Set := make(map[int]struct{})
-	for _, num := range nums1 {
-		nums1Set[num] = struct{}{}
-	}
+// 方法 1：哈希映射
+// 时间复杂度 O(m+n)，空间复杂度 O(n)
+func intersect(nums1 []int, nums2 []int) []int {
 	var res []int
+	if len(nums1) == 0 || len(nums2) == 0 {
+		return res
+	}
+	nums1Map := make(map[int]int)
+	for _, num := range nums1 { // 可以选长度短的数组做 map
+		nums1Map[num]++
+	}
 	for _, num := range nums2 {
-		if _, ok := nums1Set[num]; ok {
+		cnt := nums1Map[num]
+		if cnt > 0 {
 			res = append(res, num)
-			delete(nums1Set, num)
+			nums1Map[num]--
 		}
 	}
 	return res
+}
+
+// 方法 2：排序法
+// 时间复杂度：O(nlogn+mlogm)，空间复杂度 O(1)
+func intersect2(nums1 []int, nums2 []int) []int {
+	var res []int
+	if len(nums1) == 0 || len(nums2) == 0 {
+		return res
+	}
+	sort.Ints(nums1)
+	sort.Ints(nums2)
+	len1 := len(nums1)
+	len2 := len(nums2)
+	for i, j := 0, 0; i < len1 && j < len2; {
+		if nums1[i] < nums2[j] {
+			i++
+		} else if nums1[i] > nums2[j] {
+			j++
+		} else {
+			res = append(res, nums1[i])
+			i++
+			j++
+		}
+	}
+	return res
+}
+
+/*
+ * LeetCode T121. 买卖股票的最佳时机
+ * https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
+ *
+ * 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+ * 如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
+ * 注意：你不能在买入股票前卖出股票。
+ */
+// 方法 1：暴力法
+func maxProfit(prices []int) int {
+	maxProfit := 0
+	lens := len(prices)
+	for i := 0; i < lens-1; i++ {
+		// i 买 j 卖
+		for j := i + 1; j < lens; j++ {
+			profit := prices[j] - prices[i]
+			if profit > maxProfit {
+				maxProfit = profit
+			}
+		}
+	}
+	return maxProfit
+}
+
+// 方法 2：一次遍历法
+// 找到最低历史价格
+func maxProfit2(prices []int) int {
+	maxProfit := 0
+	minPrice := math.MaxInt32
+	for _, price := range prices {
+		if price < minPrice {
+			minPrice = price
+			continue
+		}
+		profit := price - minPrice // 最低价格时，为 0
+		if profit > maxProfit {
+			maxProfit = profit
+		}
+	}
+	return maxProfit
+}
+
+/*
+ * LeetCode T122. 买卖股票的最佳时机 II
+ * https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/
+ *
+ * 给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+ * 设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+ * 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）
+ */
+// 方法 1：贪心法
+// 股票买卖策略: 单独交易日/连续上涨交易日/连续下降交易日
+// 连续上涨交易日： 设此上涨交易日股票价格分别为 p1,p2..pn, 则第一天买最后一天卖收益最大, pn-p1
+// 等价于每天都买卖,即 pn-p1 = (p2-p1)+(p3-p2)+...+(pn-pn-1)
+// 从贪心算法思路看，就是逢低就买入，逢高就卖出。贪心算法就是说一个目光短浅的贪心的人，只会考虑下一步的得失，从不考虑长远的利益
+// 时间复杂度：O(n),空间复杂度：O(1)
+func maxProfit3(prices []int) int {
+	maxProfit := 0
+	lens := len(prices)
+	for i := 0; i < lens-1; i++ {
+		p := prices[i+1] - prices[i]
+		if p > 0 {
+			maxProfit += p
+		}
+	}
+	return maxProfit
+}
+
+// 方法 2：峰谷法
+// 时间复杂度：O(n),空间复杂度：O(1)
+// 所有的波峰 - 波谷
+func maxProfit4(prices []int) int {
+	maxProfit := 0
+	lens := len(prices)
+	if lens == 0 {
+		return maxProfit
+	}
+	peak := prices[0]
+	valley := prices[0]
+	for i := 0; i < lens-1; {
+		for i < lens-1 && prices[i] >= prices[i+1] {
+			i++
+		}
+		valley = prices[i]
+		for i < lens-1 && prices[i] <= prices[i+1] {
+			i++
+		}
+		peak = prices[i]
+		maxProfit += peak - valley
+	}
+	return maxProfit
+}
+
+/*
+ * LeetCode T48. 旋转图像
+ * https://leetcode-cn.com/problems/rotate-image/
+ *
+ * 给定一个 n × n 的二维矩阵表示一个图像，将图像顺时针旋转 90 度。
+ * 你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。
+ */
+// 时间复杂度：O(N^2)，空间复杂度：O(1)
+func rotateMatrix(matrix [][]int) {
+	rols := len(matrix)
+	if rols == 0 {
+		return
+	}
+	for i := 0; i < rols; i++ { // 先把矩阵转置
+		for j := 0; j < i; j++ {
+			matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+		}
+	}
+	cols := len(matrix[0])
+	for i := 0; i < rols; i++ { // 然后逐行反转
+		for j := 0; j < cols/2; j++ {
+			matrix[i][j], matrix[i][cols-j-1] = matrix[i][cols-j-1], matrix[i][j]
+		}
+	}
+	return
 }

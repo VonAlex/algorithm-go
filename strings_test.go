@@ -32,21 +32,21 @@ func TestFirstUniqChar(t *testing.T) {
 }
 
 func TestReverse(t *testing.T) {
-	type test struct {
-		input int
-		want  int
-	}
-	tests := []test{
-		{input: 1234, want: 4321},
-		{input: -1234, want: -4321},
-		{input: 120, want: 21},
-	}
-	for _, tc := range tests {
-		got := Reverse2(tc.input)
-		if got != tc.want {
-			t.Log(cmp.Diff(tc.want, got))
-		}
-	}
+	// type test struct {
+	// 	input int
+	// 	want  int
+	// }
+	// tests := []test{
+	// 	{input: 1234, want: 4321},
+	// 	{input: -1234, want: -4321},
+	// 	{input: 120, want: 21},
+	// }
+	// for _, tc := range tests {
+	// 	got := reverse2(tc.input)
+	// 	if got != tc.want {
+	// 		t.Log(cmp.Diff(tc.want, got))
+	// 	}
+	// }
 }
 
 func TestIsPalindrome(t *testing.T) {
@@ -239,6 +239,29 @@ func TestMaxArea(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := MaxArea(tt.args.height); got != tt.want {
 				t.Errorf("MaxArea() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_addBinary(t *testing.T) {
+	type args struct {
+		a string
+		b string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"case1", args{"11", "1"}, "100"},
+		{"case2", args{"1010", "1011"}, "10101"},
+		{"case empty", args{"11", ""}, "11"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := addBinary2(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("addBinary() = %v, want %v", got, tt.want)
 			}
 		})
 	}

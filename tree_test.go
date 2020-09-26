@@ -104,7 +104,7 @@ func TestInorderTraversal(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := InorderTraversal3(tt.args.root); !reflect.DeepEqual(got, tt.want) {
+			if got := InorderTraversal2(tt.args.root); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("InorderTraversal() = %v, want %v", got, tt.want)
 			}
 		})
@@ -157,6 +157,13 @@ func TestLevelOrderTraversal(t *testing.T) {
 
 func TestBST(t *testing.T) {
 	// t.Log(IsInBST(BSTroot, 8))
-	t.Log(InorderTraversal(InsertIntoBST2(BSTroot, 8)))
+	// t.Log(InorderTraversal(InsertIntoBST2(BSTroot, 8)))
 	// t.Log(InorderTraversal(DelFromBST(BSTroot, 2)))
+	t.Log(isValidBST2(BSTroot))
+}
+
+func Test_sortedArrayToBST(t *testing.T) {
+	nums := []int{-10, -3, 0, 5, 9}
+	root := sortedArrayToBST(nums)
+	t.Log(LevelOrderTraversal(root))
 }

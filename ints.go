@@ -81,7 +81,7 @@ func powWithUnsignedEx2(x float64, n int) float64 {
 	return res
 }
 
-/**
+/*
  * LeetCode 面试题17. 打印从1到最大的n位数
  * https://leetcode-cn.com/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/
  *
@@ -128,3 +128,38 @@ func printNumbersHelper(number []byte, length, index int) []string {
 	}
 	return res
 }
+
+/*
+ * LeetCode T7. 整数反转
+ * https://leetcode-cn.com/problems/reverse-integer/
+ *
+ * 给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转
+ *
+ * 示例 1:
+ *        输入: 123
+ *        输出: 321
+ * 假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−2^31,  2^31 − 1]。请根据这个假设，如果反转后整数溢出那么就返回 0。
+ */
+// 时间复杂度 O(log(x)), 空间复杂度 O(1)
+func reverseInt(x int) int {
+	res := 0
+	for x != 0 {
+		remain := x % 10
+		// [-2147483648, 2147483647]
+		if res > math.MaxInt32/10 || (res == math.MaxInt32/10 && remain > 7) {
+			return 0
+		}
+		if res < math.MinInt32/10 || (res == math.MinInt32/10 && remain < -8) {
+			return 0
+		}
+		res = res*10 + remain
+		x /= 10
+	}
+	return res
+}
+
+// func myAtoi(str string) int {
+// 	if len(str) == 0 {
+// 		return 0
+// 	}
+// }

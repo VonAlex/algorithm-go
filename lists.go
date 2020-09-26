@@ -516,6 +516,61 @@ func isPalindromeList2(head *ListNode) bool {
 }
 
 /*
+ * LeetCode T143. 重排链表
+ * https://leetcode-cn.com/problems/reorder-list/
+ *
+ * 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+ * 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+ * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+ * 示例 1:
+ * 给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+ *
+ */
+func reorderList(head *ListNode) {
+	if head == nil || head.Next == nil {
+		return
+	}
+	// 1. 找到中间节点
+	slow := head
+	fast := head.Next
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+
+	// 2. 反转后半部分
+	curr := slow.Next
+	slow.Next = nil
+	var prev, next *ListNode
+	for curr != nil {
+		next = curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+	}
+
+	// 3. 合并两部分
+	second := prev
+	first := head
+	dummy := &ListNode{}
+	curr = dummy
+	for first != nil && second != nil {
+		curr.Next = first
+		first = first.Next
+		curr = curr.Next
+		curr.Next = second
+		second = second.Next
+		curr = curr.Next
+	}
+	// len(前半部分) >= len(后半部分)
+	if first != nil {
+		curr.Next = first
+	}
+	head = dummy.Next
+	return
+}
+
+/*
  * LeetCode T61. 旋转链表
  * https://leetcode-cn.com/problems/rotate-list/
  * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
@@ -988,13 +1043,7 @@ func hasCycle2(head *ListNode) bool {
  * 给定一个有环链表，实现一个算法返回环路的开头节点。
  */
 // 方法 1：快慢指针法
-// 假设相遇时，slow 走了 K 步（起点到相遇点的距离），那两倍速的 fast 走了 2K 步
-// fast 多走的部分就是环的长度，即 2K-K = K
-// 假设相遇点离环开始处 M 步，那么起点距离环开始处为 K-M，因此 fast 和 slow 同步走，在交点处相遇
 func detectCycle(head *ListNode) *ListNode {
-	if head == nil {
-		return nil
-	}
 	slow := head
 	fast := head
 	for fast != nil && fast.Next != nil {
@@ -1008,7 +1057,7 @@ func detectCycle(head *ListNode) *ListNode {
 	if fast == nil || fast.Next == nil {
 		return nil
 	}
-	slow = head // slow 从头开始走
+	fast = head // fast 从头开始走
 	for slow != fast {
 		slow = slow.Next
 		fast = fast.Next
@@ -1032,20 +1081,20 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	if currA == nil || currB == nil {
 		return nil
 	}
-	var loop int
+	var end int
 	for currA != currB {
 		currA = currA.Next
 		if currA == nil {
 			currA = headB
-			loop++
+			end++
 		}
 		currB = currB.Next
 		if currB == nil {
 			currB = headA
-			loop++
+			end++
 		}
-		// 当两个指针同时到达结尾时，loop = 4，没有公共部分，返回 nil
-		if loop > 2 {
+		// 当两个指针同时到达结尾时，end = 4，没有公共部分，返回 nil
+		if end > 2 {
 			return nil
 		}
 	}
@@ -1053,6 +1102,33 @@ func getIntersectionNode(headA, headB *ListNode) *ListNode {
 }
 
 // 方法 2：哈希表法
+
+/*
+ * 求两个链表的第一个公共节点。
+ * 两个链表，可能有环，可能无环
+ */
+func getListIntersection(headA, headB *ListNode) *ListNode {
+	loopA := detectCycle(headA)
+	loopB := detectCycle(headB)
+	if loopA == nil && loopB == nil { // AB 都无环
+		return getIntersectionNode(headA, headB)
+	}
+	if loopA != nil && loopB != nil { // AB 都有环
+		if loopA == loopB { // 入环处相同
+			return loopA
+		}
+		// 入环处不同
+		curr := loopA.Next
+		for curr != loopA {
+			if curr == loopB { // curr 在环内转了一圈，能找到 loopB，说明 loopB 也在环上
+				return curr
+			}
+			curr = curr.Next
+		}
+		return nil // loopB 不在环上，说明不相交
+	}
+	return nil // 一个有环，一个无环
+}
 
 /*
  * LeetCode T876 链表的中间结点

@@ -1,6 +1,6 @@
 package leetcode
 
-/**
+/*
  * LeetCode T509. 斐波那契数
  * https://leetcode-cn.com/problems/fibonacci-number/
  * 面试题10- I. 斐波那契数列
@@ -27,7 +27,7 @@ func Fib(n int) int {
 // 当数组中有的话，直接从数组中取到，否则进行递归运算
 // 时间复杂度和空间复杂度为 O(N)
 func Fib2(n int) int {
-	res := make([]int, n+1)
+	memo := make([]int, n+1)
 
 	var _helper func(int) int
 	_helper = func(n int) int {
@@ -37,11 +37,11 @@ func Fib2(n int) int {
 		if n == 1 || n == 2 {
 			return 1
 		}
-		if res[n] != 0 {
-			return res[n]
+		if memo[n] != 0 {
+			return memo[n]
 		}
-		res[n] = (_helper(n-1) + _helper(n-2)) % 1000000007
-		return res[n]
+		memo[n] = (_helper(n-1) + _helper(n-2)) % 1000000007
+		return memo[n]
 	}
 	return _helper(n)
 }
@@ -229,16 +229,10 @@ func MaxSubArray2(nums []int) int {
 
 // 方法 2：Kadane算法
 func MaxSubArray3(nums []int) int {
-	_max := func(x, y int) int {
-		if x > y {
-			return x
-		}
-		return y
-	}
 	sum := nums[0]
 	maxSum := nums[0]
 	for _, num := range nums {
-		sum = _max(num, sum+num) // sum 能否提供正增益，与 dp 解法其实是一致的
+		sum = maxInt(num, sum+num) // sum 能否提供正增益，与 dp 解法其实是一致的
 		if maxSum < sum {
 			maxSum = sum
 		}
@@ -248,10 +242,105 @@ func MaxSubArray3(nums []int) int {
 
 // 方法 3：分治法
 // 时间复杂度 O(nlogn)
-
 func min(x, y int) int {
 	if x < y {
 		return x
 	}
 	return y
+}
+
+/*
+ * LeetCode T70. 爬楼梯
+ * https://leetcode-cn.com/problems/climbing-stairs/
+ *
+ * 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+ * 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+ * 注意：给定 n 是一个正整数。
+ */
+// 状态 n，n 阶台阶共有 f(n) 种不同的方法
+// dp 状态转移方程，f(n) = f(n-1) + f(n-2)，一次只能走 1 或 2 个台阶，所以 f(n) 可以从 f(n-1) 到达，也可以从 f(n-2)到达
+// 边界值 f(0) = 1, f(1) = 1
+// 这个问题转换完跟斐波拉契数列是一样的，其他解法可以参考
+func climbStairs(n int) int {
+	if n == 0 || n == 1 {
+		return 1
+	}
+	first, second := 1, 1
+	res := 0
+	for i := 2; i <= n; i++ {
+		res = first + second
+		first = second
+		second = res
+	}
+	return res
+}
+
+// 方法 1：dp table，自底而上
+// 状态:i，f(i) = max(f(i-1), nums[i]+f(i-2))
+// 选择: 第 i 间房屋，偷还是不偷
+// 偷窃第 i 间房屋，那么就不能偷窃第 i−1 间房屋，偷窃总金额为前 i−2 间房屋的最高总金额与第 i 间房屋的金额之和。
+// 不偷窃第 i 间房屋，偷窃总金额为前 i−1 间房屋的最高总金额
+// 边界条件：只有1间房屋，则偷窃该房屋; 只有两间房屋，选择其中金额较高的房屋进行偷窃
+// 状态 -> 选择 -> 状态转移方程 -> 边界条件
+func rob(nums []int) int {
+	n := len(nums)
+	if n == 0 {
+		return 0
+	}
+	if n == 1 {
+		return nums[0]
+	}
+	dp := make([]int, n)
+	// 边界条件
+	dp[0] = nums[0]
+	dp[1] = maxInt(nums[0], nums[1])
+	for i := 2; i < n; i++ {
+		dp[i] = maxInt(dp[i-1], nums[i]+dp[i-2])
+	}
+	return dp[n-1]
+}
+
+// 因为 dp[i] 只与dp[i-1] 和 dp[i-2] 有关，所以可以使用滚动数组存储前两次的结果，
+// 使空间复杂度从 O(n) 降为 O(1)
+func rob2(nums []int) int {
+	n := len(nums)
+	if n == 0 {
+		return 0
+	}
+	if n == 1 {
+		return nums[0]
+	}
+	first := nums[0]
+	second := maxInt(nums[0], nums[1])
+	for i := 2; i < n; i++ {
+		temp := maxInt(second, nums[i]+first)
+		first = second
+		second = temp
+	}
+	return second
+}
+
+// 方法 3：memo 备忘录，自顶而下
+func rob3(nums []int) int {
+	n := len(nums)
+	memo := make([]int, n)
+	for i := range memo {
+		memo[i] = -1
+	}
+	var _dp func(int) int
+	_dp = func(i int) int {
+		if i >= n || i < 0 {
+			return 0
+		}
+		if i == 0 {
+			return nums[0]
+		}
+		if memo[i] != -1 {
+			return memo[i]
+		}
+		res := maxInt(_dp(i-1), nums[i]+_dp(i-2))
+		memo[i] = res
+		return res
+	}
+	return _dp(n - 1)
 }

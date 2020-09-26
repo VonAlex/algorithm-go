@@ -80,7 +80,7 @@ func TestPivotIndex(t *testing.T) {
 		{[]int{}, -1},
 	}
 	for _, tc := range tests {
-		got := PivotIndex(tc.input)
+		got := pivotIndex(tc.input)
 		if got != tc.want {
 			t.Log(tc.want, got)
 		}
@@ -90,25 +90,6 @@ func TestPivotIndex(t *testing.T) {
 func TestDominantIndex(t *testing.T) {
 	nums := []int{0, 0, 0, 1}
 	t.Log(DominantIndex2(nums))
-}
-
-func TestPlusOne(t *testing.T) {
-	type test struct {
-		input []int
-		want  []int
-	}
-	tests := []test{
-		{[]int{9}, []int{1, 0}}, // 注意这种最高位有进位的情况
-		{[]int{1, 2, 3}, []int{1, 2, 4}},
-		{[]int{}, []int{}},
-		{[]int{1, 2, 9}, []int{1, 3, 0}},
-	}
-	for _, tc := range tests {
-		got := PlusOne(tc.input)
-		if !reflect.DeepEqual(got, tc.want) {
-			t.Log(cmp.Diff(tc.want, got))
-		}
-	}
 }
 
 func TestSingleNumber(t *testing.T) {
@@ -188,52 +169,6 @@ func TestCountPrimes(t *testing.T) {
 	}
 }
 
-func TestBinarySearchFindLeftBound(t *testing.T) {
-	type args struct {
-		nums   []int
-		target int
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{"normal", args{[]int{1, 2, 2, 4}, 2}, 1},
-		{"right", args{[]int{1, 2, 2, 4}, 6}, -1},
-		{"left", args{[]int{1, 2, 2, 4}, 0}, -1},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := BinarySearchFindLeftBound(tt.args.nums, tt.args.target); got != tt.want {
-				t.Errorf("BinarySearchFindLeftBound() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestBinarySearchFindRightBound(t *testing.T) {
-	type args struct {
-		nums   []int
-		target int
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{"normal", args{[]int{1, 2, 2, 4}, 2}, 2},
-		{"right", args{[]int{1, 2, 2, 4}, 6}, -1},
-		{"left", args{[]int{1, 2, 2, 4}, 0}, -1},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := BinarySearchFindRightBound(tt.args.nums, tt.args.target); got != tt.want {
-				t.Errorf("BinarySearchFindRightBound() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestSubarraySum(t *testing.T) {
 	type args struct {
 		nums []int
@@ -248,7 +183,7 @@ func TestSubarraySum(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SubarraySum3(tt.args.nums, tt.args.k); got != tt.want {
+			if got := subarraySum4(tt.args.nums, tt.args.k); got != tt.want {
 				t.Errorf("SubarraySum() = %v, want %v", got, tt.want)
 			}
 		})
@@ -353,7 +288,9 @@ func TestFindKthLargest(t *testing.T) {
 	// nums := []int{1}
 	// k := 1
 
-	t.Log(FindKthLargest3(nums, k))
+	nums = []int{3, 2, 3, 1, 2, 4, 5, 5, 6}
+	k = 4
+	t.Log(findKthLargest(nums, k))
 }
 
 func TestMaxSubArray(t *testing.T) {
@@ -381,4 +318,74 @@ func TestRotate(t *testing.T) {
 	k := 3
 	rotate(nums, k)
 	t.Log(nums)
+}
+
+func Test_intersect(t *testing.T) {
+	nums1 := []int{1, 2, 2, 1}
+	nums2 := []int{2, 2}
+	// nums1 := []int{4, 9, 5}
+	// nums2 := []int{9, 4, 9, 8, 4}
+	t.Log(intersect2(nums1, nums2))
+}
+
+func Test_plusOne(t *testing.T) {
+	type args struct {
+		digits []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{"case1", args{[]int{9}}, []int{1, 0}},
+		{"case2", args{[]int{1, 2, 3}}, []int{1, 2, 4}},
+		{"case3", args{[]int{1, 2, 9}}, []int{1, 3, 0}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := plusOne(tt.args.digits); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("plusOne() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_rotateMatrix(t *testing.T) {
+	matrix1 := [][]int{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+	}
+	rotateMatrix(matrix1)
+	t.Log(matrix1)
+
+	matrix2 := [][]int{
+		{5, 1, 9, 11},
+		{2, 4, 8, 10},
+		{13, 3, 6, 7},
+		{15, 14, 12, 16},
+	}
+	rotateMatrix(matrix2)
+	t.Log(matrix2)
+}
+
+func Test_mergeArr(t *testing.T) {
+	nums1 := []int{1, 2, 3, 0, 0, 0}
+	nums2 := []int{2, 5, 6}
+	mergeArr(nums1, 3, nums2, 3)
+	t.Log(nums1)
+}
+
+func Test_maxProfit(t *testing.T) {
+	// prices := []int{7, 1, 5, 3, 6, 4}
+	prices := []int{7, 1, 5, 3, 6, 2}
+	t.Log(maxProfit3(prices))
+}
+
+func Test_SumRange(t *testing.T) {
+	nums := []int{-2, 0, 3, -5, 2, -1}
+	sumArr := Constructor2(nums)
+	t.Log(sumArr.SumRange(0, 2) == 1)
+	t.Log(sumArr.SumRange(2, 5) == -1)
+	t.Log(sumArr.SumRange(0, 5) == -3)
 }

@@ -52,64 +52,14 @@ func TestSearchMatrix(t *testing.T) {
 	t.Log(got)
 }
 
-func TestBinarySearch(t *testing.T) {
-	type args struct {
-		nums   []int
-		target int
-	}
-	tests := []struct {
-		name      string
-		args      args
-		wantIndex int
-	}{
-		{"case one num", args{[]int{1}, 1}, 0},
-		{"case repeat num", args{[]int{1, 2, 2, 3, 4}, 2}, 2},
-		{"case  normal", args{[]int{1, 2, 2, 3, 4}, 3}, 3},
-		{"case no target", args{[]int{1, 2, 2, 3, 4}, 5}, -1},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotIndex := BinarySearch(tt.args.nums, tt.args.target); gotIndex != tt.wantIndex {
-				t.Errorf("BinarySearch() = %v, want %v", gotIndex, tt.wantIndex)
-			}
-		})
-	}
-}
-
-func TestFindMin(t *testing.T) {
-	type args struct {
-		nums []int
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{"sorted", args{[]int{1, 2, 3, 4}}, 1},
-		{"one item", args{[]int{1}}, 1},
-		{"two item", args{[]int{3, 2}}, 2},
-		{"normal", args{[]int{3, 4, 5, 1, 2}}, 1},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := FindMin(tt.args.nums); got != tt.want {
-				t.Errorf("FindMin() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestFindMin2(t *testing.T) {
-	// nums := []int{2, 2, 2, 0, 1}
-	// nums := []int{3, 1, 3}
-	// nums := []int{1, 1}
-	nums := []int{3, 4, 5, 1, 2}
-	// nums := []int{4, 4, 5, 6, 7, 1, 2, 4, 4}
-	t.Log(FindMin2(nums))
-}
-
 func TestFindDuplicate(t *testing.T) {
 	// nums := []int{3, 1, 3, 4, 2}
 	nums := []int{1, 3, 4, 2, 2}
-	t.Log(FindDuplicate2(nums))
+	t.Log(FindDuplicate(nums))
+}
+
+func Test_search2(t *testing.T) {
+	t.Log(search2([]int{2, 5, 6, 0, 0, 1, 2}, 0) == true)
+	t.Log(search2([]int{2, 5, 6, 0, 0, 1, 2}, 3) == false)
+	t.Log(search2([]int{1, 3, 1, 1, 1}, 3) == true)
 }

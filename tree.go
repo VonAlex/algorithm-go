@@ -69,11 +69,10 @@ func PreorderTraversal3(root *TreeNode) []int {
 	curr := root
 	stack = append(stack, curr)
 	for len(stack) != 0 {
-		index := len(stack) - 1
-		curr = stack[index] // 栈顶
-		res = append(res, curr.Val)
-		stack = stack[:index] // 出栈
+		curr = stack[len(stack)-1]   // 栈顶
+		stack = stack[:len(stack)-1] // 出栈
 
+		res = append(res, curr.Val)
 		if curr.Right != nil {
 			stack = append(stack, curr.Right) // 右孩子后遍历，先入栈
 		}
@@ -146,17 +145,15 @@ func InorderTraversal2(root *TreeNode) []int {
 	var stack []*TreeNode
 	curr := root
 	for len(stack) > 0 || curr != nil {
-		if curr != nil {
+		for curr != nil {
 			stack = append(stack, curr)
 			curr = curr.Left // 找到最深的左孩子
-		} else {
-			index := len(stack) - 1
-			curr = stack[index] // 栈顶
-			res = append(res, curr.Val)
-			stack = stack[:index] // 出栈
-
-			curr = curr.Right // 最后遍历右孩子
 		}
+		curr = stack[len(stack)-1]   // 栈顶
+		stack = stack[:len(stack)-1] // 出栈
+
+		res = append(res, curr.Val)
+		curr = curr.Right // 最后遍历右孩子
 	}
 	return res
 }
@@ -388,43 +385,53 @@ func IsSameTree(root1, root2 *TreeNode) bool {
 // 递归函数在递归过程中需要为每一层递归函数分配栈空间，所以这里需要额外的空间且该空间取决于递归的深度，即二叉树的高度。
 // 最坏情况下二叉树为一条链，树的高度为 n ，递归最深达到 n 层，故最坏情况下空间复杂度为 O(n)
 func IsValidBST(root *TreeNode) bool {
-	return IsValidBSTHelper(root, math.MinInt64, math.MaxInt64)
-}
-
-func IsValidBSTHelper(root *TreeNode, min, max int) bool {
-	if root == nil {
+	var _helper func(*TreeNode, int, int) bool
+	_helper = func(t *TreeNode, max, min int) bool {
+		if t == nil {
+			return true
+		}
+		if t.Val >= max || t.Val <= min {
+			return false
+		}
+		// 左子树上所有节点的值均小于它的根节点的值
+		if !_helper(t.Left, t.Val, min) {
+			return false
+		}
+		// 右子树上所有节点的值均大于它的根节点的值
+		if !_helper(t.Right, max, t.Val) {
+			return false
+		}
 		return true
 	}
-	if root.Val <= min || root.Val >= max {
-		return false
-	}
-	// 左子树上所有节点的值均小于它的根节点的值
-	// 右子树上所有节点的值均大于它的根节点的值
-	return IsValidBSTHelper(root.Left, min, root.Val) &&
-		IsValidBSTHelper(root.Right, root.Val, max)
+	curr := root
+	return _helper(curr, math.MaxInt64, math.MinInt64)
+
 }
 
 // 方法 2：中序遍历
 // BST 的中序遍历是一个升序数组，如果遍历的时候发现，当前的 node 值<= 前一个，那就表示这不是一个 BST
-func IsValidBST2(root *TreeNode) bool {
+func isValidBST2(root *TreeNode) bool {
 	if root == nil {
 		return true
 	}
-	stack := []*TreeNode{}
+	var stack []*TreeNode
 	prev := math.MinInt64 // 起始值
-	for len(stack) != 0 || root != nil {
-		for root != nil {
-			stack = append(stack, root.Left)
-			root = root.Left
+
+	curr := root
+	for len(stack) != 0 || curr != nil {
+		for curr != nil {
+			stack = append(stack, curr)
+			curr = curr.Left
 		}
-		root = stack[len(stack)-1]
+
+		curr = stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
 
-		if root.Val <= prev {
+		if curr.Val <= prev {
 			return false
 		}
-		prev = root.Val
-		root = root.Right
+		prev = curr.Val
+		curr = curr.Right
 	}
 	return true
 }
@@ -638,6 +645,7 @@ func KthLargest2(root *TreeNode, k int) int {
 // 前序遍历的形式总是 [ 根节点, [左子树的前序遍历结果], [右子树的前序遍历结果] ], 即根节点总是前序遍历中的第一个节点。
 // 而中序遍历的形式总是 [ [左子树的中序遍历结果], 根节点, [右子树的中序遍历结果] ]
 // 只要我们在中序遍历中定位到根节点，那么我们就可以分别知道左子树和右子树中的节点数目
+// 参考 https://mp.weixin.qq.com/s/QHt9fGP-q8RAs8GI7fP3hw
 func buildTree(preorder []int, inorder []int) *TreeNode {
 	preorderLen := len(preorder)
 	inorderLen := len(inorder)
@@ -675,4 +683,229 @@ func buildTree(preorder []int, inorder []int) *TreeNode {
 		return root
 	}
 	return _build(0, 0, inorderLen-1)
+}
+
+/*
+ * LeetCode T104. 二叉树的最大深度
+ * https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/
+ * 给定一个二叉树，找出其最大深度。
+ * 二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+ * 说明: 叶子节点是指没有子节点的节点。
+ */
+// 方法 1：递归 DFS
+// 时间复杂度 O(n), 空间复杂度最差 O(n)，O(logn)
+func maxDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	lh := maxDepth(root.Left)
+	rh := maxDepth(root.Right)
+	return maxInt(lh, rh) + 1
+}
+
+func maxInt(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+// 方法 2：迭代 BFS
+// 时/空间复杂度 O(n)，实际上就是层序遍历
+func maxDepth2(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	maxDepth := 0
+	curr := root
+	q := list.New()
+	q.PushBack(curr)
+	for q.Len() > 0 {
+		maxDepth++
+		size := q.Len()
+		for i := 0; i < size; i++ {
+			// 队列先进先出
+			c := q.Remove(q.Front()).(*TreeNode)
+			if c.Left != nil {
+				q.PushBack(c.Left)
+			}
+			if c.Right != nil {
+				q.PushBack(c.Right)
+			}
+		}
+	}
+	return maxDepth
+}
+
+/* LeetCode T226. 翻转二叉树
+ * https://leetcode-cn.com/problems/invert-binary-tree/
+ * 剑指 Offer 27. 二叉树的镜像
+ * https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/
+ * 请完成一个函数，输入一个二叉树，该函数输出它的镜像。(翻转一棵二叉树)
+ */
+// 思路：先前序遍历这棵树，如果遍历到的节点有子节点，那么就交换它的两个子节点。
+// 当交换完所有非叶子节点的左右子节点后，就可以得到树的镜像
+func mirrorTree(root *TreeNode) *TreeNode {
+	var _mirrorTreeRecur func(*TreeNode)
+	_mirrorTreeRecur = func(t *TreeNode) {
+		if t == nil {
+			return
+		}
+		if t.Left == nil && t.Right == nil {
+			return
+		}
+		t.Left, t.Right = t.Right, t.Left
+		if t.Left != nil {
+			_mirrorTreeRecur(t.Left)
+		}
+		if t.Right != nil {
+			_mirrorTreeRecur(t.Right)
+		}
+		return
+	}
+	curr := root
+	_mirrorTreeRecur(curr)
+	return root
+}
+
+/*
+ * LeetCode T101. 对称二叉树
+ * https://leetcode-cn.com/problems/symmetric-tree/
+ * 剑指 Offer 28. 对称的二叉树
+ * https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/
+ * 给定一个二叉树，检查它是否是镜像对称的。
+ * (请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。)
+ */
+// 方法 1：递归法
+// 时/空间复杂度 O(n)
+func isSymmetric(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	curr := root
+	var _ismirror func(*TreeNode, *TreeNode) bool
+	_ismirror = func(curr1, curr2 *TreeNode) bool {
+		if curr1 == nil && curr2 == nil {
+			return true
+		}
+		if curr1 == nil || curr2 == nil {
+			return false
+		}
+		if curr1.Val != curr2.Val {
+			return false
+		}
+		return _ismirror(curr1.Left, curr2.Right) && _ismirror(curr1.Right, curr2.Left)
+	}
+	return _ismirror(curr, curr)
+}
+
+// 方法 2：迭代法
+// 需要借助队列做层遍历，也可以使用数组代替
+// 时/空间复杂度 O(n)
+func isSymmetric2(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	q := list.New()
+	curr := root
+	q.PushBack(curr)
+	q.PushBack(curr)
+	for q.Len() > 0 {
+		t1 := q.Remove(q.Front()).(*TreeNode)
+		t2 := q.Remove(q.Front()).(*TreeNode)
+		if t1 == nil && t2 == nil {
+			continue
+		}
+		if t1 == nil || t2 == nil {
+			return false
+		}
+		if t1.Val != t2.Val {
+			return false
+		}
+		q.PushBack(t1.Left)
+		q.PushBack(t2.Right)
+		q.PushBack(t1.Right)
+		q.PushBack(t2.Left)
+	}
+	return true
+}
+
+/*
+ * LeetCode T108. 将有序数组转换为二叉搜索树
+ * https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/
+ *
+ * 将一个按照升序排列的有序数组，转换为一棵高度平衡二叉搜索树。
+ * 本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+ */
+// 一个 BST 的中序遍历是个有序数组，中序遍历结果不足以确定一颗 BST
+// 中 + 前，或中 + 后，都可以确定一棵树，但是前 + 后不能
+// 高度平衡意味着每次必须选择中间数字作为根节点。
+// 可以参考解析 https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/solution/jiang-you-xu-shu-zu-zhuan-huan-wei-er-cha-sou-s-15/
+func sortedArrayToBST(nums []int) *TreeNode {
+	if len(nums) == 0 {
+		return nil
+	}
+	var _helper func(int, int) *TreeNode
+	_helper = func(left, right int) *TreeNode {
+		if right < left {
+			return nil
+		}
+		// 始终选择中间位置左边元素作为根节点
+		mid := left + (right-left)>>1
+		root := &TreeNode{
+			Val: nums[mid],
+		}
+		root.Left = _helper(left, mid-1)
+		root.Right = _helper(mid+1, right)
+		return root
+	}
+	return _helper(0, len(nums)-1)
+}
+
+/*
+ * LeetCode T109. 有序链表转换二叉搜索树
+ * https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/
+ *
+ * 给定一个单链表，其中的元素按升序排序，将其转换为高度平衡的二叉搜索树。
+ * 本题中，一个高度平衡二叉树是指一个二叉树每个节点 的左右两个子树的高度差的绝对值不超过 1。
+ */
+func sortedListToBST(head *ListNode) *TreeNode {
+	if head == nil {
+		return nil
+	}
+	var _helper func(*ListNode) *TreeNode
+	_helper = func(node *ListNode) *TreeNode {
+		if node == nil {
+			return nil
+		}
+		mid := getMidNodeAndCut(node)
+		root := &TreeNode{
+			Val: mid.Val,
+		}
+		if mid == node { // 单节点
+			return root
+		}
+		root.Left = _helper(node)
+		root.Right = _helper(mid.Next)
+		return root
+	}
+	return _helper(head)
+}
+
+// 获得链表中间节点，并分成两段
+func getMidNodeAndCut(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	var prev *ListNode
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		prev = slow
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	if prev != nil {
+		prev.Next = nil // 断开
+	}
+	return slow
 }
