@@ -5,6 +5,7 @@ import "fmt"
 // 正向打印 list
 func listPrint(node *ListNode) {
 	if node == nil {
+		fmt.Println(node)
 		return
 	}
 	for node != nil {

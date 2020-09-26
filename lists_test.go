@@ -141,7 +141,12 @@ func TestPrintCommonPart(t *testing.T) {
 
 func TestRemoveLastKthNode(t *testing.T) {
 	listPrint(head)
-	listPrint(removeLastKthNode4(head, 1))
+	listPrint(removeLastKthNode(head, 1))
+}
+
+func Test_removeNthFromEnd(t *testing.T) {
+	listPrint(head)
+	listPrint(removeNthFromEnd(head, 1))
 }
 
 func TestRemoveDuplicateNodes(t *testing.T) {
@@ -183,8 +188,41 @@ func TestMergeTwoLists(t *testing.T) {
 }
 
 func TestDeleteMiddleNode(t *testing.T) {
-	listPrint(head)
-	listPrint(deleteMiddleNode2(head))
+	l4 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 3,
+				Next: &ListNode{
+					Val: 4,
+				},
+			},
+		},
+	}
+	listPrint(deleteMiddleNode(l4))
+	l1 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 3,
+			},
+		},
+	}
+	listPrint(deleteMiddleNode(l1))
+	l2 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+		},
+	}
+	listPrint(deleteMiddleNode(l2))
+	l3 := &ListNode{
+		Val: 1,
+	}
+	listPrint(deleteMiddleNode(l3))
+	listPrint(deleteMiddleNode(nil))
 }
 
 func TestIsPalindromeList(t *testing.T) {
@@ -271,7 +309,7 @@ func Test_reorderList(t *testing.T) {
 	listPrint(head3)
 }
 
-func Test_getIntersectionNode2(t *testing.T) {
+func Test_getListIntersection(t *testing.T) {
 	common := &ListNode{
 		Val: 7,
 		Next: &ListNode{
@@ -293,7 +331,7 @@ func Test_getIntersectionNode2(t *testing.T) {
 		Next: common,
 	}
 	// 都无环，相交
-	n := getIntersectionNode2(l1, l2)
+	n := getListIntersection(l1, l2)
 	if n == nil {
 		t.Log(n)
 	} else {
@@ -310,7 +348,7 @@ func Test_getIntersectionNode2(t *testing.T) {
 		},
 	}
 	// 都无环，不相交
-	n = getIntersectionNode2(l1, l3)
+	n = getListIntersection(l1, l3)
 	if n == nil {
 		t.Log(n)
 	} else {
@@ -336,7 +374,7 @@ func Test_getIntersectionNode2(t *testing.T) {
 	n7.Next = n8
 	n8.Next = n4
 
-	n = getIntersectionNode2(n1, n6)
+	n = getListIntersection(n1, n6)
 	if n == nil {
 		t.Log(n)
 	} else {

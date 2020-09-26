@@ -805,129 +805,6 @@ func printCommonPart(head1 *ListNode, head2 *ListNode) {
 	}
 }
 
-/*
- * LeetCode T19 删除单链表的倒数第 K 个节点
- * 示例：
- * 给定一个链表: 1->2->3->4->5, 和 n = 2.
- * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
- * 给定的 n 保证是有效的。
- *
- * 考察点是链表的删除，重要的是找到要删除节点的前一个节点
- */
-// 解法 1：两遍遍历链表1
-// 假设链表长度是 N，倒数第 K 个节点的前一个节点就是第 N - K 个节点
-// 第 1 次遍历，每个节点 -1，到最后一个节点，该值为 K - N
-// 第 2 次遍历，每个节点 +1，当值为 0 时，就找到了要找的节点
-func removeLastKthNode(head *ListNode, n int) *ListNode {
-	if head == nil || n < 0 {
-		return head
-	}
-	dummy := &ListNode{
-		Next: head,
-	}
-	curr := dummy
-	for curr.Next != nil {
-		n--
-		curr = curr.Next
-	}
-	if n > 0 {
-		return head
-	}
-	if n == 0 {
-		return head.Next
-	}
-	curr = dummy
-	for n != 0 {
-		n++
-		curr = curr.Next
-	}
-	curr.Next = curr.Next.Next
-	return head
-}
-
-// 解法 2：两遍遍历链表 2 (跟上面的解法类似，核心是找到第 N - K + 1 个节点)
-func removeLastKthNode2(head *ListNode, n int) *ListNode {
-	if head == nil || n < 0 {
-		return head
-	}
-	curr := head
-	length := 0
-	for curr != nil {
-		length++
-		curr = curr.Next
-	}
-	// 链表长度减去 K，可能有三种情况，>0,=0,<0
-	// <0 和 = 0 为异常情况，使用 dummy 节点来归一化处理
-	length -= n
-	dummy := &ListNode{
-		Next: head,
-	}
-	curr = dummy
-	// 找到从链表开头数起的第 (N - K) 个结点（是前置节点）
-	for length > 0 {
-		length--
-		curr = curr.Next
-	}
-	curr.Next = curr.Next.Next
-	return dummy.Next
-}
-
-// 解法 3 一次遍历法
-// 使用快慢指针法
-func removeLastKthNode3(head *ListNode, n int) *ListNode {
-	if head == nil || n < 0 {
-		return head
-	}
-	dummy := &ListNode{
-		Next: head,
-	}
-	// dummy 节点解决了 n = 链表长度这种情况，进行了归一化
-	fast := dummy
-	slow := dummy
-	for n >= 0 { // fast 先走 n+1 步
-		if fast == nil {
-			return head
-		}
-		n--
-		fast = fast.Next
-	}
-	for fast != nil {
-		fast = fast.Next
-		slow = slow.Next
-	}
-	slow.Next = slow.Next.Next
-	return dummy.Next
-}
-
-// 解法 4：快慢指针 - 去掉 dummy 节点
-func removeLastKthNode4(head *ListNode, n int) *ListNode {
-	if head == nil || n < 0 {
-		return head
-	}
-	fast := head
-	for n > 0 { // fast 先走 n 步
-		if fast == nil {
-			return head
-		}
-		n--
-		fast = fast.Next
-	}
-	var prev *ListNode // prev 节点辅助
-	slow := head
-	for fast != nil {
-		prev = slow
-		fast = fast.Next
-		slow = slow.Next
-	}
-	// 遍历结束，slow 就是倒数第 k 个节点
-	if prev == nil {
-		head = slow.Next
-	} else {
-		prev.Next = slow.Next
-	}
-	return head
-}
-
 /**
  * 剑指 offer 面试题22. 链表中倒数第k个节点
  * https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
@@ -1140,9 +1017,6 @@ func getListIntersection(headA, headB *ListNode) *ListNode {
 // 方法 1：快慢指针法
 // 时间复杂度 O(N)，空间复杂度 O(1)
 func middleNode(head *ListNode) *ListNode {
-	if head == nil {
-		return nil
-	}
 	slow := head
 	fast := head
 	// 注意奇数节点和偶数节点的终止条件是不同的
@@ -1180,20 +1054,16 @@ func deleteSomeNode(node *ListNode) {
 // Q1：确认偶数节点的时候删哪个（前 or 后）
 // Q2: 确认只有一个节点怎么处理
 func deleteMiddleNode(head *ListNode) *ListNode {
-	if head == nil {
-		return head
+	if head == nil || head.Next == nil {
+		return nil
 	}
-	dummy := &ListNode{
-		Next: head,
-	}
-	slow := dummy
-	fast := dummy
+	slow, fast := head, head
 	if fast != nil && fast.Next != nil {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
 	if slow.Next == nil {
-		slow = nil
+		head.Next = nil
 	} else {
 		slow.Val = slow.Next.Val
 		slow.Next = slow.Next.Next
@@ -1210,21 +1080,110 @@ func deleteMiddleNode(head *ListNode) *ListNode {
 // 1 → 2 → 3 → 4 → 5（奇数）
 //                 ↑
 func deleteMiddleNode2(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return nil
-	}
 	var prev *ListNode
-	slow := head
-	fast := head
-	for fast.Next != nil && fast.Next.Next != nil {
+	slow, fast := head, head
+
+	for fast != nil && fast.Next != nil {
 		prev = slow
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-	if prev == nil { // list 长度为 2
+	if prev == nil {
+		return nil
+	}
+	prev.Next = slow.Next
+	return head
+}
+
+/*
+ * LeetCode T19 删除单链表的倒数第 K 个节点
+ * 示例：
+ * 给定一个链表: 1->2->3->4->5, 和 n = 2.
+ * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
+ * 给定的 n 保证是有效的。
+ *
+ * 考察点是链表的删除，重要的是找到要删除节点的前一个节点
+ */
+
+// 解法 1：两遍遍历链表1
+// 假设链表长度是 N，倒数第 K 个节点的前一个节点就是第 N - K 个节点
+// 第 1 次遍历，每个节点 -1，到最后一个节点，该值为 K - N
+// 第 2 次遍历，每个节点 +1，当值为 0 时，就找到了要找的节点
+func removeLastKthNode(head *ListNode, n int) *ListNode {
+	if head == nil || n <= 0 {
+		return head
+	}
+	curr := head
+	for curr.Next != nil {
+		curr = curr.Next
+		n--
+	}
+	if n == 1 {
 		return head.Next
 	}
-	prev.Next = prev.Next.Next
+	if n > 1 {
+		return head
+	}
+	curr = head
+	for n < 0 {
+		curr = curr.Next
+		n++
+	}
+	curr.Next = curr.Next.Next
+	return head
+}
+
+// 解法 2：两遍遍历链表 2 (跟上面的解法类似，核心是找到第 N - K + 1 个节点)
+func removeLastKthNode2(head *ListNode, n int) *ListNode {
+	if head == nil || n <= 0 {
+		return head
+	}
+	curr := head
+	length := 0
+	for curr != nil {
+		curr = curr.Next
+		length++
+	}
+	length -= n
+	if length < 0 {
+		return head
+	}
+	if length == 0 {
+		return head.Next
+	}
+	curr = head
+	for length > 1 {
+		curr = curr.Next
+		length--
+	}
+	curr.Next = curr.Next.Next
+	return head
+}
+
+// 解法 3：快慢指针
+func removeNthFromEnd(head *ListNode, n int) *ListNode {
+	if n <= 0 {
+		return head
+	}
+	slow, fast := head, head
+	for fast != nil && n > 0 {
+		fast = fast.Next
+		n--
+	}
+	if n > 0 {
+		return head
+	}
+	if fast == nil {
+		return head.Next
+	}
+
+	var prev *ListNode
+	for fast != nil {
+		prev = slow
+		slow = slow.Next
+		fast = fast.Next
+	}
+	prev.Next = slow.Next
 	return head
 }
 
