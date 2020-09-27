@@ -642,150 +642,6 @@ func rotateRight2(head *ListNode, k int) *ListNode {
 }
 
 /*
- * 剑指 offer 面试题 18 删除链表的节点
- * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
- *
- * 输入: head = [4,5,1,9], val = 5
- * 输出: [4,1,9]
- *
- * 说明：题目保证链表中节点的值互不相同
- */
-func deleteNode(head *ListNode, val int) *ListNode {
-	if head == nil {
-		return head
-	}
-	// 使用 dummy 节点简化特殊情况的处理
-	dummy := &ListNode{
-		Next: head,
-	}
-	prev := dummy
-	curr := head
-	for curr != nil {
-		if curr.Val == val {
-			prev.Next = curr.Next
-			break
-		}
-		prev = curr
-		curr = curr.Next
-	}
-	return dummy.Next
-}
-
-// 不使用 dummy 结点
-func deleteNode2(head *ListNode, val int) *ListNode {
-	var prev *ListNode
-	curr := head
-	for curr != nil {
-		if prev == nil { // curr 是头结点
-			if head.Val == val {
-				return head.Next
-			}
-		} else { // curr 不是头结点
-			if curr.Val == val {
-				prev.Next = curr.Next
-			}
-		}
-		prev = curr
-		curr = curr.Next
-	}
-	return head
-}
-
-/*
- * LeetCode T203. 删除链表中等于给定值 val 的所有节点。
- * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
- *
- * 输入: 1->2->6->3->4->5->6, val = 6
- * 输出: 1->2->3->4->5
- *
- * 说明：链表中有相同的元素
- */
-// 本题是上面一题的升级版
-// 方法 1: 不使用 dummy 结点
-func removeElements(head *ListNode, val int) *ListNode {
-	var prev *ListNode
-	curr := head
-	for curr != nil {
-		if prev == nil { // curr 是头结点
-			if head.Val == val {
-				head = head.Next
-				if head == nil {
-					return nil
-				}
-				continue
-			}
-		} else { // curr 不是头结点
-			if curr.Val == val {
-				prev.Next = curr.Next
-				curr = curr.Next // 跳过 val，prev 不变，curr 往下一个
-				continue
-			}
-		}
-		prev = curr
-		curr = curr.Next
-	}
-	return head
-}
-
-// 方法 2：使用 dummy 结点简化特殊情况
-func removeElements2(head *ListNode, val int) *ListNode {
-	dummy := &ListNode{
-		Next: head,
-	}
-	prev := dummy
-	curr := head
-	for curr != nil {
-		if curr.Val == val {
-			prev.Next = curr.Next // prev 不动
-		} else {
-			prev = curr
-		}
-		curr = curr.Next
-	}
-	return dummy.Next
-}
-
-/*
- * LeetCode T82. 删除排序链表中的重复元素 II
- * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/
- *
- * 给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中没有重复出现的数字
- *
- * 示例 1:
- * 输入: 1->2->3->3->4->4->5
- * 输出: 1->2->5
- *
- * 示例 2:
- * 输入: 1->1->1->2->3
- * 输出: 2->3
- */
-func deleteDuplicates(head *ListNode) *ListNode {
-	if head == nil {
-		return nil
-	}
-	dummy := &ListNode{
-		Next: head,
-	}
-	prev := dummy
-	curr := head
-	var next *ListNode
-	for curr != nil {
-		next = curr.Next
-		for next != nil && curr.Val == next.Val {
-			curr = curr.Next
-			next = next.Next
-		}
-		if prev.Next == curr {
-			prev = curr
-		} else {
-			prev.Next = next
-		}
-		curr = next
-	}
-	return dummy.Next
-}
-
-/*
  * 打印两个有序链表的公共部分
  */
 // 既然是有序链表，那么此题难度就很低了
@@ -803,83 +659,6 @@ func printCommonPart(head1 *ListNode, head2 *ListNode) {
 			curr1 = curr1.Next
 		}
 	}
-}
-
-/**
- * 剑指 offer 面试题22. 链表中倒数第k个节点
- * https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
- *
- * 输入一个链表，输出该链表中倒数第k个节点。
- * 为了符合大多数人的习惯，本题从1开始计数，即链表的尾节点是倒数第1个节点。
- */
-// 方法 1：快慢指针法
-func getKthFromEnd(head *ListNode, k int) *ListNode {
-	if head == nil || k < 0 { // 参数不合理
-		return head
-	}
-	fast := head
-	for k > 0 { // fast 先走 k 步骤
-		if fast == nil { // k 大于链表长度
-			return head
-		}
-		fast = fast.Next
-		k--
-	}
-	slow := head
-	for fast != nil {
-		slow = slow.Next
-		fast = fast.Next
-	}
-	return slow
-}
-
-// 方法 2：2 次遍历法
-// 第 1 遍遍历得到链表长度为 n，第 2 遍遍历找到第 n-k 个节点
-
-/*
- * 程序员面试金典 面试题 02.02. 返回倒数第 k 个节点
- * https://leetcode-cn.com/problems/kth-node-from-end-of-list-lcci/
- *
- * 实现一种算法，找出单向链表中倒数第 k 个节点。返回该节点的值。
- * 输入： 1->2->3->4->5 和 k = 2
- * 输出： 4
- * 说明：给定的 k 保证是有效的。
- */
-// 方法 1：快慢指针法
-// 实际上，要有异常情况的考虑，head 为空是返回什么值？k 为负数返回什么值？k 超过链表长度返回什么值？
-func kthToLast(head *ListNode, k int) int {
-	fast := head
-	for k > 0 { // fast 先走 k 步
-		fast = fast.Next
-		k--
-	}
-	slow := head
-	for fast != nil {
-		slow = slow.Next
-		fast = fast.Next
-	}
-	return slow.Val
-}
-
-func removeDuplicateNodes(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
-	}
-	pre := head
-	cur := head.Next
-	ex := make(map[int]bool)
-	ex[pre.Val] = true
-	for cur != nil {
-		if _, ok := ex[cur.Val]; ok {
-			pre.Next = cur.Next
-			cur = pre.Next
-		} else {
-			ex[cur.Val] = true
-			pre = pre.Next
-			cur = cur.Next
-		}
-	}
-	return head
 }
 
 /*
@@ -1094,6 +873,200 @@ func deleteMiddleNode2(head *ListNode) *ListNode {
 	prev.Next = slow.Next
 	return head
 }
+
+/*
+ * 剑指 offer 面试题 18 删除链表的节点
+ * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
+ *
+ * 输入: head = [4,5,1,9], val = 5
+ * 输出: [4,1,9]
+ *
+ * 说明：题目保证链表中节点的值互不相同
+ */
+func deleteNode(head *ListNode, val int) *ListNode {
+	if head == nil {
+		return head
+	}
+	// 使用 dummy 节点简化特殊情况的处理
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev, curr := dummy, head
+	for curr != nil {
+		if curr.Val == val {
+			prev.Next = curr.Next
+			break
+		}
+		prev = curr
+		curr = curr.Next
+	}
+	return dummy.Next
+}
+
+/*
+ * LeetCode T203. 删除链表中等于给定值 val 的所有节点。
+ * https://leetcode-cn.com/problems/shan-chu-lian-biao-de-jie-dian-lcof/
+ *
+ * 输入: 1->2->6->3->4->5->6, val = 6
+ * 输出: 1->2->3->4->5
+ *
+ * 说明：链表中有相同的元素
+ */
+// 本题是上面一题的升级版
+// 方法 1: 不使用 dummy 结点
+func removeElements(head *ListNode, val int) *ListNode {
+	var prev *ListNode
+	curr := head
+	for curr != nil {
+		if curr.Val == val {
+			if prev == nil { // 要删除的是头部节点
+				head = head.Next
+			} else {
+				prev.Next = curr.Next
+			}
+		} else {
+			prev = curr
+		}
+		curr = curr.Next
+	}
+	return head
+}
+
+// 方法 2：使用 dummy 结点简化特殊情况
+func removeElements2(head *ListNode, val int) *ListNode {
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev, curr := dummy, head
+	for curr != nil {
+		if curr.Val == val {
+			prev.Next = curr.Next // prev 不动
+		} else {
+			prev = curr
+		}
+		curr = curr.Next
+	}
+	return dummy.Next
+}
+
+/*
+ * LeetCode T83. 删除排序链表中的重复元素
+ * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/
+ *
+ * 给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+ *
+ * 示例 1:
+ * 输入: 1->1->2
+ * 输出: 1->2
+ *
+ * 示例 2:
+ * 输入: 1->1->2->3->3
+ * 输出: 1->2->3
+ */
+func deleteDuplicates(head *ListNode) *ListNode {
+	curr := head
+	for curr != nil && curr.Next != nil {
+		if curr.Val == curr.Next.Val {
+			curr.Next = curr.Next.Next
+		} else {
+			curr = curr.Next
+		}
+	}
+	return head
+}
+
+/*
+ * LeetCode T82. 删除排序链表中的重复元素 II
+ * https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/
+ *
+ * 给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中没有重复出现的数字
+ *
+ * 示例 1:
+ * 输入: 1->2->3->3->4->4->5
+ * 输出: 1->2->5
+ *
+ * 示例 2:
+ * 输入: 1->1->1->2->3
+ * 输出: 2->3
+ */
+func deleteDuplicates2(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev := dummy
+	curr := head
+	var next *ListNode
+	for curr != nil {
+		next = curr.Next
+		for next != nil && curr.Val == next.Val {
+			curr = curr.Next
+			next = next.Next
+		}
+		if prev.Next == curr {
+			prev = curr
+		} else {
+			prev.Next = next
+		}
+		curr = next
+	}
+	return dummy.Next
+}
+
+func removeDuplicateNodes(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	pre := head
+	cur := head.Next
+	ex := make(map[int]bool)
+	ex[pre.Val] = true
+	for cur != nil {
+		if _, ok := ex[cur.Val]; ok {
+			pre.Next = cur.Next
+			cur = pre.Next
+		} else {
+			ex[cur.Val] = true
+			pre = pre.Next
+			cur = cur.Next
+		}
+	}
+	return head
+}
+
+/**
+ * 剑指 offer 面试题22. 链表中倒数第k个节点
+ * https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/
+ * 程序员面试金典 面试题 02.02. 返回倒数第 k 个节点
+ * https://leetcode-cn.com/problems/kth-node-from-end-of-list-lcci/
+ *
+ * 输入一个链表，输出该链表中倒数第 k 个节点。
+ * 为了符合大多数人的习惯，本题从 1 开始计数，即链表的尾节点是倒数第 1 个节点。
+ */
+// 方法 1：快慢指针法
+func getKthFromEnd(head *ListNode, k int) *ListNode {
+	if k <= 0 { // 参数不合理
+		return head
+	}
+	slow, fast := head, head
+	for fast != nil && k > 0 {
+		fast = fast.Next
+		k--
+	}
+	if k > 0 { // 参数不合理, k > 链表长度
+		return head
+	}
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next
+	}
+	return slow
+}
+
+// 方法 2：2 次遍历法
+// 第 1 遍遍历得到链表长度为 n，第 2 遍遍历找到第 n-k 个节点
 
 /*
  * LeetCode T19 删除单链表的倒数第 K 个节点
