@@ -963,6 +963,7 @@ func removeElements2(head *ListNode, val int) *ListNode {
  * 输入: 1->1->2->3->3
  * 输出: 1->2->3
  */
+// 解法 1
 func deleteDuplicates(head *ListNode) *ListNode {
 	curr := head
 	for curr != nil && curr.Next != nil {
@@ -970,6 +971,28 @@ func deleteDuplicates(head *ListNode) *ListNode {
 			curr.Next = curr.Next.Next
 		} else {
 			curr = curr.Next
+		}
+	}
+	return head
+}
+
+// 解法 2
+func removeDuplicateNodes(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	pre := head
+	cur := head.Next
+	ex := make(map[int]bool)
+	ex[pre.Val] = true
+	for cur != nil {
+		if _, ok := ex[cur.Val]; ok {
+			pre.Next = cur.Next
+			cur = pre.Next
+		} else {
+			ex[cur.Val] = true
+			pre = pre.Next
+			cur = cur.Next
 		}
 	}
 	return head
@@ -989,6 +1012,7 @@ func deleteDuplicates(head *ListNode) *ListNode {
  * 输入: 1->1->1->2->3
  * 输出: 2->3
  */
+// 方法 1: 迭代法
 func deleteDuplicates2(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
@@ -996,43 +1020,38 @@ func deleteDuplicates2(head *ListNode) *ListNode {
 	dummy := &ListNode{
 		Next: head,
 	}
-	prev := dummy
-	curr := head
-	var next *ListNode
-	for curr != nil {
-		next = curr.Next
-		for next != nil && curr.Val == next.Val {
+	prev, curr := dummy, head
+	for curr != nil && curr.Next != nil {
+		// 跳过所有重复数字
+		for curr.Next != nil && curr.Val == curr.Next.Val {
 			curr = curr.Next
-			next = next.Next
 		}
 		if prev.Next == curr {
 			prev = curr
-		} else {
-			prev.Next = next
+		} else { // 有连续相等的结点，curr 发生的移动，跳过它们
+			prev.Next = curr.Next
 		}
-		curr = next
+		curr = curr.Next
 	}
 	return dummy.Next
 }
 
-func removeDuplicateNodes(head *ListNode) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
+// 方法 2: 递归法
+func deleteDuplicates3(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
 	}
-	pre := head
-	cur := head.Next
-	ex := make(map[int]bool)
-	ex[pre.Val] = true
-	for cur != nil {
-		if _, ok := ex[cur.Val]; ok {
-			pre.Next = cur.Next
-			cur = pre.Next
-		} else {
-			ex[cur.Val] = true
-			pre = pre.Next
-			cur = cur.Next
+	// 重复结点
+	if head.Next != nil && head.Val == head.Next.Val {
+		// 跳过所有重复数字
+		for head.Next != nil && head.Val == head.Next.Val {
+			head = head.Next
 		}
+		// 处理重复数字后的下一个结点
+		return deleteDuplicates3(head.Next)
 	}
+	// 非重复结点，保留当前结点，处理下一个
+	head.Next = deleteDuplicates3(head.Next)
 	return head
 }
 

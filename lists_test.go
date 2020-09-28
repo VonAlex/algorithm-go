@@ -251,7 +251,7 @@ func TestOddEvenList(t *testing.T) {
 
 func TestDeleteDuplicates(t *testing.T) {
 	listPrint(head3)
-	listPrint(deleteDuplicates(head3))
+	listPrint(deleteDuplicates3(head3))
 }
 
 func TestCopyRandomList(t *testing.T) {
