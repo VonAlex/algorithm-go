@@ -235,6 +235,11 @@ func TestReverseKGroup(t *testing.T) {
 	listPrint(reverseKGroup2(head, 3))
 }
 
+func TestReverseB(t *testing.T) {
+	listPrint(head)
+	listPrint(reverseKGroup8(head, 2))
+}
+
 func TestSortList(t *testing.T) {
 	// listPrint(head)
 	listPrint(sortList3(head3))
@@ -380,4 +385,9 @@ func Test_getListIntersection(t *testing.T) {
 	} else {
 		t.Log(n.Val)
 	}
+}
+
+func Test_reverseBetween(t *testing.T) {
+	listPrint(head)
+	listPrint(reverseBetween(head, 2, 4))
 }
