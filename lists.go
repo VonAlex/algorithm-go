@@ -362,10 +362,10 @@ func reverseList3(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
-	var next *ListNode
+
 	curr := head
 	for curr.Next != nil {
-		next = curr.Next
+		next := curr.Next
 		curr.Next = next.Next // 将 next 节点扣出来
 		next.Next = head      // next 节点转移到最前面
 		head = next           // 更新 head 节点，因为刚才在head 前面插入了一个节点
@@ -506,62 +506,191 @@ func reverseKGroupHelper(stack *list.List, left, right *ListNode) *ListNode {
 	return curr
 }
 
-// 方法 2：原地反转，时间复杂度 O(N)，空间复杂度 O(1)
+// 方法 2：迭代法
 func reverseKGroup2(head *ListNode, k int) *ListNode {
-	if k < 2 {
+	if head == nil || head.Next == nil || k < 2 {
 		return head
 	}
-	// start 本次翻转头结点
-	// next 本次翻转尾节点下一个节点
-	// newHead 新链表头部
-	// lastTail 上一次翻转的尾部
-	var lastTail, start, next, newHead *ListNode
+
+	var newHead, lastEnd *ListNode
+	var count int
+
 	curr := head
-	count := 0
 	for curr != nil {
 		count++
-		next = curr.Next
-		if count == k {
-			if lastTail == nil { // 处理第一次反转
-				start = head   // 本次从 head 开始翻转
-				newHead = curr // 第一次反转后 curr 成为头结点
-			} else {
-				start = lastTail.Next // 本次从上一次尾结点的下一节点开始翻转
-			}
-			reversePartlist(lastTail, start, curr, next)
-			// 记录 lastTail 位置
-			lastTail = start // 反转后 start 成为反转部分的尾节点，记录一下 pre，方便后面反转
-			count = 0
+		if count != k {
+			curr = curr.Next
+			continue
 		}
-		curr = next
+
+		var start *ListNode // 本 group 从哪儿开始
+		if lastEnd == nil {
+			start = head
+		} else {
+			start = lastEnd.Next
+		}
+		pcurr := start
+
+		var prev *ListNode
+		nextStart := curr.Next // 下一 group 的第一个结点
+		for pcurr != nextStart {
+			next := pcurr.Next
+			pcurr.Next = prev
+			prev = pcurr
+			pcurr = next
+		}
+		if lastEnd == nil {
+			newHead = prev
+		} else { // 非 group 1，连接翻转部分与前面的链表
+			lastEnd.Next = prev
+		}
+		start.Next = pcurr // 连接翻转部分与后面的链表
+		lastEnd = start    // 变更处理过的最后一个节点
+
+		curr = pcurr
+		count = 0
 	}
 	return newHead
 }
 
-// 反转单链表的一部分，
-// 从 start 节点开始，到 end 节点结束，
-// 这一段的前驱节点是 left，后继节点是 right
-func reversePartlist(left, start, end, right *ListNode) {
-	var pre, next *ListNode
-	curr := start
-	for curr != right {
-		next = curr.Next
-		curr.Next = pre
-		pre = curr
-		curr = next
+// 使用 dummy 结点简化 head 的特殊情况
+func reverseKGroup3(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k < 2 {
+		return head
 	}
-	if left != nil { // 是否需要连接头部
-		left.Next = end // 反转后 end 成为首节点
+	dummy := &ListNode{
+		Next: head,
 	}
-	start.Next = right // 反转后 start 成为尾节点
+	lastEnd, curr := dummy, head
+
+	var count int
+	for curr != nil {
+		count++
+		if count != k {
+			curr = curr.Next
+			continue
+		}
+
+		var prev *ListNode
+		nextStart := curr.Next // 下一 group 的第一个结点
+		pcurr := lastEnd.Next  // 本 group 从哪儿开始
+		for pcurr != nextStart {
+			next := pcurr.Next
+			pcurr.Next = prev
+			prev = pcurr
+			pcurr = next
+		}
+		// pcurr 指向下一个 group 的第一个结点
+		start := lastEnd.Next // 翻转后的最后一个结点，翻转前的第一个节点
+		lastEnd.Next = prev   // 连接当前 group 与前面的链表
+		start.Next = pcurr    // 连接当前 group 与后面的链表
+		lastEnd = start       // 变更处理过的最后一个节点
+
+		curr = pcurr // 需要重新定位 curr，因为原来的那组结点经过了翻转
+		count = 0
+	}
+	return dummy.Next
+}
+
+// 使用已有的函数翻转链表
+func reverseKGroup4(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k < 2 {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	lastEnd, curr := dummy, head
+
+	var count int
+	for curr != nil {
+		count++
+		if count%k != 0 {
+			curr = curr.Next
+			continue
+		}
+		// count == k 时，curr 指向第 k 个节点
+		nextStart := curr.Next // 保存 curr 的下一结点
+		curr.Next = nil        // 断开
+
+		start := lastEnd.Next             // 要翻转部分的第一个结点
+		lastEnd.Next = reverseList(start) // 连接前面部分与新翻转的部分
+		start.Next = nextStart            // tail 成为翻转部分的尾结点，重新连接链表的后面部分
+		lastEnd = start                   // 更新 lastEnd
+
+		curr = nextStart
+	}
+	return dummy.Next
+}
+
+// 方法 2：头插法
+func reverseKGroup5(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k < 2 {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	lastEnd, curr := dummy, head
+
+	var count int
+	for curr != nil {
+		count++
+		if count%k != 0 {
+			curr = curr.Next
+			continue
+		}
+		// 经过反转后，lastEnd.Next 的值就变了，所以先保存好 start 结点
+		start, nextStart := lastEnd.Next, curr.Next
+
+		pcurr := start
+		for pcurr.Next != nextStart {
+			next := pcurr.Next
+			pcurr.Next = next.Next
+			next.Next = lastEnd.Next
+			lastEnd.Next = next
+		}
+		lastEnd = start
+		curr = nextStart
+	}
+	return dummy.Next
+}
+
+// 方法 3：递归法
+func reverseKGroup6(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k < 2 {
+		return head
+	}
+	var count int
+	curr := head
+	for curr != nil && count < k {
+		curr = curr.Next
+		count++
+	}
+	// curr 定位到第 k+1 个结点，即下一 group 的首结点
+	if count < k {
+		return head
+	}
+
+	var prev *ListNode
+	p := head
+	for p != curr {
+		next := p.Next
+		p.Next = prev
+		prev = p
+		p = next
+	}
+	// 连接当前 group 与后面的部分
+	head.Next = reverseKGroup6(curr, k)
+	return prev
 }
 
 /*
  * 跟 LeetCode T25. K 个一组翻转链表题目类似，
  * 题目要求换成，如果节点总数不是 k 的整数倍，那么请头部剩余的节点保持原有顺序
  */
-func reverseKGroup3(head *ListNode, k int) *ListNode {
-	if k < 2 {
+func reverseKGroup8(head *ListNode, k int) *ListNode {
+	if head == nil || head.Next == nil || k < 2 {
 		return head
 	}
 	lens := getListLen(head)
@@ -577,154 +706,6 @@ func reverseKGroup3(head *ListNode, k int) *ListNode {
 	// 先把头部的余数节点放过，然后走入正常的逻辑，每 k 个一组进行翻转
 	prev.Next = reverseKGroup(curr, k)
 	return head
-}
-
-func reverseKGroup5(head *ListNode, k int) *ListNode {
-	if head == nil || k < 2 {
-		return head
-	}
-
-	var newHead, lastTail, start *ListNode
-
-	cnt := 1
-	curr := head
-	for curr != nil {
-		if cnt != k {
-			cnt++
-			curr = curr.Next
-			continue
-		}
-		if lastTail == nil {
-			start = head
-			newHead = curr
-		} else {
-			start = lastTail.Next
-		}
-		nextStart := curr.Next
-
-		prev := lastTail
-		iter := start
-		for iter != nextStart {
-			next := iter.Next
-			iter.Next = prev
-			prev = iter
-			iter = next
-		}
-		if lastTail != nil {
-			lastTail.Next = prev
-		}
-
-		lastTail = start
-		lastTail.Next = nextStart
-		curr = nextStart
-		cnt = 1
-	}
-	return newHead
-}
-
-func reverseKGroup6(head *ListNode, k int) *ListNode {
-	if head == nil || k < 2 {
-		return head
-	}
-
-	dummy := &ListNode{
-		Next: head,
-	}
-	lastTail := dummy
-
-	cnt := 1
-	curr := head
-	for curr != nil {
-		if cnt != k {
-			cnt++
-			curr = curr.Next
-			continue
-		}
-
-		start := lastTail.Next
-		nextStart := curr.Next
-
-		prev := lastTail
-		iter := start
-		for iter != nextStart {
-			next := iter.Next
-			iter.Next = prev
-			prev = iter
-			iter = next
-		}
-		lastTail.Next = prev
-
-		lastTail = start
-		lastTail.Next = nextStart
-		curr = nextStart
-		cnt = 1
-	}
-	return dummy.Next
-}
-
-func reverseKGroup7(head *ListNode, k int) *ListNode {
-	if head == nil || k < 2 {
-		return head
-	}
-	dummy := &ListNode{
-		Next: head,
-	}
-	// prev 翻转部分第一个结点的前置结点
-	prev, curr := dummy, head
-
-	count := 1
-	for curr != nil {
-		if count != k {
-			count++
-			curr = curr.Next
-			continue
-		}
-		// count == k 时，curr 指向第 k 个节点
-		next := curr.Next // 保存 curr 的下一结点
-		curr.Next = nil   // 断开
-
-		start := prev.Next             // 要翻转部分的第一个结点
-		prev.Next = reverseList(start) // 连接前面部分与新翻转的部分
-
-		start.Next = next // stat 成为翻转部分的尾结点，重新连接链表的后面部分
-		prev = start      // 更新 prev
-		curr = next
-		count = 1
-	}
-	return dummy.Next
-}
-
-func reverseKGroup8(head *ListNode, k int) *ListNode {
-	if head == nil || k < 2 {
-		return head
-	}
-	dummy := &ListNode{
-		Next: head,
-	}
-	// prev 翻转部分第一个结点的前置结点
-	prev, curr := dummy, head
-
-	for curr != nil {
-		m := k
-		for curr != nil && m > 1 {
-			curr = curr.Next
-			m--
-		}
-		if curr == nil {
-			break
-		}
-
-		next := curr.Next
-		curr.Next = nil
-
-		start := prev.Next
-		prev.Next = reverseList(start)
-
-		start.Next = next
-		prev = start
-		curr = next
-	}
-	return dummy.Next
 }
 
 /*

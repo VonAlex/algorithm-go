@@ -232,12 +232,7 @@ func TestIsPalindromeList(t *testing.T) {
 
 func TestReverseKGroup(t *testing.T) {
 	listPrint(head)
-	listPrint(reverseKGroup2(head, 3))
-}
-
-func TestReverseB(t *testing.T) {
-	listPrint(head)
-	listPrint(reverseKGroup8(head, 2))
+	listPrint(reverseKGroup6(head, 2))
 }
 
 func TestSortList(t *testing.T) {
