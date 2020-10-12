@@ -2,7 +2,6 @@ package leetcode
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 )
 
@@ -111,10 +110,12 @@ func TestListPrint(t *testing.T) {
 }
 
 func TestReversePrint(t *testing.T) {
-	listPrint(head)
-	fmt.Println(reversePrint4(head))
-	listPrint(oneNodeHead)
-	fmt.Println(reversePrint4(oneNodeHead))
+	// listPrint(head)
+	// fmt.Println(reversePrint4(head))
+	// listPrint(oneNodeHead)
+	// fmt.Println(reversePrint4(oneNodeHead))
+
+	t.Log(reversePrint6(head))
 }
 
 func TestReverseList(t *testing.T) {
