@@ -115,7 +115,7 @@ func TestReversePrint(t *testing.T) {
 	// listPrint(oneNodeHead)
 	// fmt.Println(reversePrint4(oneNodeHead))
 
-	t.Log(reversePrint6(head))
+	t.Log(reversePrint5(head))
 }
 
 func TestReverseList(t *testing.T) {
@@ -228,7 +228,7 @@ func TestDeleteMiddleNode(t *testing.T) {
 
 func TestIsPalindromeList(t *testing.T) {
 	listPrint(head3)
-	t.Log(isPalindromeList(head3))
+	t.Log(isPalindromeList3(head3))
 }
 
 func TestReverseKGroup(t *testing.T) {
@@ -292,8 +292,8 @@ func TestDivideOddEvenList(t *testing.T) {
 }
 
 func TestRotateRight(t *testing.T) {
-	listPrint(oddEvenHead)
-	listPrint(rotateRight2(oddEvenHead, 3))
+	listPrint(head)
+	listPrint(rotateRight(head, 3))
 }
 
 func Test_reorderList(t *testing.T) {

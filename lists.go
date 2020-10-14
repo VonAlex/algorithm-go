@@ -709,7 +709,7 @@ func reverseKGroup8(head *ListNode, k int) *ListNode {
 // 方法 1 使用栈，借助其先入后出的特点
 // 时/空间复杂度 O(N)
 func isPalindromeList(head *ListNode) bool {
-	if head == nil {
+	if head == nil || head.Next == nil {
 		return true
 	}
 	stack := list.New()
@@ -729,22 +729,46 @@ func isPalindromeList(head *ListNode) bool {
 	return true
 }
 
+// 方法 2 使用栈，入栈一半结点
+func isPalindromeList2(head *ListNode) bool {
+	if head == nil || head.Next == nil {
+		return true
+	}
+	stack := list.New()
+	slow, fast := head, head
+	// 放一半结点到栈中
+	for fast != nil && fast.Next != nil {
+		stack.PushBack(slow)
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	if fast != nil { // 奇数链表跳过中间结点
+		slow = slow.Next
+	}
+	for slow != nil {
+		node := stack.Remove(stack.Back())
+		if node.(*ListNode).Val != slow.Val {
+			return false
+		}
+		slow = slow.Next
+	}
+	return true
+}
+
 // 方法 2 反转链表
 // 将链表后半部分反转，从两边遍历，对回文链表链表来说，这两半链表有着相同的遍历
 // 时间复杂度 O(N)，空间复杂度 O(1)
-func isPalindromeList2(head *ListNode) bool {
+func isPalindromeList3(head *ListNode) bool {
 	if head == nil || head.Next == nil { // 讨论链表为空时返回 true 还是 false
 		return true
 	}
-	slow := head
-	fast := head
+	slow, fast := head, head
 	for fast != nil && fast.Next != nil {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-	revHead := reverseList(slow) // 保存反转后的后半部分头结点，方便后面恢复链表
-	currL := head                // 链表两头
-	currR := revHead
+	HeadR := reverseList(slow)  // 保存反转后的后半部分头结点，方便后面恢复链表
+	currL, currR := head, HeadR // 链表两头
 	res := true
 	for currL != nil && currR != nil {
 		if currL.Val != currR.Val {
@@ -754,63 +778,8 @@ func isPalindromeList2(head *ListNode) bool {
 		currL = currL.Next
 		currR = currR.Next
 	}
-	reverseList(revHead) // 恢复后半段list
+	reverseList(HeadR) // 恢复后半段list
 	return res
-}
-
-/*
- * LeetCode T143. 重排链表
- * https://leetcode-cn.com/problems/reorder-list/
- *
- * 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
- * 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
- * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
- * 示例 1:
- * 给定链表 1->2->3->4, 重新排列为 1->4->2->3.
- *
- */
-func reorderList(head *ListNode) {
-	if head == nil || head.Next == nil {
-		return
-	}
-	// 1. 找到中间节点
-	slow := head
-	fast := head.Next
-	for fast != nil && fast.Next != nil {
-		slow = slow.Next
-		fast = fast.Next.Next
-	}
-
-	// 2. 反转后半部分
-	curr := slow.Next
-	slow.Next = nil
-	var prev, next *ListNode
-	for curr != nil {
-		next = curr.Next
-		curr.Next = prev
-		prev = curr
-		curr = next
-	}
-
-	// 3. 合并两部分
-	second := prev
-	first := head
-	dummy := &ListNode{}
-	curr = dummy
-	for first != nil && second != nil {
-		curr.Next = first
-		first = first.Next
-		curr = curr.Next
-		curr.Next = second
-		second = second.Next
-		curr = curr.Next
-	}
-	// len(前半部分) >= len(后半部分)
-	if first != nil {
-		curr.Next = first
-	}
-	head = dummy.Next
-	return
 }
 
 /*
@@ -830,57 +799,60 @@ func reorderList(head *ListNode) {
 // 方法1：截取法
 // 将链表后 k 个节点组成的子链作为新链表的头部
 func rotateRight(head *ListNode, k int) *ListNode {
-	if head == nil || head.Next == nil || k <= 0 { // 单节点、空链表不需要翻转
+	if head == nil || head.Next == nil || k <= 0 {
 		return head
 	}
-	lens := getListLen(head)
-	k %= lens
-
+	var n int
+	curr := head
+	for curr != nil {
+		curr = curr.Next
+		n++
+	}
+	k %= n
 	if k == 0 { // 整除，不需要翻转
 		return head
 	}
+
+	// 找到第 n - k 个节点
 	fast := head
 	for k > 0 { // fast 指针先走 k 步
-		if fast == nil {
-			return head
-		}
 		fast = fast.Next
 		k--
 	}
-
 	slow := head
 	for fast != nil && fast.Next != nil {
 		slow = slow.Next
 		fast = fast.Next
 	}
-
 	newHead := slow.Next // 新链表的头部在 slow 的下一个节点
-	slow.Next = nil
+	slow.Next = nil      // 断开
 	fast.Next = head
 	return newHead
 }
 
 // 方法2：切环法
-// 将单链表收尾相连成环，然后在 len - k%len - 1 位置切断
+// 将单链表收尾相连成环，然后在新 tail 结点后切断
 func rotateRight2(head *ListNode, k int) *ListNode {
-	if head == nil || head.Next == nil || k <= 0 { // 单节点、空链表不需要翻转
+	if head == nil || head.Next == nil || k <= 0 {
 		return head
 	}
-	listLen := 1
+	n := 1
 	curr := head
 	for curr.Next != nil {
 		curr = curr.Next
-		listLen++
+		n++
 	}
 	curr.Next = head
-	tailIdx := listLen - k%listLen - 1 // 新的 tail 节点在链表中的位置
 
-	newTail := head
-	for i := 1; i <= tailIdx; i++ {
-		newTail = newTail.Next
+	// 第 n - k 个结点为新的 tail 结点
+	idx := n - k%n
+	curr = head
+	for idx > 1 {
+		curr = curr.Next
+		idx--
 	}
-	newHead := newTail.Next
-	newTail.Next = nil
+	newHead := curr.Next
+	curr.Next = nil
 	return newHead
 }
 
@@ -1571,6 +1543,61 @@ func copyRandomList2(head *ComplexNode) *ComplexNode {
 	}
 	odd.Next = nil
 	return evenHead
+}
+
+/*
+ * LeetCode T143. 重排链表
+ * https://leetcode-cn.com/problems/reorder-list/
+ *
+ * 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+ * 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+ * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+ * 示例 1:
+ * 给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+ *
+ */
+func reorderList(head *ListNode) {
+	if head == nil || head.Next == nil {
+		return
+	}
+	// 1. 找到中间节点
+	slow := head
+	fast := head.Next
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+
+	// 2. 反转后半部分
+	curr := slow.Next
+	slow.Next = nil
+	var prev, next *ListNode
+	for curr != nil {
+		next = curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+	}
+
+	// 3. 合并两部分
+	second := prev
+	first := head
+	dummy := &ListNode{}
+	curr = dummy
+	for first != nil && second != nil {
+		curr.Next = first
+		first = first.Next
+		curr = curr.Next
+		curr.Next = second
+		second = second.Next
+		curr = curr.Next
+	}
+	// len(前半部分) >= len(后半部分)
+	if first != nil {
+		curr.Next = first
+	}
+	head = dummy.Next
+	return
 }
 
 /*
