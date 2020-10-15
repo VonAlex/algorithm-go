@@ -165,12 +165,12 @@ func TestMergeTwoLists(t *testing.T) {
 		Val: 1,
 		Next: &ListNode{
 			Val: 3,
-			Next: &ListNode{
-				Val: 9,
-				Next: &ListNode{
-					Val: 10,
-				},
-			},
+			// Next: &ListNode{
+			// 	Val: 9,
+			// 	Next: &ListNode{
+			// 		Val: 10,
+			// 	},
+			// },
 		},
 	}
 	l2 := &ListNode{

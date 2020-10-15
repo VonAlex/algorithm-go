@@ -97,31 +97,24 @@ func addTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
 // 方法 1：迭代法
 // 时间复杂度：O(n + m), 空间复杂度：O(1)
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-	if l1 == nil {
-		return l2
-	}
-	if l2 == nil {
-		return l1
-	}
 	dummy := &ListNode{}
-	curr1 := l1
-	curr2 := l2
-	merged := dummy
+	curr := dummy
+	curr1, curr2 := l1, l2
 	for curr1 != nil && curr2 != nil {
 		if curr1.Val < curr2.Val {
-			merged.Next = curr1
+			curr.Next = curr1
 			curr1 = curr1.Next
 		} else {
-			merged.Next = curr2
+			curr.Next = curr2
 			curr2 = curr2.Next
 		}
-		merged = merged.Next
+		curr = curr.Next
 	}
 	if curr1 != nil {
-		merged.Next = curr1
+		curr.Next = curr1
 	}
 	if curr2 != nil {
-		merged.Next = curr2
+		curr.Next = curr2
 	}
 	return dummy.Next
 }
@@ -129,12 +122,14 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 // 方法 2：递归法
 // 时间/空间复杂度都是O(n + m)
 func mergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
+	// 返回条件
 	if l1 == nil {
 		return l2
 	}
 	if l2 == nil {
 		return l1
 	}
+
 	if l1.Val < l2.Val {
 		l1.Next = mergeTwoLists2(l1.Next, l2)
 		return l1
@@ -149,9 +144,9 @@ func mergeTwoLists2(l1 *ListNode, l2 *ListNode) *ListNode {
 // 方法1： 先合并成一个递增链表，然后反正翻转
 // 方法2： 头插法
 func mergeTwoLists3(head1 *ListNode, head2 *ListNode) *ListNode {
-	var curr, newHead, next *ListNode
-	curr1 := head1
-	curr2 := head2
+	var curr, newHead *ListNode
+
+	curr1, curr2 := head1, head2
 	for curr1 != nil && curr2 != nil {
 		if curr1.Val < curr2.Val { // 头插法
 			curr = curr1
@@ -169,10 +164,12 @@ func mergeTwoLists3(head1 *ListNode, head2 *ListNode) *ListNode {
 	} else {
 		curr = curr2
 	}
+
+	// 反转剩余部分，前一个结点是 newHead
 	for curr != nil {
-		next = curr.Next
+		next := curr.Next
 		curr.Next = newHead
-		newHead = curr // 更新 head
+		newHead = curr
 		curr = next
 	}
 	return newHead
