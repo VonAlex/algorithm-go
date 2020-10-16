@@ -1434,10 +1434,8 @@ func divideOddEvenList(head *ListNode) (oddHead, evenHead *ListNode) {
 		oddHead = head
 		return
 	}
-	oddHead = head
-	odd := oddHead
-	evenHead = head.Next
-	even := evenHead
+	oddHead, evenHead = head, head.Next
+	odd, even := oddHead, evenHead
 	for odd.Next != nil && even.Next != nil {
 		odd.Next = even.Next
 		odd = odd.Next
@@ -1446,6 +1444,21 @@ func divideOddEvenList(head *ListNode) (oddHead, evenHead *ListNode) {
 	}
 	odd.Next = nil
 	return
+}
+
+/*
+ * 头条面试题:
+ * 一个链表，奇数位升序偶数位降序，让链表变成升序的。
+ * 例如：1->8->2->7->3->6->4->5，变为 1->2->3->4->5->6->7->8
+ */
+func oddEvenSortlist(head *ListNode) *ListNode {
+	// 1. 抽出奇数节点组成的升序链表 L1 和偶数节点组成的降序链表 L2
+	odd, even := divideOddEvenList(head)
+	// 2. 将 L2 反转成升序链表
+	even = reverseList(even)
+	// 3. 合并 L1 和 L2 两个有序链表
+	newHead := mergeTwoLists(odd, even)
+	return newHead
 }
 
 /*
@@ -1598,19 +1611,4 @@ func reorderList(head *ListNode) {
 	}
 	head = dummy.Next
 	return
-}
-
-/*
- * 头条面试题:
- * 一个链表，奇数位升序偶数位降序，让链表变成升序的。
- * 例如：1->8->2->7->3->6->4->5，变为 1->2->3->4->5->6->7->8
- */
-func oddEvenSortlist(head *ListNode) *ListNode {
-	// 1. 抽出奇数节点组成的升序链表 L1 和偶数节点组成的降序链表 L2
-	odd, even := divideOddEvenList(head)
-	// 2. 将 L2 反转成升序链表
-	even = reverseList(even)
-	// 3. 合并 L1 和 L2 两个有序链表
-	newHead := mergeTwoLists(odd, even)
-	return newHead
 }
