@@ -165,12 +165,12 @@ func TestMergeTwoLists(t *testing.T) {
 		Val: 1,
 		Next: &ListNode{
 			Val: 3,
-			Next: &ListNode{
-				Val: 9,
-				Next: &ListNode{
-					Val: 10,
-				},
-			},
+			// Next: &ListNode{
+			// 	Val: 9,
+			// 	Next: &ListNode{
+			// 		Val: 10,
+			// 	},
+			// },
 		},
 	}
 	l2 := &ListNode{
@@ -246,8 +246,8 @@ func TestReverseN(t *testing.T) {
 	listPrint(reverseN(head3, 4))
 }
 func TestOddEvenList(t *testing.T) {
-	listPrint(head3)
-	listPrint(oddEvenList(head3))
+	listPrint(head)
+	listPrint(oddEvenList(head))
 }
 
 func TestDeleteDuplicates(t *testing.T) {
