@@ -1408,16 +1408,14 @@ func oddEvenList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
-	odd := head
-	evenHead := head.Next
-	even := evenHead
+	oddHead, evenHead := head, head.Next
+	odd, even := oddHead, evenHead
 	for odd.Next != nil && even.Next != nil {
 		odd.Next = even.Next
 		odd = odd.Next
 		even.Next = odd.Next
 		even = even.Next
 	}
-	odd.Next = nil // 清理最后一个节点
 	odd.Next = evenHead
 	return head
 }

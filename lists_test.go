@@ -246,8 +246,8 @@ func TestReverseN(t *testing.T) {
 	listPrint(reverseN(head3, 4))
 }
 func TestOddEvenList(t *testing.T) {
-	listPrint(head3)
-	listPrint(oddEvenList(head3))
+	listPrint(head)
+	listPrint(oddEvenList(head))
 }
 
 func TestDeleteDuplicates(t *testing.T) {
