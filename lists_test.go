@@ -387,3 +387,17 @@ func Test_reverseBetween(t *testing.T) {
 	listPrint(head)
 	listPrint(reverseBetween(head, 2, 4))
 }
+
+func Test_listPlusOne(t *testing.T) {
+	h1 := &ListNode{
+		Val: 8,
+		Next: &ListNode{
+			Val: 9,
+			Next: &ListNode{
+				Val: 9,
+			},
+		},
+	}
+	listPrint(h1)
+	listPrint(listPlusOne2(h1))
+}

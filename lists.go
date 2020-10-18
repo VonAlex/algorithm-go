@@ -55,34 +55,112 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
 // 使用 dummy head 简化了链表遍历的处理
 func addTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
 	dummy := &ListNode{}
-	pre := dummy // 前一个节点
-	carry := 0
-	for l1 != nil || l2 != nil {
-		x, y := 0, 0
-		if l1 != nil {
-			x = l1.Val
-			l1 = l1.Next
-		}
-		if l2 != nil {
-			y = l2.Val
-			l2 = l2.Next
-		}
-		sum := x + y + carry
+	curr := dummy
+	curr1, curr2 := l1, l2
+	var carry int
+	for curr1 != nil && curr2 != nil {
+		sum := curr1.Val + curr2.Val + carry
 		carry = sum / 10
 		sum %= 10
-		pre.Next = &ListNode{
+		curr.Next = &ListNode{
 			Val: sum,
 		}
-		pre = pre.Next
+		curr1 = curr1.Next
+		curr2 = curr2.Next
+		curr = curr.Next
 	}
-	// 考虑最后一个进位
+	for curr1 != nil {
+		sum := curr1.Val + carry
+		carry = sum / 10
+		sum %= 10
+		curr.Next = &ListNode{
+			Val: sum,
+		}
+		curr1 = curr1.Next
+		curr = curr.Next
+	}
+	for curr2 != nil {
+		sum := curr2.Val + carry
+		carry = sum / 10
+		sum %= 10
+		curr.Next = &ListNode{
+			Val: sum,
+		}
+		curr2 = curr2.Next
+		curr = curr.Next
+	}
 	if carry != 0 {
-		pre.Next = &ListNode{
+		curr.Next = &ListNode{
 			Val: carry,
 		}
 	}
 	return dummy.Next
+}
+
+/**
+ * LeetCode T369 单链表加 1
+ *
+ * 输入：1 -> 2 -> 3
+ * 输出：1 -> 2 -> 4
+ */
+func listPlusOne(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	reHead := reverseList(head)
+	curr := reHead
+
+	carry := 1         // 加1
+	var prev *ListNode // prev 记录尾结点
+	for curr != nil {
+		curr.Val += carry
+		carry = curr.Val / 10
+		curr.Val %= 10
+		prev = curr
+		curr = curr.Next
+	}
+	if carry > 0 {
+		prev.Next = &ListNode{
+			Val: carry,
+		}
+	}
+	head = reverseList(reHead)
+	return head
+}
+
+func listPlusOne2(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	var _plus func(*ListNode) int
+	_plus = func(node *ListNode) int {
+		var carry int
+		if node.Next == nil {
+			carry = 1 // 低位（尾结点）加 1
+		} else {
+			carry = _plus(node.Next)
+		}
+		node.Val += carry
+		carry = node.Val / 10
+		node.Val %= 10
+		return carry
+	}
+	carry := _plus(head)
+	if carry == 0 {
+		return head
+	}
+	newHead := &ListNode{
+		Val:  carry,
+		Next: head,
+	}
+	return newHead
 }
 
 /**
@@ -1474,41 +1552,36 @@ type ComplexNode struct {
 // 方法 1：时间复杂度 O(N)，空间复杂度 O(N)
 func copyRandomList(head *ComplexNode) *ComplexNode {
 	if head == nil {
-		return head
+		return nil
 	}
 	copyHead := &ComplexNode{
 		Val: head.Val,
 	}
-	curr := head
-	prev := copyHead // 要有一个 prev 节点，来 next 连接 copy 节点
-	curr = curr.Next
 	// 1. 复制有一个 random 为空的单链表
+	curr, cycurr := head.Next, copyHead
 	for curr != nil {
-		copyNode := &ComplexNode{
+		n := &ComplexNode{
 			Val: curr.Val,
 		}
-		prev.Next = copyNode
-		prev = prev.Next
+		cycurr.Next = n
 		curr = curr.Next
+		cycurr = cycurr.Next
 	}
 	// 2. 映射 A → A'
+	curr, cycurr = head, copyHead
 	nodes := make(map[*ComplexNode]*ComplexNode)
-	curr = head
-	copyCurr := copyHead
 	for curr != nil {
-		nodes[curr] = copyCurr
+		nodes[curr] = cycurr
 		curr = curr.Next
-		copyCurr = copyCurr.Next
+		cycurr = cycurr.Next
 	}
+
 	// 3. 根据映射，赋值 random
-	curr = head
-	copyCurr = copyHead
-	for curr != nil {
-		if curr.Random != nil {
-			copyCurr.Random = nodes[curr.Random]
-		}
+	curr, cycurr = head, copyHead
+	for cycurr != nil {
+		cycurr.Random = nodes[curr.Random]
 		curr = curr.Next
-		copyCurr = copyCurr.Next
+		cycurr = cycurr.Next
 	}
 	return copyHead
 }
@@ -1523,26 +1596,25 @@ func copyRandomList2(head *ComplexNode) *ComplexNode {
 	// 1. 先拷贝当前节点，作为当前节点的下一个节点
 	// A → A' → B → B‘
 	for curr != nil {
-		currCloned := &ComplexNode{
+		copy := &ComplexNode{
 			Val:  curr.Val,
 			Next: curr.Next,
 		}
-		curr.Next = currCloned
-		curr = currCloned.Next
+		curr.Next = copy
+		curr = copy.Next
 	}
 	curr = head
 	// 2. 将 copy 节点的 random 指针赋值
 	for curr != nil {
-		currCloned := curr.Next
+		copy := curr.Next
 		if curr.Random != nil {
-			currCloned.Random = curr.Random.Next
+			copy.Random = curr.Random.Next
 		}
-		curr = currCloned.Next
+		curr = copy.Next
 	}
 	// 3. 分离奇偶数节点组成的链表
-	odd := head
 	evenHead := head.Next
-	even := evenHead
+	odd, even := head, evenHead
 	for odd.Next != nil && even.Next != nil {
 		odd.Next = even.Next
 		odd = odd.Next
@@ -1568,41 +1640,47 @@ func reorderList(head *ListNode) {
 	if head == nil || head.Next == nil {
 		return
 	}
-	// 1. 找到中间节点
-	slow := head
-	fast := head.Next
+	// 1. 找中间结点
+	var prev *ListNode
+	slow, fast := head, head
 	for fast != nil && fast.Next != nil {
+		prev = slow
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-
+	var curr *ListNode // 后半段链表的 head
+	// 奇偶链表需要分别处理
+	if fast != nil { // 奇数个结点
+		curr = slow.Next
+		slow.Next = nil
+	} else { // 偶数个结点
+		curr = slow
+		prev.Next = nil
+	}
 	// 2. 反转后半部分
-	curr := slow.Next
-	slow.Next = nil
-	var prev, next *ListNode
+	prev = nil
 	for curr != nil {
-		next = curr.Next
+		next := curr.Next
 		curr.Next = prev
 		prev = curr
 		curr = next
 	}
-
 	// 3. 合并两部分
-	second := prev
-	first := head
+	curr1, curr2 := head, prev
 	dummy := &ListNode{}
 	curr = dummy
-	for first != nil && second != nil {
-		curr.Next = first
-		first = first.Next
+	for curr1 != nil && curr2 != nil {
+		curr.Next = curr1
+		curr1 = curr1.Next
 		curr = curr.Next
-		curr.Next = second
-		second = second.Next
+		curr.Next = curr2
+		curr2 = curr2.Next
 		curr = curr.Next
 	}
-	// len(前半部分) >= len(后半部分)
-	if first != nil {
-		curr.Next = first
+
+	// 前半部分的长度肯定比后半部分大
+	if curr1 != nil {
+		curr.Next = curr1
 	}
 	head = dummy.Next
 	return
