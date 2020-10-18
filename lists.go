@@ -11,7 +11,7 @@ type ListNode struct {
 	Next *ListNode
 }
 
-/**
+/*
  * LeetCode T2 两数相加
  *
  * 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
@@ -65,35 +65,22 @@ func addTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
 	curr := dummy
 	curr1, curr2 := l1, l2
 	var carry int
-	for curr1 != nil && curr2 != nil {
-		sum := curr1.Val + curr2.Val + carry
+	for curr1 != nil || curr2 != nil {
+		sum := carry
+		if curr1 != nil {
+			sum += curr1.Val
+			curr1 = curr1.Next
+		}
+		if curr2 != nil {
+			sum += curr2.Val
+			curr2 = curr2.Next
+		}
+
 		carry = sum / 10
 		sum %= 10
 		curr.Next = &ListNode{
 			Val: sum,
 		}
-		curr1 = curr1.Next
-		curr2 = curr2.Next
-		curr = curr.Next
-	}
-	for curr1 != nil {
-		sum := curr1.Val + carry
-		carry = sum / 10
-		sum %= 10
-		curr.Next = &ListNode{
-			Val: sum,
-		}
-		curr1 = curr1.Next
-		curr = curr.Next
-	}
-	for curr2 != nil {
-		sum := curr2.Val + carry
-		carry = sum / 10
-		sum %= 10
-		curr.Next = &ListNode{
-			Val: sum,
-		}
-		curr2 = curr2.Next
 		curr = curr.Next
 	}
 	if carry != 0 {
@@ -102,6 +89,134 @@ func addTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
 		}
 	}
 	return dummy.Next
+}
+
+/**
+ * LeetCode T445. 两数相加 II
+ * https://leetcode-cn.com/problems/add-two-numbers-ii/
+ *
+ * 给你两个非空链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
+ * 你可以假设除了数字 0 之外，这两个数字都不会以零开头。
+ *
+ * 示例：
+ * 	   输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+ *	   输出：7 -> 8 -> 0 -> 7
+ */
+// 方法1：辅助栈法
+func addTwoNumbers3(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+
+	stack1 := list.New()
+	stack2 := list.New()
+	curr := l1
+	for curr != nil {
+		stack1.PushBack(curr)
+		curr = curr.Next
+	}
+	curr = l2
+	for curr != nil {
+		stack2.PushBack(curr)
+		curr = curr.Next
+	}
+	var carry int
+	dummy := &ListNode{}
+	for stack1.Len() > 0 || stack2.Len() > 0 {
+		node := &ListNode{
+			Val: carry,
+		}
+		if stack1.Len() > 0 {
+			node.Val += stack1.Remove(stack1.Back()).(*ListNode).Val
+		}
+		if stack2.Len() > 0 {
+			node.Val += stack2.Remove(stack2.Back()).(*ListNode).Val
+		}
+
+		carry = node.Val / 10
+		node.Val %= 10
+		node.Next = dummy.Next
+		// 头插结果
+		dummy.Next = node
+	}
+	if carry > 0 {
+		node := &ListNode{
+			Val:  carry,
+			Next: dummy.Next,
+		}
+		dummy.Next = node
+	}
+	return dummy.Next
+}
+
+// 方法2：递归法
+func addTwoNumbers4(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+
+	l1Len := getListLen(l1)
+	l2Len := getListLen(l2)
+
+	// 把 l1 与 l2 padding 成 2 个相同长度的链表
+	var offset int
+	if l1Len > l2Len {
+		offset = l1Len - l2Len
+		for offset > 0 {
+			node := &ListNode{
+				Next: l2,
+			}
+			l2 = node
+			offset--
+		}
+	} else {
+		offset = l2Len - l1Len
+		for offset > 0 {
+			node := &ListNode{
+				Next: l1,
+			}
+			l1 = node
+			offset--
+		}
+	}
+
+	var _plus func(*ListNode, *ListNode) *ListNode
+	_plus = func(l1, l2 *ListNode) *ListNode {
+		if l1 == nil { // l1 与 l2 有相等的长度，判断一个即可
+			return nil
+		}
+		curr := &ListNode{
+			Val: l1.Val + l2.Val,
+		}
+		node := _plus(l1.Next, l2.Next)
+		if node != nil {
+			carry := node.Val / 10
+			curr.Val += carry
+			node.Val %= 10
+		}
+		curr.Next = node // 连接返回的结点
+		return curr
+	}
+
+	head := _plus(l1, l2)
+
+	// 有新的进位，需要加一个结点
+	carry := head.Val / 10
+	if carry == 0 {
+		return head
+	}
+	head.Val %= 10
+	newHead := &ListNode{
+		Val:  carry,
+		Next: head,
+	}
+	return newHead
 }
 
 /**
@@ -139,23 +254,30 @@ func listPlusOne2(head *ListNode) *ListNode {
 	if head == nil {
 		return head
 	}
-	var _plus func(*ListNode) int
-	_plus = func(node *ListNode) int {
-		var carry int
-		if node.Next == nil {
-			carry = 1 // 低位（尾结点）加 1
-		} else {
-			carry = _plus(node.Next)
+
+	var _plus func(*ListNode) *ListNode
+	_plus = func(l *ListNode) *ListNode {
+		if l.Next == nil {
+			l.Val++
+			return l
 		}
-		node.Val += carry
-		carry = node.Val / 10
+		node := _plus(l.Next)
+
+		carry := node.Val / 10
+		l.Val += carry
 		node.Val %= 10
-		return carry
+
+		l.Next = node
+		return l
 	}
-	carry := _plus(head)
+
+	head = _plus(head)
+
+	carry := head.Val / 10
 	if carry == 0 {
 		return head
 	}
+	head.Val %= 10
 	newHead := &ListNode{
 		Val:  carry,
 		Next: head,
