@@ -1,34 +1,34 @@
 package leetcode
 
 import (
-	"encoding/json"
 	"testing"
 )
 
-func TestAddTwoNumbers(t *testing.T) {
+func Test_AddTwoNumbers(t *testing.T) {
 	l1 := &ListNode{
-		Val: 5,
-		// Next: &ListNode{
-		// 	Val: 4,
-		// 	Next: &ListNode{
-		// 		Val: 3,
-		// 	},
-		// },
+		Val: 7,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 4,
+				Next: &ListNode{
+					Val: 3,
+				},
+			},
+		},
 	}
 
 	l2 := &ListNode{
 		Val: 5,
-		// Next: &ListNode{
-		// 	Val: 6,
-		// 	Next: &ListNode{
-		// 		Val: 4,
-		// 	},
-		// },
+		Next: &ListNode{
+			Val: 6,
+			Next: &ListNode{
+				Val: 4,
+			},
+		},
 	}
 
-	sum := addTwoNumbers2(l1, l2)
-	s, _ := json.Marshal(sum)
-	t.Log(string(s))
+	listPrint(addTwoNumbers4(l1, l2))
 }
 
 var head = &ListNode{
@@ -391,4 +391,18 @@ func Test_reverseBetween(t *testing.T) {
 func Test_swapPairs(t *testing.T) {
 	listPrint(head)
 	listPrint(swapPairs(head))
+}
+
+func Test_listPlusOne(t *testing.T) {
+	h1 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 3,
+			},
+		},
+	}
+	listPrint(h1)
+	listPrint(listPlusOne2(h1))
 }

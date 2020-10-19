@@ -11,7 +11,7 @@ type ListNode struct {
 	Next *ListNode
 }
 
-/**
+/*
  * LeetCode T2 两数相加
  *
  * 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
@@ -55,34 +55,234 @@ func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
 
 // 使用 dummy head 简化了链表遍历的处理
 func addTwoNumbers2(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
 	dummy := &ListNode{}
-	pre := dummy // 前一个节点
-	carry := 0
-	for l1 != nil || l2 != nil {
-		x, y := 0, 0
-		if l1 != nil {
-			x = l1.Val
-			l1 = l1.Next
+	curr := dummy
+	curr1, curr2 := l1, l2
+	var carry int
+	for curr1 != nil || curr2 != nil {
+		sum := carry
+		if curr1 != nil {
+			sum += curr1.Val
+			curr1 = curr1.Next
 		}
-		if l2 != nil {
-			y = l2.Val
-			l2 = l2.Next
+		if curr2 != nil {
+			sum += curr2.Val
+			curr2 = curr2.Next
 		}
-		sum := x + y + carry
+
 		carry = sum / 10
 		sum %= 10
-		pre.Next = &ListNode{
+		curr.Next = &ListNode{
 			Val: sum,
 		}
-		pre = pre.Next
+		curr = curr.Next
 	}
-	// 考虑最后一个进位
 	if carry != 0 {
-		pre.Next = &ListNode{
+		curr.Next = &ListNode{
 			Val: carry,
 		}
 	}
 	return dummy.Next
+}
+
+/**
+ * LeetCode T445. 两数相加 II
+ * https://leetcode-cn.com/problems/add-two-numbers-ii/
+ *
+ * 给你两个非空链表来代表两个非负整数。数字最高位位于链表开始位置。它们的每个节点只存储一位数字。将这两数相加会返回一个新的链表。
+ * 你可以假设除了数字 0 之外，这两个数字都不会以零开头。
+ *
+ * 示例：
+ * 	   输入：(7 -> 2 -> 4 -> 3) + (5 -> 6 -> 4)
+ *	   输出：7 -> 8 -> 0 -> 7
+ */
+// 方法1：辅助栈法
+func addTwoNumbers3(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+
+	stack1 := list.New()
+	stack2 := list.New()
+	curr := l1
+	for curr != nil {
+		stack1.PushBack(curr)
+		curr = curr.Next
+	}
+	curr = l2
+	for curr != nil {
+		stack2.PushBack(curr)
+		curr = curr.Next
+	}
+	var carry int
+	dummy := &ListNode{}
+	for stack1.Len() > 0 || stack2.Len() > 0 {
+		node := &ListNode{
+			Val: carry,
+		}
+		if stack1.Len() > 0 {
+			node.Val += stack1.Remove(stack1.Back()).(*ListNode).Val
+		}
+		if stack2.Len() > 0 {
+			node.Val += stack2.Remove(stack2.Back()).(*ListNode).Val
+		}
+
+		carry = node.Val / 10
+		node.Val %= 10
+		node.Next = dummy.Next
+		// 头插结果
+		dummy.Next = node
+	}
+	if carry > 0 {
+		node := &ListNode{
+			Val:  carry,
+			Next: dummy.Next,
+		}
+		dummy.Next = node
+	}
+	return dummy.Next
+}
+
+// 方法2：递归法
+func addTwoNumbers4(l1 *ListNode, l2 *ListNode) *ListNode {
+	if l1 == nil {
+		return l2
+	}
+	if l2 == nil {
+		return l1
+	}
+
+	l1Len := getListLen(l1)
+	l2Len := getListLen(l2)
+
+	// 把 l1 与 l2 padding 成 2 个相同长度的链表
+	var offset int
+	if l1Len > l2Len {
+		offset = l1Len - l2Len
+		for offset > 0 {
+			node := &ListNode{
+				Next: l2,
+			}
+			l2 = node
+			offset--
+		}
+	} else {
+		offset = l2Len - l1Len
+		for offset > 0 {
+			node := &ListNode{
+				Next: l1,
+			}
+			l1 = node
+			offset--
+		}
+	}
+
+	var _plus func(*ListNode, *ListNode) *ListNode
+	_plus = func(l1, l2 *ListNode) *ListNode {
+		if l1 == nil { // l1 与 l2 有相等的长度，判断一个即可
+			return nil
+		}
+		curr := &ListNode{
+			Val: l1.Val + l2.Val,
+		}
+		node := _plus(l1.Next, l2.Next)
+		if node != nil {
+			carry := node.Val / 10
+			curr.Val += carry
+			node.Val %= 10
+		}
+		curr.Next = node // 连接返回的结点
+		return curr
+	}
+
+	head := _plus(l1, l2)
+
+	// 有新的进位，需要加一个结点
+	carry := head.Val / 10
+	if carry == 0 {
+		return head
+	}
+	head.Val %= 10
+	newHead := &ListNode{
+		Val:  carry,
+		Next: head,
+	}
+	return newHead
+}
+
+/**
+ * LeetCode T369 单链表加 1
+ *
+ * 输入：1 -> 2 -> 3
+ * 输出：1 -> 2 -> 4
+ */
+func listPlusOne(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	reHead := reverseList(head)
+	curr := reHead
+
+	carry := 1         // 加1
+	var prev *ListNode // prev 记录尾结点
+	for curr != nil {
+		curr.Val += carry
+		carry = curr.Val / 10
+		curr.Val %= 10
+		prev = curr
+		curr = curr.Next
+	}
+	if carry > 0 {
+		prev.Next = &ListNode{
+			Val: carry,
+		}
+	}
+	head = reverseList(reHead)
+	return head
+}
+
+func listPlusOne2(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+
+	var _plus func(*ListNode) *ListNode
+	_plus = func(l *ListNode) *ListNode {
+		if l.Next == nil {
+			l.Val++
+			return l
+		}
+		node := _plus(l.Next)
+
+		carry := node.Val / 10
+		l.Val += carry
+		node.Val %= 10
+
+		l.Next = node
+		return l
+	}
+
+	head = _plus(head)
+
+	carry := head.Val / 10
+	if carry == 0 {
+		return head
+	}
+	head.Val %= 10
+	newHead := &ListNode{
+		Val:  carry,
+		Next: head,
+	}
+	return newHead
 }
 
 /**
@@ -1429,10 +1629,8 @@ func divideOddEvenList(head *ListNode) (oddHead, evenHead *ListNode) {
 		oddHead = head
 		return
 	}
-	oddHead = head
-	odd := oddHead
-	evenHead = head.Next
-	even := evenHead
+	oddHead, evenHead = head, head.Next
+	odd, even := oddHead, evenHead
 	for odd.Next != nil && even.Next != nil {
 		odd.Next = even.Next
 		odd = odd.Next
@@ -1441,6 +1639,21 @@ func divideOddEvenList(head *ListNode) (oddHead, evenHead *ListNode) {
 	}
 	odd.Next = nil
 	return
+}
+
+/*
+ * 头条面试题:
+ * 一个链表，奇数位升序偶数位降序，让链表变成升序的。
+ * 例如：1->8->2->7->3->6->4->5，变为 1->2->3->4->5->6->7->8
+ */
+func oddEvenSortlist(head *ListNode) *ListNode {
+	// 1. 抽出奇数节点组成的升序链表 L1 和偶数节点组成的降序链表 L2
+	odd, even := divideOddEvenList(head)
+	// 2. 将 L2 反转成升序链表
+	even = reverseList(even)
+	// 3. 合并 L1 和 L2 两个有序链表
+	newHead := mergeTwoLists(odd, even)
+	return newHead
 }
 
 /*
@@ -1461,41 +1674,36 @@ type ComplexNode struct {
 // 方法 1：时间复杂度 O(N)，空间复杂度 O(N)
 func copyRandomList(head *ComplexNode) *ComplexNode {
 	if head == nil {
-		return head
+		return nil
 	}
 	copyHead := &ComplexNode{
 		Val: head.Val,
 	}
-	curr := head
-	prev := copyHead // 要有一个 prev 节点，来 next 连接 copy 节点
-	curr = curr.Next
 	// 1. 复制有一个 random 为空的单链表
+	curr, cycurr := head.Next, copyHead
 	for curr != nil {
-		copyNode := &ComplexNode{
+		n := &ComplexNode{
 			Val: curr.Val,
 		}
-		prev.Next = copyNode
-		prev = prev.Next
+		cycurr.Next = n
 		curr = curr.Next
+		cycurr = cycurr.Next
 	}
 	// 2. 映射 A → A'
+	curr, cycurr = head, copyHead
 	nodes := make(map[*ComplexNode]*ComplexNode)
-	curr = head
-	copyCurr := copyHead
 	for curr != nil {
-		nodes[curr] = copyCurr
+		nodes[curr] = cycurr
 		curr = curr.Next
-		copyCurr = copyCurr.Next
+		cycurr = cycurr.Next
 	}
+
 	// 3. 根据映射，赋值 random
-	curr = head
-	copyCurr = copyHead
-	for curr != nil {
-		if curr.Random != nil {
-			copyCurr.Random = nodes[curr.Random]
-		}
+	curr, cycurr = head, copyHead
+	for cycurr != nil {
+		cycurr.Random = nodes[curr.Random]
 		curr = curr.Next
-		copyCurr = copyCurr.Next
+		cycurr = cycurr.Next
 	}
 	return copyHead
 }
@@ -1510,26 +1718,25 @@ func copyRandomList2(head *ComplexNode) *ComplexNode {
 	// 1. 先拷贝当前节点，作为当前节点的下一个节点
 	// A → A' → B → B‘
 	for curr != nil {
-		currCloned := &ComplexNode{
+		copy := &ComplexNode{
 			Val:  curr.Val,
 			Next: curr.Next,
 		}
-		curr.Next = currCloned
-		curr = currCloned.Next
+		curr.Next = copy
+		curr = copy.Next
 	}
 	curr = head
 	// 2. 将 copy 节点的 random 指针赋值
 	for curr != nil {
-		currCloned := curr.Next
+		copy := curr.Next
 		if curr.Random != nil {
-			currCloned.Random = curr.Random.Next
+			copy.Random = curr.Random.Next
 		}
-		curr = currCloned.Next
+		curr = copy.Next
 	}
 	// 3. 分离奇偶数节点组成的链表
-	odd := head
 	evenHead := head.Next
-	even := evenHead
+	odd, even := head, evenHead
 	for odd.Next != nil && even.Next != nil {
 		odd.Next = even.Next
 		odd = odd.Next
@@ -1555,61 +1762,63 @@ func reorderList(head *ListNode) {
 	if head == nil || head.Next == nil {
 		return
 	}
-	// 1. 找到中间节点
-	slow := head
-	fast := head.Next
+	// 1. 找中间结点
+	var prev *ListNode
+	slow, fast := head, head
 	for fast != nil && fast.Next != nil {
+		prev = slow
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-
+	var curr *ListNode // 后半段链表的 head
+	// 奇偶链表需要分别处理
+	if fast != nil { // 奇数个结点
+		curr = slow.Next
+		slow.Next = nil
+	} else { // 偶数个结点
+		curr = slow
+		prev.Next = nil
+	}
 	// 2. 反转后半部分
-	curr := slow.Next
-	slow.Next = nil
-	var prev, next *ListNode
+	prev = nil
 	for curr != nil {
-		next = curr.Next
+		next := curr.Next
 		curr.Next = prev
 		prev = curr
 		curr = next
 	}
-
 	// 3. 合并两部分
-	second := prev
-	first := head
+	curr1, curr2 := head, prev
 	dummy := &ListNode{}
 	curr = dummy
-	for first != nil && second != nil {
-		curr.Next = first
-		first = first.Next
+	for curr1 != nil && curr2 != nil {
+		curr.Next = curr1
+		curr1 = curr1.Next
 		curr = curr.Next
-		curr.Next = second
-		second = second.Next
+		curr.Next = curr2
+		curr2 = curr2.Next
 		curr = curr.Next
 	}
-	// len(前半部分) >= len(后半部分)
-	if first != nil {
-		curr.Next = first
+
+	// 前半部分的长度肯定比后半部分大
+	if curr1 != nil {
+		curr.Next = curr1
 	}
 	head = dummy.Next
 	return
 }
 
 /*
- * 头条面试题:
- * 一个链表，奇数位升序偶数位降序，让链表变成升序的。
- * 例如：1->8->2->7->3->6->4->5，变为 1->2->3->4->5->6->7->8
+ * LeetCode T24. 两两交换链表中的节点
+ * https://leetcode-cn.com/problems/swap-nodes-in-pairs/
+ *
+ * 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+ * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+ *
+ * 示例 1:
+ * 输入：head = [1,2,3,4]
+ * 输出：[2,1,4,3]
  */
-func oddEvenSortlist(head *ListNode) *ListNode {
-	// 1. 抽出奇数节点组成的升序链表 L1 和偶数节点组成的降序链表 L2
-	odd, even := divideOddEvenList(head)
-	// 2. 将 L2 反转成升序链表
-	even = reverseList(even)
-	// 3. 合并 L1 和 L2 两个有序链表
-	newHead := mergeTwoLists(odd, even)
-	return newHead
-}
-
 func swapPairs(head *ListNode) *ListNode {
 	if head == nil {
 		return head
