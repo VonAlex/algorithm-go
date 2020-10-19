@@ -387,3 +387,8 @@ func Test_reverseBetween(t *testing.T) {
 	listPrint(head)
 	listPrint(reverseBetween(head, 2, 4))
 }
+
+func Test_swapPairs(t *testing.T) {
+	listPrint(head)
+	listPrint(swapPairs(head))
+}

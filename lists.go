@@ -1609,3 +1609,23 @@ func oddEvenSortlist(head *ListNode) *ListNode {
 	newHead := mergeTwoLists(odd, even)
 	return newHead
 }
+
+func swapPairs(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev, curr := dummy, head
+	for curr != nil && curr.Next != nil {
+		next := curr.Next
+		nextNext := next.Next
+		prev.Next = next
+		next.Next = curr
+		curr.Next = nextNext
+		prev = curr
+		curr = nextNext
+	}
+	return dummy.Next
+}
