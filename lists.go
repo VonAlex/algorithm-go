@@ -1819,8 +1819,10 @@ func reorderList(head *ListNode) {
  * 输入：head = [1,2,3,4]
  * 输出：[2,1,4,3]
  */
+// 方法 1：迭代法
+// 时间复杂度 O(N)，空间复杂度 O(1)
 func swapPairs(head *ListNode) *ListNode {
-	if head == nil {
+	if head == nil || head.Next == nil {
 		return head
 	}
 	dummy := &ListNode{
@@ -1829,7 +1831,7 @@ func swapPairs(head *ListNode) *ListNode {
 	prev, curr := dummy, head
 	for curr != nil && curr.Next != nil {
 		next := curr.Next
-		nextNext := next.Next
+		nextNext := next.Next // 保存下一组要反转的 pair
 		prev.Next = next
 		next.Next = curr
 		curr.Next = nextNext
@@ -1837,4 +1839,16 @@ func swapPairs(head *ListNode) *ListNode {
 		curr = nextNext
 	}
 	return dummy.Next
+}
+
+// 方法 2：递归法
+// 时/空间复杂度 O(N)
+func swapPairs2(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	newHead := head.Next
+	head.Next = swapPairs2(newHead.Next)
+	newHead.Next = head
+	return newHead
 }
