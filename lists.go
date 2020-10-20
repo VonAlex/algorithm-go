@@ -1852,3 +1852,52 @@ func swapPairs2(head *ListNode) *ListNode {
 	newHead.Next = head
 	return newHead
 }
+
+/*
+ * LeetCode T725. 分隔链表
+ * https://leetcode-cn.com/problems/split-linked-list-in-parts/
+ *
+ * 给定一个头结点为 root 的链表, 编写一个函数以将链表分隔为 k 个连续的部分。
+ * 示例 1:
+ * 输入: root = [1, 2, 3], k = 5
+ * 输出: [[1],[2],[3],[],[]]
+ *
+ * 示例 2:
+ * 输入: root = [], k = 3
+ * 输出: [[],[],[]]
+ *
+ * 示例 3:
+ * 输入: root = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 3
+ * 输出: [[1, 2, 3, 4], [5, 6, 7], [8, 9, 10]]
+ */
+// 方法 1：拆链表法
+// 时间复杂度：O(N+k)。N 指的是所给链表的结点数，若 k 很大，则还需要添加许多空列表。
+// 空间复杂度：O(k)O，存储答案时所需的额外空格
+func splitListToParts(root *ListNode, k int) []*ListNode {
+	res := make([]*ListNode, k)
+	if root == nil {
+		return res
+	}
+	lLen := getListLen(root)
+	width, rem := lLen/k, lLen%k
+	curr := root
+
+	var prev *ListNode
+	for i := 0; i < k; i++ {
+		num := width // 每组链表需要包含几个结点
+		head := curr
+		if i < rem { // 将多余的 rem 个结点均匀分布在头部的几组链表中
+			num++
+		}
+		// prev 记录该组最后一个结点
+		// head 记录该组第一个结点
+		for num > 0 && curr != nil {
+			prev = curr
+			curr = curr.Next
+			num--
+		}
+		prev.Next = nil // 断开链表
+		res[i] = head
+	}
+	return res
+}

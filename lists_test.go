@@ -406,3 +406,24 @@ func Test_listPlusOne(t *testing.T) {
 	listPrint(h1)
 	listPrint(listPlusOne2(h1))
 }
+
+func Test_splitListToParts(t *testing.T) {
+	h2 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 3,
+			},
+		},
+	}
+	arr := splitListToParts(h2, 5)
+	for _, l := range arr {
+		listPrint(l)
+	}
+
+	arr = splitListToParts(nil, 3)
+	for _, l := range arr {
+		listPrint(l)
+	}
+}
