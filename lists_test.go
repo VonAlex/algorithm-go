@@ -388,6 +388,11 @@ func Test_reverseBetween(t *testing.T) {
 	listPrint(reverseBetween(head, 2, 4))
 }
 
+func Test_swapPairs(t *testing.T) {
+	listPrint(head)
+	listPrint(swapPairs(head))
+}
+
 func Test_listPlusOne(t *testing.T) {
 	h1 := &ListNode{
 		Val: 1,
@@ -400,4 +405,25 @@ func Test_listPlusOne(t *testing.T) {
 	}
 	listPrint(h1)
 	listPrint(listPlusOne2(h1))
+}
+
+func Test_splitListToParts(t *testing.T) {
+	h2 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 2,
+			Next: &ListNode{
+				Val: 3,
+			},
+		},
+	}
+	arr := splitListToParts(h2, 5)
+	for _, l := range arr {
+		listPrint(l)
+	}
+
+	arr = splitListToParts(nil, 3)
+	for _, l := range arr {
+		listPrint(l)
+	}
 }

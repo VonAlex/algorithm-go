@@ -1807,3 +1807,97 @@ func reorderList(head *ListNode) {
 	head = dummy.Next
 	return
 }
+
+/*
+ * LeetCode T24. 两两交换链表中的节点
+ * https://leetcode-cn.com/problems/swap-nodes-in-pairs/
+ *
+ * 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+ * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+ *
+ * 示例 1:
+ * 输入：head = [1,2,3,4]
+ * 输出：[2,1,4,3]
+ */
+// 方法 1：迭代法
+// 时间复杂度 O(N)，空间复杂度 O(1)
+func swapPairs(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	prev, curr := dummy, head
+	for curr != nil && curr.Next != nil {
+		next := curr.Next
+		nextNext := next.Next // 保存下一组要反转的 pair
+		prev.Next = next
+		next.Next = curr
+		curr.Next = nextNext
+		prev = curr
+		curr = nextNext
+	}
+	return dummy.Next
+}
+
+// 方法 2：递归法
+// 时/空间复杂度 O(N)
+func swapPairs2(head *ListNode) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	newHead := head.Next
+	head.Next = swapPairs2(newHead.Next)
+	newHead.Next = head
+	return newHead
+}
+
+/*
+ * LeetCode T725. 分隔链表
+ * https://leetcode-cn.com/problems/split-linked-list-in-parts/
+ *
+ * 给定一个头结点为 root 的链表, 编写一个函数以将链表分隔为 k 个连续的部分。
+ * 示例 1:
+ * 输入: root = [1, 2, 3], k = 5
+ * 输出: [[1],[2],[3],[],[]]
+ *
+ * 示例 2:
+ * 输入: root = [], k = 3
+ * 输出: [[],[],[]]
+ *
+ * 示例 3:
+ * 输入: root = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 3
+ * 输出: [[1, 2, 3, 4], [5, 6, 7], [8, 9, 10]]
+ */
+// 方法 1：拆链表法
+// 时间复杂度：O(N+k)。N 指的是所给链表的结点数，若 k 很大，则还需要添加许多空列表。
+// 空间复杂度：O(k)O，存储答案时所需的额外空格
+func splitListToParts(root *ListNode, k int) []*ListNode {
+	res := make([]*ListNode, k)
+	if root == nil {
+		return res
+	}
+	lLen := getListLen(root)
+	width, rem := lLen/k, lLen%k
+	curr := root
+
+	var prev *ListNode
+	for i := 0; i < k; i++ {
+		num := width // 每组链表需要包含几个结点
+		head := curr
+		if i < rem { // 将多余的 rem 个结点均匀分布在头部的几组链表中
+			num++
+		}
+		// prev 记录该组最后一个结点
+		// head 记录该组第一个结点
+		for num > 0 && curr != nil {
+			prev = curr
+			curr = curr.Next
+			num--
+		}
+		prev.Next = nil // 断开链表
+		res[i] = head
+	}
+	return res
+}

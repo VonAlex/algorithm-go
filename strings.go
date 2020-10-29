@@ -694,3 +694,109 @@ func addBinary2(a string, b string) string {
 	}
 	return strconv.FormatInt(ai, 2)
 }
+
+/*
+ * LeetCode T844. 比较含退格的字符串
+ * https://leetcode-cn.com/problems/backspace-string-compare/
+ *
+ * 给定 S 和 T 两个字符串，当它们分别被输入到空白的文本编辑器后，判断二者是否相等，并返回结果。 # 代表退格字符。
+ * 注意：如果对空文本输入退格字符，文本继续为空。
+ *
+ * 示例：
+ * 输入：S = "a##c", T = "#a#c"
+ * 输出：true
+ * 解释：S 和 T 都会变成 “c”.
+ */
+// 方法 1：辅助栈法
+// 时间/空间复杂度：O(N+M)
+func backspaceCompare(S string, T string) bool {
+	stackS := list.New()
+	for _, c := range S {
+		if c == '#' {
+			if stackS.Len() > 0 {
+				stackS.Remove(stackS.Back())
+			}
+			continue
+		}
+		stackS.PushBack(c)
+	}
+
+	stackT := list.New()
+	for _, c := range T {
+		if c == '#' {
+			if stackT.Len() > 0 {
+				stackT.Remove(stackT.Back())
+			}
+			continue
+		}
+		stackT.PushBack(c)
+	}
+	if stackS.Len() != stackT.Len() {
+		return false
+	}
+	for stackS.Len() > 0 && stackT.Len() > 0 {
+		s := stackS.Remove(stackS.Back()).(byte)
+		t := stackT.Remove(stackT.Back()).(byte)
+		if s != t {
+			return false
+		}
+	}
+	return true
+}
+
+// 方法 2：辅助数组法
+// 时间/空间复杂度：O(N+M)
+func backspaceCompare2(S string, T string) bool {
+	_rebuild := func(s string) string {
+		var res []byte
+		for i := range s {
+			if s[i] != '#' {
+				res = append(res, s[i])
+			} else if len(res) > 0 {
+				res = res[:len(res)-1]
+			}
+		}
+		return string(res)
+	}
+	return _rebuild(S) == _rebuild(T)
+}
+
+// 方法 3：双指针法
+func backspaceCompare3(S string, T string) bool {
+	skipS, skipT := 0, 0 // skip 表示需要退格几次
+	i, j := len(S)-1, len(T)-1
+	for i >= 0 || j >= 0 {
+		for i >= 0 {
+			if S[i] == '#' {
+				skipS++
+				i--
+			} else if skipS > 0 { // 删掉一个字符
+				skipS--
+				i--
+			} else { // 当前字符不需要删除
+				break
+			}
+		}
+		for j >= 0 {
+			if T[j] == '#' {
+				skipT++
+				j--
+			} else if skipT > 0 {
+				skipT--
+				j--
+			} else {
+				break
+			}
+		}
+		if i >= 0 && j >= 0 {
+			if S[i] != T[j] { // 不需要退格时的字符是否相等
+				return false
+			}
+		} else if i >= 0 || j >= 0 { // 有一个遍历完了，而另一个没有
+			return false
+		}
+		i--
+		j--
+	}
+	return true
+}
