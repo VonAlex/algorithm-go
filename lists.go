@@ -1901,3 +1901,78 @@ func splitListToParts(root *ListNode, k int) []*ListNode {
 	}
 	return res
 }
+
+/*
+ * LeetCode T86. 分隔链表
+ * https://leetcode-cn.com/problems/partition-list/
+ *
+ * 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+ * 你应当保留两个分区中每个节点的初始相对位置。
+ *
+ * 示例 1:
+ * 输入：head = 1->4->3->2->5->2, x = 3
+ * 输出：1->2->2->4->3->5
+ */
+func partitionList(head *ListNode, x int) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	dummyBefore := &ListNode{} // 比 x 都小的结点组成的链表
+	dummyAfter := &ListNode{}  // 不小于 x 的结点组成的链表
+	currBefore, currAfter, curr := dummyBefore, dummyAfter, head
+	for curr != nil {
+		if curr.Val < x {
+			currBefore.Next = curr
+			currBefore = currBefore.Next
+		} else {
+			currAfter.Next = curr
+			currAfter = currAfter.Next
+		}
+		curr = curr.Next
+	}
+	currAfter.Next = nil
+	currBefore.Next = dummyAfter.Next
+	return dummyBefore.Next
+}
+
+// 不用 dummy 结点，代码复杂了许多，增加更多的条件判断
+func partitionList2(head *ListNode, x int) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	var headBefore, headAfter *ListNode
+	var currBefore, currAfter *ListNode
+
+	curr := head
+	for curr != nil {
+		if curr.Val < x {
+			if currBefore == nil { // 记录头部
+				currBefore = curr
+				headBefore = curr
+			} else {
+				currBefore.Next = curr
+				currBefore = currBefore.Next
+			}
+		} else {
+			if currAfter == nil { // 记录头部
+				currAfter = curr
+				headAfter = curr
+			} else {
+				currAfter.Next = curr
+				currAfter = currAfter.Next
+			}
+		}
+		curr = curr.Next
+	}
+	// 比 x 小的链表可能为空，那么直接返回比 x 大的链表
+	// 否则需要拼接
+	if currAfter != nil {
+		currAfter.Next = nil
+	}
+	if currBefore != nil {
+		currBefore.Next = headAfter
+		return headBefore
+	}
+	return headAfter
+}
