@@ -1905,6 +1905,8 @@ func splitListToParts(root *ListNode, k int) []*ListNode {
 /*
  * LeetCode T86. 分隔链表
  * https://leetcode-cn.com/problems/partition-list/
+ * 面试题 02.04. 分割链表
+ * https://leetcode-cn.com/problems/partition-list-lcci/
  *
  * 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
  * 你应当保留两个分区中每个节点的初始相对位置。
@@ -1975,4 +1977,46 @@ func partitionList2(head *ListNode, x int) *ListNode {
 		return headBefore
 	}
 	return headAfter
+}
+
+/*
+ * LeetCode T1290. 二进制链表转整数
+ * https://leetcode-cn.com/problems/convert-binary-number-in-a-linked-list-to-integer/
+ *
+ * 给你一个单链表的引用结点 head。链表中每个结点的值不是 0 就是 1。已知此链表是一个整数数字的二进制表示形式。
+ * 请你返回该链表所表示数字的 十进制值 。
+ *
+ * 示例 1:
+ * 输入：head = [1,0,1]
+ * 输出：5
+ * 解释：二进制数 (101) 转化为十进制数 (5)
+ */
+// 两次遍历
+func getDecimalValue(head *ListNode) int {
+	curr := head
+	pw := 1
+	for curr.Next != nil {
+		pw <<= 1
+		curr = curr.Next
+	}
+	var res int
+	curr = head
+	for curr != nil {
+		res += curr.Val * pw
+		curr = curr.Next
+		pw >>= 1
+	}
+	return res
+}
+
+// 一次遍历
+// 模拟二进制转十进制的方法
+func getDecimalValue2(head *ListNode) int {
+	var res int
+	curr := head
+	for curr != nil {
+		res = res<<1 + curr.Val
+		curr = curr.Next
+	}
+	return res
 }

@@ -449,3 +449,16 @@ func Test_partition2(t *testing.T) {
 	}
 	listPrint(partitionList2(h, 3))
 }
+
+func Test_getDecimalValue(t *testing.T) {
+	h := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 0,
+			Next: &ListNode{
+				Val: 1,
+			},
+		},
+	}
+	t.Log(getDecimalValue(h))
+}
