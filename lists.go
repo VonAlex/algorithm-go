@@ -2020,3 +2020,43 @@ func getDecimalValue2(head *ListNode) int {
 	}
 	return res
 }
+
+/*
+ * LeetCode T1171. 从链表中删去总和值为零的连续节点
+ * https://leetcode-cn.com/problems/convert-binary-number-in-a-linked-list-to-integer/
+ *
+ * 给你一个链表的头节点 head，请你编写代码，反复删去链表中由 总和 值为 0 的连续节点组成的序列，直到不存在这样的序列为止。
+ * 删除完毕后，请你返回最终结果链表的头节点。
+ * 你可以返回任何满足题目要求的答案。
+ * 示例 1:
+ * 输入：head = [1,2,-3,3,1]
+ * 输出：[3,1]
+ * 提示：答案 [1,2,1] 也是正确的。
+ */
+func removeZeroSumSublists(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	// 累计和字典
+	prefixSum := make(map[int]*ListNode)
+	var sum int
+	curr := dummy
+	for curr != nil {
+		sum += curr.Val
+		prefixSum[sum] = curr
+		curr = curr.Next
+	}
+	sum = 0
+	curr = dummy
+	for curr != nil {
+		sum += curr.Val
+		// 说明 curr 与 prefixSum[sum].Next 之前所有节点和累加为 0
+		// 直接去掉
+		curr.Next = prefixSum[sum].Next
+		curr = curr.Next
+	}
+	return dummy.Next
+}
