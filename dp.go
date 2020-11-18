@@ -344,3 +344,99 @@ func rob3(nums []int) int {
 	}
 	return _dp(n - 1)
 }
+
+/*
+ * LeetCode T5. 最长回文子串
+ * https://leetcode-cn.com/problems/longest-palindromic-substring/
+ *
+ * 给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。
+ */
+// 方法 1：暴力法
+// 枚举所有的子串 O(N^2) * 判断每个子串是否是回文串 O(N)
+// 所以，时间复杂度为 O(N^3) ，空间复杂度为 O(1)
+
+// 方法 2：动态规划
+// 考虑奇偶字符串，枚举字符串的左右边界
+// 时/空复杂度 O(N^2)
+func longestPalindrome(s string) string {
+	slen := len(s)
+	if slen < 2 {
+		return s
+	}
+	// 定义状态 dp[i][j] 表示子串 s[i..j] 是否为回文子串，闭区间，两端都能取到
+	dp := make([][]bool, slen)
+	for i := 0; i < slen; i++ {
+		dp[i] = make([]bool, slen)
+		dp[i][i] = true // 状态的初始化
+	}
+	start := 0
+	maxLen := 1
+	// 状态的转移 dp[i][j] = (s[i] == s[j]) and dp[i + 1][j - 1]
+	// 看到 i + 1 和 j - 1 的坐标，就要考虑边界条件
+	// j - 1 - (i + 1) + 1 = j - i -1
+	// 如果 j - i - 1 == 0，即 s[i+1..j-1] 为空字符串，是回文
+	// 如果 j - i - 1 == 1， 即 s[i+1..j-1] 为单字符串，也是回文
+	// 所以要求 j - i - 1 < 2，即 j - i < 3
+
+	// 填报，在本题的填表的过程中，只参考了左下方的数值。
+	// 事实上可以优化，但是增加了代码编写和理解的难度，丢失可读和可解释性。在这里不优化空间
+	for j := 1; j < slen; j++ {
+		for i := 0; i < j; i++ { // s[i..j]
+			if s[i] != s[j] {
+				dp[i][j] = false
+				continue
+			}
+			if j-i < 3 {
+				dp[i][j] = true
+			} else { // s[i] == s[j], s[i..j] 是否是回文串由 s[i+1..j-1] 决定
+				dp[i][j] = dp[i+1][j-1]
+			}
+			if dp[i][j] && j-i+1 > maxLen { // 记录下最长子串的 start
+				start = i
+				maxLen = j - i + 1
+			}
+		}
+	}
+	return s[start : start+maxLen]
+}
+
+// 方法 3：中心扩散法
+// 时间复杂度为 O(N^2)，空间复杂度为 O(1)
+// 考虑奇偶字符串，枚举回文子串的“中心位置”，这样的位置共有 2n-1 个
+//   ↓ ↓
+// a b b a 偶数字符串
+//   ↓
+// a b a  奇数字符串
+func longestPalindrome2(s string) string {
+	slen := len(s)
+	if slen < 2 {
+		return s
+	}
+	var start, end int
+	// 最后一个无法扩散，因此索引最大等于 len-2
+	for i := 0; i < slen-1; i++ {
+		l1, r1 := expendArountCenter(s, i, i)
+		if r1-l1 > end-start {
+			start, end = l1, r1
+		}
+		l2, r2 := expendArountCenter(s, i, i+1)
+		if r2-l2 > end-start {
+			start, end = l2, r2
+		}
+	}
+	return s[start : end+1]
+}
+
+// 以 l/r 为中心，往两边扩散，直到遇到非回文串
+func expendArountCenter(s string, l, r int) (int, int) {
+	slen := len(s)
+	i, j := l, r
+	for i >= 0 && j < slen {
+		if s[i] != s[j] {
+			break
+		}
+		i--
+		j++
+	}
+	return i + 1, j - 1
+}
