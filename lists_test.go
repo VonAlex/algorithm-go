@@ -427,3 +427,38 @@ func Test_splitListToParts(t *testing.T) {
 		listPrint(l)
 	}
 }
+
+func Test_partition2(t *testing.T) {
+	h := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 4,
+			Next: &ListNode{
+				Val: 3,
+				Next: &ListNode{
+					Val: 2,
+					Next: &ListNode{
+						Val: 5,
+						Next: &ListNode{
+							Val: 2,
+						},
+					},
+				},
+			},
+		},
+	}
+	listPrint(partitionList2(h, 3))
+}
+
+func Test_getDecimalValue(t *testing.T) {
+	h := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 0,
+			Next: &ListNode{
+				Val: 1,
+			},
+		},
+	}
+	t.Log(getDecimalValue(h))
+}

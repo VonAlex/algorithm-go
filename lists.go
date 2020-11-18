@@ -1901,3 +1901,162 @@ func splitListToParts(root *ListNode, k int) []*ListNode {
 	}
 	return res
 }
+
+/*
+ * LeetCode T86. 分隔链表
+ * https://leetcode-cn.com/problems/partition-list/
+ * 面试题 02.04. 分割链表
+ * https://leetcode-cn.com/problems/partition-list-lcci/
+ *
+ * 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+ * 你应当保留两个分区中每个节点的初始相对位置。
+ *
+ * 示例 1:
+ * 输入：head = 1->4->3->2->5->2, x = 3
+ * 输出：1->2->2->4->3->5
+ */
+func partitionList(head *ListNode, x int) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+
+	dummyBefore := &ListNode{} // 比 x 都小的结点组成的链表
+	dummyAfter := &ListNode{}  // 不小于 x 的结点组成的链表
+	currBefore, currAfter, curr := dummyBefore, dummyAfter, head
+	for curr != nil {
+		if curr.Val < x {
+			currBefore.Next = curr
+			currBefore = currBefore.Next
+		} else {
+			currAfter.Next = curr
+			currAfter = currAfter.Next
+		}
+		curr = curr.Next
+	}
+	currAfter.Next = nil
+	currBefore.Next = dummyAfter.Next
+	return dummyBefore.Next
+}
+
+// 不用 dummy 结点，代码复杂了许多，增加更多的条件判断
+func partitionList2(head *ListNode, x int) *ListNode {
+	if head == nil || head.Next == nil {
+		return head
+	}
+	var headBefore, headAfter *ListNode
+	var currBefore, currAfter *ListNode
+
+	curr := head
+	for curr != nil {
+		if curr.Val < x {
+			if currBefore == nil { // 记录头部
+				currBefore = curr
+				headBefore = curr
+			} else {
+				currBefore.Next = curr
+				currBefore = currBefore.Next
+			}
+		} else {
+			if currAfter == nil { // 记录头部
+				currAfter = curr
+				headAfter = curr
+			} else {
+				currAfter.Next = curr
+				currAfter = currAfter.Next
+			}
+		}
+		curr = curr.Next
+	}
+	// 比 x 小的链表可能为空，那么直接返回比 x 大的链表
+	// 否则需要拼接
+	if currAfter != nil {
+		currAfter.Next = nil
+	}
+	if currBefore != nil {
+		currBefore.Next = headAfter
+		return headBefore
+	}
+	return headAfter
+}
+
+/*
+ * LeetCode T1290. 二进制链表转整数
+ * https://leetcode-cn.com/problems/convert-binary-number-in-a-linked-list-to-integer/
+ *
+ * 给你一个单链表的引用结点 head。链表中每个结点的值不是 0 就是 1。已知此链表是一个整数数字的二进制表示形式。
+ * 请你返回该链表所表示数字的 十进制值 。
+ *
+ * 示例 1:
+ * 输入：head = [1,0,1]
+ * 输出：5
+ * 解释：二进制数 (101) 转化为十进制数 (5)
+ */
+// 两次遍历
+func getDecimalValue(head *ListNode) int {
+	curr := head
+	pw := 1
+	for curr.Next != nil {
+		pw <<= 1
+		curr = curr.Next
+	}
+	var res int
+	curr = head
+	for curr != nil {
+		res += curr.Val * pw
+		curr = curr.Next
+		pw >>= 1
+	}
+	return res
+}
+
+// 一次遍历
+// 模拟二进制转十进制的方法
+func getDecimalValue2(head *ListNode) int {
+	var res int
+	curr := head
+	for curr != nil {
+		res = res<<1 + curr.Val
+		curr = curr.Next
+	}
+	return res
+}
+
+/*
+ * LeetCode T1171. 从链表中删去总和值为零的连续节点
+ * https://leetcode-cn.com/problems/convert-binary-number-in-a-linked-list-to-integer/
+ *
+ * 给你一个链表的头节点 head，请你编写代码，反复删去链表中由 总和 值为 0 的连续节点组成的序列，直到不存在这样的序列为止。
+ * 删除完毕后，请你返回最终结果链表的头节点。
+ * 你可以返回任何满足题目要求的答案。
+ * 示例 1:
+ * 输入：head = [1,2,-3,3,1]
+ * 输出：[3,1]
+ * 提示：答案 [1,2,1] 也是正确的。
+ */
+func removeZeroSumSublists(head *ListNode) *ListNode {
+	if head == nil {
+		return head
+	}
+	dummy := &ListNode{
+		Next: head,
+	}
+	// 累计和字典
+	prefixSum := make(map[int]*ListNode)
+	var sum int
+	curr := dummy
+	for curr != nil {
+		sum += curr.Val
+		prefixSum[sum] = curr
+		curr = curr.Next
+	}
+	sum = 0
+	curr = dummy
+	for curr != nil {
+		sum += curr.Val
+		// 说明 curr 与 prefixSum[sum].Next 之前所有节点和累加为 0
+		// 直接去掉
+		curr.Next = prefixSum[sum].Next
+		curr = curr.Next
+	}
+	return dummy.Next
+}
