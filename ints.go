@@ -136,8 +136,8 @@ func printNumbersHelper(number []byte, length, index int) []string {
  * 给出一个 32 位的有符号整数，你需要将这个整数中每位上的数字进行反转
  *
  * 示例 1:
- *        输入: 123
- *        输出: 321
+ *     输入: 123
+ *     输出: 321
  * 假设我们的环境只能存储得下 32 位的有符号整数，则其数值范围为 [−2^31,  2^31 − 1]。请根据这个假设，如果反转后整数溢出那么就返回 0。
  */
 // 时间复杂度 O(log(x)), 空间复杂度 O(1)
@@ -158,8 +158,68 @@ func reverseInt(x int) int {
 	return res
 }
 
-// func myAtoi(str string) int {
-// 	if len(str) == 0 {
-// 		return 0
-// 	}
-// }
+/*
+ * LeetCode T9. 回文数
+ * https://leetcode-cn.com/problems/palindrome-number/
+ *
+ * 判断一个整数是否是回文数。回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
+ *
+ * 示例 1:
+ *     输入: 121
+ *     输出: true
+ *
+ * 示例 2:
+ *     输入: -121
+ *     输出: true
+ *     解释: 从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。
+ */
+
+// 方法1：数学解法
+// 分别得到最高位与最低位进行比较，以 1221 为例
+func isPalindromeInt(x int) bool {
+	if x < 0 {
+		return false
+	}
+
+	// div = 1000 用于求最高位
+	div := 1
+	for y := x; y >= 10; y /= 10 {
+		div *= 10
+	}
+	for x > 0 {
+		left := x / div // 1
+		right := x % 10 // 1
+		if left != right {
+			return false
+		}
+		x %= div   // 去头 221
+		x /= 10    // 去尾 22
+		div /= 100 // 去掉了两位数字，除数 / 100
+	}
+	return true
+}
+
+// 方法2：反转一半数字
+func isPalindromeInt2(x int) bool {
+	if x < 0 || (x != 0 && x%10 == 0) {
+		return false
+	}
+	rev := 0
+
+	for x > rev {
+		rev = rev*10 + x%10
+		x /= 10
+	}
+	return x == rev || x == rev/10
+}
+
+// 方法3：反转全部数字
+func isPalindromeInt3(x int) bool {
+	if x < 0 {
+		return false
+	}
+	rex := reverseInt(x)
+	return x == rex
+}
+
+// 方法4：字符串法
