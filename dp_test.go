@@ -58,3 +58,8 @@ func Test_rob(t *testing.T) {
 	nums := []int{2, 7, 9, 3, 1}
 	t.Log(rob2(nums))
 }
+
+func Test_longestPalindrome(t *testing.T) {
+	s := "bb"
+	t.Log(longestPalindrome2(s))
+}
