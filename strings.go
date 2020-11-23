@@ -800,3 +800,71 @@ func backspaceCompare3(S string, T string) bool {
 	}
 	return true
 }
+
+/*
+ * LeetCode T14. 最长公共前缀
+ * https://leetcode-cn.com/problems/backspace-string-compare/
+ *
+ * 编写一个函数来查找字符串数组中的最长公共前缀。
+ * 如果不存在公共前缀，返回空字符串 ""。
+ *
+ * 示例：
+ * 输入：["flower","flow","flight"]
+ * 输出："fl"
+ *
+ * 说明：所有输入只包含小写字母 a-z 。
+ */
+// 方法 1：纵向扫描
+// 纵向扫描时，从前往后遍历所有字符串的每一列，比较相同列上的字符是否相同，
+// 如果相同则继续对下一列进行比较，
+// 如果不相同则当前列不再属于公共前缀，当前列之前的部分为最长公共前缀。
+//
+// 时间复杂度：O(mn)，空间复杂度：O(1)
+func longestCommonPrefix(strs []string) string {
+	arrLen := len(strs)
+	if arrLen == 0 {
+		return ""
+	}
+	slen := len(strs[0])
+	for i := 0; i < slen; i++ {
+		for j := 0; j < arrLen; j++ {
+			// 只有所有字符串第 i 个字符相等才会继续比较
+			if i >= len(strs[j]) || strs[0][i] != strs[j][i] {
+				return strs[0][:i]
+			}
+		}
+	}
+	return strs[0] // strs[0] 就是最长前缀
+}
+
+// 方法 2：横向扫描
+// 设 LCP(S1..Sn) 表示字符串 S1..Sn 的最长公共前缀，
+// 那么 LCP(S1..Sn) = LCP(LCP(LCP(S1,S2),S3)..Sn)
+// 依次遍历每个字符串，更新最长公共前缀。
+func longestCommonPrefix2(strs []string) string {
+	arrLen := len(strs)
+	if arrLen == 0 {
+		return ""
+	}
+	prefix := strs[0]
+	for i := 1; i < arrLen; i++ {
+		prefix = lcp(prefix, strs[i])
+		// 最长公共前缀是空串，则整个数组字符串的最长公共前缀一定是空串
+		if prefix == "" {
+			return ""
+		}
+	}
+	return prefix
+}
+
+func lcp(str1, str2 string) string {
+	len1, len2 := len(str1), len(str2)
+	var i int
+	for i < len1 && i < len2 {
+		if str1[i] != str2[i] {
+			break
+		}
+		i++
+	}
+	return str1[:i]
+}

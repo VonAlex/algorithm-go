@@ -292,3 +292,25 @@ func Test_backspaceCompare(t *testing.T) {
 		})
 	}
 }
+
+func Test_longestCommonPrefix(t *testing.T) {
+	type args struct {
+		strs []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"case1", args{[]string{"flower", "flow", "flight"}}, "fl"},
+		{"case2", args{[]string{"fl", "flow", "flight"}}, "fl"},
+		{"case3", args{[]string{"dog", "racecar", "car"}}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := longestCommonPrefix2(tt.args.strs); got != tt.want {
+				t.Errorf("longestCommonPrefix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
