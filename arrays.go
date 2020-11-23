@@ -1266,3 +1266,141 @@ func rotateMatrix(matrix [][]int) {
 	}
 	return
 }
+
+/*
+ * LeetCode T4. 寻找两个正序数组的中位数
+ * https://leetcode-cn.com/problems/median-of-two-sorted-arrays/
+ *
+ * 给定两个大小为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数。
+ *
+ * 示例 1：
+ * 输入：nums1 = [1,3], nums2 = [2]
+ * 输出：2.00000
+ * 解释：合并数组 = [1,2,3] ，中位数 2
+ */
+// 方法 1： 合并数组
+// 时间/空间复杂度均为 O(m+n)
+func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+	len1, len2 := len(nums1), len(nums2)
+	len3 := len1 + len2
+	if len3 == 0 {
+		return float64(0)
+	}
+	// 1. 先合并两个有序数组
+	var nums3 []int
+	var i, j int
+	for i < len1 && j < len2 {
+		if nums1[i] < nums2[j] {
+			nums3 = append(nums3, nums1[i])
+			i++
+		} else {
+			nums3 = append(nums3, nums2[j])
+			j++
+		}
+	}
+	if i < len1 {
+		nums3 = append(nums3, nums1[i:]...)
+	}
+	if j < len2 {
+		nums3 = append(nums3, nums2[j:]...)
+	}
+	// 2. 找到中位数
+	medianIndex := len3 / 2
+	if len3%2 == 1 {
+		return float64(nums3[medianIndex])
+	}
+	return (float64(nums3[medianIndex]) + float64(nums3[medianIndex-1])) / 2
+}
+
+// 方法 2：不真正合并数组，只遍历
+// 时间复杂度 O(m+n)，空间复杂度为 O(1)
+// 假设合并数组长度为 n，
+// 当长度为奇数时，只需要返回第 n/2+1 个数
+// 当长度为偶数时，需要返回第 n/2 和 n/2 + 1 个数的平均数
+// 从上面可以看出，都需要遍历 n/2+1 次，只是长度为偶数时，需要记录下前一个数
+func findMedianSortedArrays2(nums1 []int, nums2 []int) float64 {
+	n1, n2 := len(nums1), len(nums2)
+	n3 := n1 + n2
+	if n3 == 0 {
+		return float64(0)
+	}
+	mIndex := n3 / 2
+
+	var j, k int
+	var pnum, cnum int
+
+	// 遍历 (n1+n2)/2 + 1 次
+	for i := 0; i <= mIndex; i++ {
+		pnum = cnum
+		// j 可能超出 nums1 边界
+		// 如果在边界内，但是 num2 数组遍历完了，那么 j++
+		// 或者两个数组都在边界内，但是 nums1[j] 比 nums2[k] 小
+		if j < n1 && (k >= n2 || nums1[j] < nums2[k]) {
+			cnum = nums1[j]
+			j++
+		} else {
+			cnum = nums2[k]
+			k++
+		}
+	}
+	if n3%2 == 1 {
+		return float64(cnum)
+	}
+	return (float64(pnum) + float64(cnum)) / 2.0
+}
+
+// 方法 3：二分法
+// https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/shuang-zhi-zhen-by-powcai/
+// https://mp.weixin.qq.com/s/iAFjmYiLMTGwa2ixs_hw8A
+func findMedianSortedArrays3(nums1 []int, nums2 []int) float64 {
+	n1, n2 := len(nums1), len(nums2)
+	if n1 == 0 && n2 == 0 {
+		return float64(0)
+	}
+	if n1 > n2 { // 保证 num1 长度 < num2 长度
+		nums1, nums2 = nums2, nums1
+		n1, n2 = n2, n1
+	}
+	// 兼顾奇数情况，中位数划在左半部分
+	// mid 表示的是右半部分的第一个数字，同时也是坐标 i+j
+	// 因此 a[mid] > max(nums1[i-1], nums2[j-1]), 且 a[mid] = min(nums1[i], nums2[j])
+	// 剩下就是考虑边界情况了
+	mid := (n1 + n2 + 1) >> 1
+
+	var i, j int
+	l, r := 0, n1
+	for l <= r {
+		i = l + (r-l)>>1
+		j = mid - i
+		if i < n1 && nums1[i] < nums2[j-1] { // 考虑到 i 超过 n1, nums1= [1], nums[2,3,4]
+			//i 偏小了，需要右移
+			l = i + 1
+		} else if i > 0 && nums2[j] < nums1[i-1] { // 考虑 i = -1, nums1= [5], nums[2,3,4]
+			//i 偏大了，需要左移
+			r = i - 1
+		} else {
+			break
+		}
+	}
+	var maxLeft int
+	if i == 0 {
+		maxLeft = nums2[j-1]
+	} else if j == 0 {
+		maxLeft = nums1[i-1]
+	} else {
+		maxLeft = maxInt(nums1[i-1], nums2[j-1])
+	}
+	if (n1+n2)%2 == 1 {
+		return float64(maxLeft)
+	}
+
+	var minRight int
+	if i == n1 {
+		minRight = nums2[j]
+	} else if j == n2 {
+		minRight = nums1[i]
+	} else {
+		minRight = minInt(nums1[i], nums2[j])
+	}
+	return (float64(maxLeft) + float64(minRight)) / 2.0
+}

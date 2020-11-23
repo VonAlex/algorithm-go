@@ -703,13 +703,6 @@ func maxDepth(root *TreeNode) int {
 	return maxInt(lh, rh) + 1
 }
 
-func maxInt(x, y int) int {
-	if x > y {
-		return x
-	}
-	return y
-}
-
 // 方法 2：迭代 BFS
 // 时/空间复杂度 O(n)，实际上就是层序遍历
 func maxDepth2(root *TreeNode) int {
