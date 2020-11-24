@@ -63,3 +63,10 @@ func Test_search2(t *testing.T) {
 	t.Log(search2([]int{2, 5, 6, 0, 0, 1, 2}, 3) == false)
 	t.Log(search2([]int{1, 3, 1, 1, 1}, 3) == true)
 }
+
+func Test_threeSum(t *testing.T) {
+	nums := []int{-1, 0, 1, 2, -1, -4}
+	t.Log(threeSum(nums))
+	nums2 := []int{-4, -2, 1, -5, -4, -4, 4, -2, 0, 4, 0, -2, 3, 1, -5, 0}
+	t.Log(threeSum(nums2))
+}

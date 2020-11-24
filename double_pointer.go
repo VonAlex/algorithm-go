@@ -2,6 +2,7 @@ package leetcode
 
 import (
 	"container/list"
+	"sort"
 	"unicode"
 )
 
@@ -166,36 +167,35 @@ func ReverseVowels2(s string) string {
  * 输入：[1,8,6,2,5,4,8,3,7]
  * 输出：49
  */
-// 双指针法（对撞指针）
-
+// 双指针法（对撞指针）缩减搜索空间
+// 时间复杂度 O(N)，空间复杂度 O(1)
+// https://leetcode-cn.com/problems/container-with-most-water/solution/sheng-zui-duo-shui-de-rong-qi-by-leetcode-solution/
 // 水槽面积 S(i, j) = min(h[i], h[j]) × (j - i)
 // 在每一个状态下，无论长板或短板收窄 1 格，都会导致水槽底边宽度 -1
 // 若向内移动短板，水槽的短板 min(h[i],h[j]) 可能变大，因此水槽面积 S(i, j)可能增大。
 // 若向内移动长板，水槽的短板 min(h[i],h[j]) 不变或变小，下个水槽的面积一定小于当前水槽面积
 func MaxArea(height []int) int {
-	l := 0
-	r := len(height) - 1
-	maxArea := 0
+	l, r := 0, len(height)-1
+	var maxArea int
 	for l < r {
+		h, w := 0, r-l
 		// 收窄短板
 		if height[l] < height[r] {
-			area := (r - l) * height[l]
-			if area > maxArea {
-				maxArea = area
-			}
+			h = height[l]
 			l++
 		} else {
-			area := (r - l) * height[r]
-			if area > maxArea {
-				maxArea = area
-			}
+			h = height[r]
 			r--
+		}
+		area := w * h
+		if area > maxArea {
+			maxArea = area
 		}
 	}
 	return maxArea
 }
 
-/**
+/*
  * LeetCode T167. 两数之和 II - 输入有序数组
  * 给定一个已按照升序排列 的有序数组，找到两个数使得它们相加之和等于目标数
  * 函数应该返回这两个下标值 index1 和 index2，其中 index1 必须小于 index2。
@@ -258,7 +258,63 @@ func TwoSum5(numbers []int, target int) []int {
 	return []int{-1, -1}
 }
 
-/**
+/*
+ * LeetCode T15. 三数之和
+ * https://leetcode-cn.com/problems/3sum/
+ * 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？
+ * 请你找出所有满足条件且不重复的三元组。
+ *
+ * 注意：答案中不可以包含重复的三元组。
+ * 示例:
+ * 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+ * 满足要求的三元组集合为：
+ * [
+ *     [-1, 0, 1],
+ *     [-1, -1, 2]
+ * ]
+ */
+// 排序 + 双指针
+func threeSum(nums []int) [][]int {
+	numsLen := len(nums)
+	ans := make([][]int, 0, numsLen)
+	if numsLen < 3 {
+		return ans
+	}
+	sort.Ints(nums)
+	for i := 0; i < numsLen; i++ {
+		if nums[i] > 0 { // 如果当前数字 > 0，则三数之和一定 > 0
+			break
+		}
+		if i > 0 && nums[i-1] == nums[i] { // 去重
+			continue
+		}
+
+		l, r := i+1, numsLen-1
+		for l < r {
+
+			sum := nums[i] + nums[l] + nums[r]
+			if sum == 0 {
+				ans = append(ans, []int{nums[i], nums[l], nums[r]})
+				// 一定要在 sum == 0 时对 l 和 r 去重
+				for l < r && nums[l] == nums[l+1] { // 去重
+					l++
+				}
+				for r > l && nums[r-1] == nums[r] { // 去重
+					r--
+				}
+				l++
+				r--
+			} else if sum > 0 {
+				r--
+			} else {
+				l++
+			}
+		}
+	}
+	return ans
+}
+
+/*
  * LeetCode T240. 搜索二维矩阵 II
  * 编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target。该矩阵具有以下特性：
  * 每行的元素从左到右升序排列。
