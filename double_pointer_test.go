@@ -70,3 +70,12 @@ func Test_threeSum(t *testing.T) {
 	nums2 := []int{-4, -2, 1, -5, -4, -4, 4, -2, 0, 4, 0, -2, 3, 1, -5, 0}
 	t.Log(threeSum(nums2))
 }
+
+func Test_threeSumClosest(t *testing.T) {
+	nums := []int{-1, 2, 1, -4}
+	target := 1
+
+	nums = []int{1, 2, 4, 8, 16, 32, 64, 128}
+	target = 82
+	t.Log(threeSumClosest(nums, target))
+}

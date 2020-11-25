@@ -64,3 +64,10 @@ func minInt(x, y int) int {
 	}
 	return x
 }
+
+func abs(x int) int {
+	if x < 0 {
+		return -1 * x
+	}
+	return x
+}

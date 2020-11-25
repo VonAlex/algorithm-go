@@ -2,6 +2,7 @@ package leetcode
 
 import (
 	"container/list"
+	"math"
 	"sort"
 	"unicode"
 )
@@ -291,15 +292,14 @@ func threeSum(nums []int) [][]int {
 
 		l, r := i+1, numsLen-1
 		for l < r {
-
 			sum := nums[i] + nums[l] + nums[r]
 			if sum == 0 {
 				ans = append(ans, []int{nums[i], nums[l], nums[r]})
 				// 一定要在 sum == 0 时对 l 和 r 去重
-				for l < r && nums[l] == nums[l+1] { // 去重
+				for l+1 < r && nums[l] == nums[l+1] { // 去重
 					l++
 				}
-				for r > l && nums[r-1] == nums[r] { // 去重
+				for r-1 > l && nums[r-1] == nums[r] { // 去重
 					r--
 				}
 				l++
@@ -312,6 +312,54 @@ func threeSum(nums []int) [][]int {
 		}
 	}
 	return ans
+}
+
+/*
+ * LeetCode T16. 最接近的三数之和
+ * https://leetcode-cn.com/problems/3sum-closest/
+ *
+ * 给定一个包括 n 个整数的数组 nums 和 一个目标值 target。
+ * 找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
+ *
+ * 输入：nums = [-1,2,1,-4], target = 1
+ * 输出：2
+ * 解释：与 target 最接近的和是 2 (-1 + 2 + 1 = 2)
+ */
+func threeSumClosest(nums []int, target int) int {
+	numsLen := len(nums)
+	if numsLen < 3 {
+		return 0
+	}
+	sort.Ints(nums)
+
+	delta := math.MaxInt32
+	for i := 0; i < numsLen; i++ {
+		if i > 0 && nums[i] == nums[i-1] { // 去重
+			continue
+		}
+		l, r := i+1, numsLen-1
+		for l < r {
+			gap := target - nums[i] - nums[l] - nums[r]
+			if abs(gap) < abs(delta) {
+				delta = gap
+			}
+			if gap == 0 { // gap 不可能比 0 更小
+				return target
+			} else if gap < 0 { // 三数之和 > target，要往 target 靠近，只能让数字变小，所以右边界左移
+				for r-1 > l && nums[r-1] == nums[r] { // 去重，右边界要移动到的下一个位置处的数字跟当前位置数字是一样的
+					r--
+				}
+				r--
+			} else { // 同理，左边界右移
+				// 如果 l+1 = r，就没有必要这一步去重了，不会漏掉任何一个元素
+				for l+1 < r && nums[l] == nums[l+1] { // 去重，道理同上
+					l++
+				}
+				l++
+			}
+		}
+	}
+	return target - delta
 }
 
 /*
