@@ -60,12 +60,13 @@ func (this *MyStack) Empty() bool {
  * 	左括号必须以正确的顺序闭合。
  *  注意空字符串可被认为是有效字符串。
  * 示例 1:
- * 输入: "()"
- * 输出: true
+ * 		输入: "()"
+ * 		输出: true
  * 示例 2:
- * 输入: "([)]"
- * 输出: false
+ * 		输入: "([)]"
+ * 		输出: false
  */
+// 注意：以下两种方法都不能规避掉额外辅助空间！！！
 // 辅助栈方法
 func IsValid(s string) bool {
 	if len(s) == 0 {
@@ -97,4 +98,40 @@ func IsValid(s string) bool {
 		return false
 	}
 	return true
+}
+
+// 辅助数组
+func isValid2(s string) bool {
+	if s == "" {
+		return false
+	}
+	slen := len(s)
+	if slen%2 == 1 {
+		return false
+	}
+	stack := make([]rune, slen, slen)
+
+	var head int
+	for _, c := range s {
+		switch c {
+		case '(':
+			stack[head] = ')'
+			head++
+		case '[':
+			stack[head] = ']'
+			head++
+		case '{':
+			stack[head] = '}'
+			head++
+		default:
+			if head == 0 {
+				return false
+			}
+			head--
+			if stack[head] != c {
+				return false
+			}
+		}
+	}
+	return head == 0
 }
