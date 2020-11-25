@@ -2,6 +2,7 @@ package leetcode
 
 import (
 	"container/list"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -867,4 +868,50 @@ func lcp(str1, str2 string) string {
 		i++
 	}
 	return str1[:i]
+}
+
+/*
+ * LeetCode T8. 字符串转换整数 (atoi)
+ * https://leetcode-cn.com/problems/string-to-integer-atoi/
+ *
+ * 请你来实现一个 atoi 函数，使其能将字符串转换成整数。
+ */
+func myAtoi(s string) int {
+	slen := len(s)
+	if slen == 0 {
+		return 0
+	}
+	var i int
+	for i < slen && s[i] == ' ' { // 去掉空格
+		i++
+	}
+	if i == slen {
+		return 0
+	}
+
+	sign := 1
+	if s[i] == '+' { // 符号
+		i++
+	} else if s[i] == '-' {
+		sign = -1
+		i++
+	}
+
+	var res int
+	for i < slen {
+		if s[i] < '0' || s[i] > '9' { // 遇到非数字的字母停止遍历
+			break
+		}
+		n := int(s[i]-'0') * sign
+		// 超限判断
+		if res > math.MaxInt32/10 || (res == math.MaxInt32/10 && n > math.MaxInt32%10) {
+			return math.MaxInt32
+		}
+		if res < math.MinInt32/10 || (res == math.MinInt32/10 && n < math.MinInt32%10) {
+			return math.MinInt32
+		}
+		res = res*10 + n
+		i++
+	}
+	return res
 }

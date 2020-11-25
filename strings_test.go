@@ -314,3 +314,45 @@ func Test_longestCommonPrefix(t *testing.T) {
 		})
 	}
 }
+
+// func Test_myAtoi(t *testing.T) {
+// 	s := "42"
+// 	// t.Log(myAtoi(s))
+// 	// s = "-42"
+// 	// t.Log(myAtoi(s))
+// 	// s = "4193 with words"
+// 	// t.Log(myAtoi(s))
+// 	// s = "words and 987"
+// 	// t.Log(myAtoi(s))
+// 	// s = "-91283472332"
+// 	// t.Log(myAtoi(s))
+// 	s = "21474836460"
+// 	s = " "
+// 	t.Log(myAtoi(s))
+// }
+
+func Test_myAtoi(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"case1", args{"42"}, 42},
+		{"case2", args{"-42"}, -42},
+		{"case3", args{"4193 with words"}, 4193},
+		{"case4", args{"words and 987"}, 0},
+		{"case5", args{"-91283472332"}, -2147483648},
+		{"case6", args{"+2"}, 2},
+		{"case7", args{""}, 0},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := myAtoi(tt.args.s); got != tt.want {
+				t.Errorf("myAtoi() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
