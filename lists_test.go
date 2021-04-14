@@ -188,6 +188,47 @@ func TestMergeTwoLists(t *testing.T) {
 	listPrint(mergeTwoLists3(l1, l2))
 }
 
+func Test_mergeKLists(t *testing.T) {
+	l1 := &ListNode{
+		Val: 1,
+		Next: &ListNode{
+			Val: 3,
+			Next: &ListNode{
+				Val: 9,
+				Next: &ListNode{
+					Val: 10,
+				},
+			},
+		},
+	}
+	l2 := &ListNode{
+		Val: 2,
+		Next: &ListNode{
+			Val: 4,
+			Next: &ListNode{
+				Val: 5,
+				Next: &ListNode{
+					Val: 7,
+				},
+			},
+		},
+	}
+	l3 := &ListNode{
+		Val: -1,
+		Next: &ListNode{
+			Val: 5,
+			Next: &ListNode{
+				Val: 9,
+				Next: &ListNode{
+					Val: 10,
+				},
+			},
+		},
+	}
+	listPrint(mergeKLists3([]*ListNode{l1, l2, l3}))
+	// mergeKLists3([]*ListNode{l1, l2, l3})
+}
+
 func TestDeleteMiddleNode(t *testing.T) {
 	l4 := &ListNode{
 		Val: 1,

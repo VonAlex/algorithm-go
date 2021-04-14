@@ -167,3 +167,7 @@ func Test_sortedArrayToBST(t *testing.T) {
 	root := sortedArrayToBST(nums)
 	t.Log(LevelOrderTraversal(root))
 }
+
+func Test_minDiffInBST(t *testing.T) {
+	t.Log(minDiffInBST(BSTroot))
+}

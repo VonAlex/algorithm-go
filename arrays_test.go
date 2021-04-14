@@ -424,3 +424,25 @@ func Test_findMedianSortedArrays(t *testing.T) {
 		})
 	}
 }
+
+func Test_largestNumber(t *testing.T) {
+	// type args struct {
+	// 	nums []int
+	// }
+	// tests := []struct {
+	// 	name string
+	// 	args args
+	// 	want string
+	// }{
+	// 	// TODO: Add test cases.
+	// }
+	// for _, tt := range tests {
+	// 	t.Run(tt.name, func(t *testing.T) {
+	// 		if got := largestNumber(tt.args.nums); got != tt.want {
+	// 			t.Errorf("largestNumber() = %v, want %v", got, tt.want)
+	// 		}
+	// 	})
+	// }
+	nums := []int{0, 9, 8, 7, 6, 5, 4, 3, 2, 1}
+	t.Log(largestNumber2(nums))
+}

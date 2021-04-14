@@ -1,6 +1,7 @@
 package leetcode
 
 import (
+	"container/heap"
 	"container/list"
 	"fmt"
 )
@@ -373,6 +374,101 @@ func mergeTwoLists3(head1 *ListNode, head2 *ListNode) *ListNode {
 		curr = next
 	}
 	return newHead
+}
+
+// 方法1：顺序合并
+// 借助上面做过的两个链表合并，只需要遍历 k 个链表，以此合并即可
+// 时间复杂度为 O(2n+3n + ···(k-1)n)=O(k^2*n)
+// 空间复杂度为 O(1)
+func mergeKLists(lists []*ListNode) *ListNode {
+	var merged *ListNode
+	for _, l := range lists {
+		merged = mergeTwoLists(merged, l)
+	}
+	return merged
+}
+
+// 方法2：分治合并
+// 可以发现方法 1 中，有很多冗余的 merge，如lists 数组中的第一个 list，它的值就需要遍历 k-1 次
+// 因此可以考虑将冗余的遍历去掉。
+// 分治合并的思路是，类比归并排序
+// 时间复杂度分析：
+//             第1轮合并 k/2 组，每组长度 O(2n), 第2轮合并 k/4 组，每组长度 O(4n)
+//             以此类推，需要合并 logk 轮，因此时间复杂度为 O(kn*logk)
+// 空间复杂度为 O(logk)
+func mergeKLists2(lists []*ListNode) *ListNode {
+	var _merge func(l, r int) *ListNode
+
+	_merge = func(l, r int) *ListNode {
+		if l == r {
+			return lists[l]
+		}
+		if l > r {
+			return nil
+		}
+		mid := l + (r-l)>>1
+		return mergeTwoLists(_merge(l, mid), _merge(mid+1, r))
+	}
+	return _merge(0, len(lists)-1)
+}
+
+/**************** 构建 list 最小堆********************/
+type listset []*ListNode
+
+func (l listset) Len() int { return len(l) }
+
+func (l listset) Less(i, j int) bool {
+	return l[i].Val < l[j].Val
+}
+
+func (l listset) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
+
+func (l *listset) Push(x interface{}) {
+	item := x.(*ListNode)
+	*l = append(*l, item)
+}
+
+func (l *listset) Pop() interface{} {
+	old := *l
+	n := len(old)
+	item := old[n-1]
+	*l = old[0 : n-1]
+	return item
+}
+
+// 方法3：最小堆法
+// 堆中元素数量不超过 k 个，那么插入和删除的时间代价为 O(logk)，
+// 这里最多有 kn 个点，对于每个点都被插入删除各一次，故总的时间代价即渐进时间复杂度为 O(kn*logk)。
+// 直接在原数组调整(slice)，因此空间复杂度为 O(1)
+func mergeKLists3(lists []*ListNode) *ListNode {
+	targets := lists[:0]
+	for _, l := range lists {
+		if l == nil {
+			continue
+		}
+		targets = append(targets, l)
+	}
+	if len(targets) == 0 {
+		return nil
+	}
+	ls := listset(targets)
+
+	// 构建最小堆
+	heap.Init(&ls)
+	dummy := &ListNode{}
+	curr := dummy
+	for ls.Len() != 0 {
+		node := heap.Pop(&ls).(*ListNode)
+		curr.Next = node
+		curr = curr.Next
+		if node.Next == nil {
+			continue
+		}
+		heap.Push(&ls, node.Next)
+	}
+	return dummy.Next
 }
 
 /**

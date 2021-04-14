@@ -476,6 +476,40 @@ func SearchBST2(root *TreeNode, val int) *TreeNode {
 }
 
 /*
+ * LeetCode T783. 二叉搜索树节点最小距离
+ * https://leetcode-cn.com/problems/minimum-distance-between-bst-nodes/
+ *
+ * 给你一个二叉搜索树的根节点 root ，返回 树中任意两不同节点值之间的最小差值
+ */
+func minDiffInBST(root *TreeNode) int {
+	var prev *TreeNode
+	res := math.MaxInt32
+
+	var _inorder func(*TreeNode)
+	_inorder = func(r *TreeNode) {
+		if r == nil {
+			return
+		}
+		if r.Left != nil {
+			_inorder(r.Left)
+		}
+		if prev != nil {
+			diff := r.Val - prev.Val
+			if diff < res {
+				res = diff
+			}
+		}
+		prev = r
+		if r.Right != nil {
+			_inorder(r.Right)
+		}
+		return
+	}
+	_inorder(root)
+	return res
+}
+
+/*
  * LeetCode T701. 二叉搜索树中的插入操作
  * https://leetcode-cn.com/problems/insert-into-a-binary-search-tree/
  * 给定二叉搜索树（BST）的根节点和要插入树中的值，将值插入二叉搜索树。
@@ -901,4 +935,56 @@ func getMidNodeAndCut(head *ListNode) *ListNode {
 		prev.Next = nil // 断开
 	}
 	return slow
+}
+
+/*
+ * LeetCode T208. 实现 Trie (前缀树)
+ * https://leetcode-cn.com/problems/implement-trie-prefix-tree/
+ *
+ */
+type Trie struct {
+	children [26]*Trie
+	isEnd    bool
+}
+
+/** Initialize your data structure here. */
+func TrieConstructor() Trie {
+	return Trie{}
+}
+
+/** Inserts a word into the trie. */
+func (this *Trie) Insert(word string) {
+	node := this
+	for _, c := range word {
+		i := c - 'a'
+		if node.children[i] == nil {
+			node.children[i] = &Trie{}
+		}
+		node = node.children[i]
+	}
+	node.isEnd = true
+}
+
+/** Returns if the word is in the trie. */
+func (this *Trie) Search(word string) bool {
+	node := this.SearchPrefix(word)
+	return node != nil && node.isEnd
+}
+
+/** Returns if there is any word in the trie that starts with the given prefix. */
+func (this *Trie) StartsWith(prefix string) bool {
+	node := this.SearchPrefix(prefix)
+	return node != nil
+}
+
+func (this *Trie) SearchPrefix(word string) *Trie {
+	node := this
+	for _, c := range word {
+		i := c - 'a'
+		if node.children[i] == nil {
+			return nil
+		}
+		node = node.children[i]
+	}
+	return node
 }

@@ -156,20 +156,15 @@ func search2(nums []int, target int) bool {
  * 输出: 1
  */
 // 特殊 case：已排序数组（包含单元素数组）
+
 func findMin(nums []int) int {
 	l, r := 0, len(nums)-1
-	for l < r { // l < r 是为了规避已排序数组是 mid+1或者mid-1出现数组越界的情况
-		mid := l + (r-l)>>1
-		if nums[mid] > nums[mid+1] {
-			return nums[mid+1]
-		}
-		if nums[mid] < nums[mid-1] {
-			return nums[mid]
-		}
-		if nums[mid] > nums[r] {
-			l = mid + 1
+	for l < r {
+		m := l + (r-l)>>1
+		if nums[m] < nums[r] {
+			r = m // nums[m] 有可能是 min，所以 r = m - 1 可能会漏掉题解
 		} else {
-			r = mid - 1
+			l = m + 1
 		}
 	}
 	return nums[l]
