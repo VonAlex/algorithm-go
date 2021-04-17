@@ -22,7 +22,7 @@ func Fib(n int) int {
 	return (Fib(n-1) + Fib(n-2)) % 1000000007
 }
 
-// 方法 2：备忘录递归（自顶向下）
+// 方法 2：备忘录递归（自顶向下 Top Down Approach）
 // 上面方法中存在的重复计算问题，可以使用使用一个数组存放已经计算过的值,
 // 当数组中有的话，直接从数组中取到，否则进行递归运算
 // 时间复杂度和空间复杂度为 O(N)
@@ -46,7 +46,7 @@ func Fib2(n int) int {
 	return _helper(n)
 }
 
-// 方法 3：动态规划（自底向上）
+// Fib3 方法 3：动态规划（自底向上）
 // 状态定义： 设 dp 为一维数组，其中 dp[i] 的值代表斐波那契数列第 i 个数字
 // 转移方程： dp[i] = dp[i-1] + dp[i-2] ，即对应数列定义 f(n) = f(n-1) + f(n-2)
 // 初始状态： dp[0] = 0 dp[1] = 1 ，即初始化前两个数字
@@ -67,7 +67,7 @@ func Fib3(n int) int {
 	return dp[n]
 }
 
-// 方法 4
+// Fib4 方法 4
 // 进一步优化
 // f(n) 只跟 f(n-1) 和 f(n-2) 有关，所以只需要保留前两个值，以及和值，不断进行迭代
 // 设正整数 x, y, p，求余符号为 ⊙，那么(x + y) ⊙ p = (x ⊙ p + y ⊙ p) ⊙ p
@@ -343,6 +343,33 @@ func rob3(nums []int) int {
 		return res
 	}
 	return _dp(n - 1)
+}
+
+/*
+ * LeetCode T213. 打家劫舍 II
+ * https://leetcode-cn.com/problems/house-robber-ii/
+ */
+func rob22(nums []int) int {
+	n := len(nums)
+	if n == 0 {
+		return 0
+	}
+	if n == 1 {
+		return nums[0]
+	}
+	if n == 2 {
+		return maxInt(nums[0], nums[1])
+	}
+	_rob := func(nums []int) int {
+		prevprev := nums[0]
+		prev := maxInt(nums[0], nums[1])
+		for _, num := range nums[2:] {
+			curr := maxInt(prev, prevprev+num) // max(抢前一个, 不抢前一个+抢当前这个)
+			prevprev, prev = prev, curr
+		}
+		return prev
+	}
+	return maxInt(_rob(nums[:n-1]), _rob(nums[1:])) // max(抢第一个，不抢第一个)
 }
 
 /*

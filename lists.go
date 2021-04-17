@@ -2012,26 +2012,22 @@ func splitListToParts(root *ListNode, k int) []*ListNode {
  * 输出：1->2->2->4->3->5
  */
 func partitionList(head *ListNode, x int) *ListNode {
-	if head == nil || head.Next == nil {
-		return head
-	}
-
-	dummyBefore := &ListNode{} // 比 x 都小的结点组成的链表
-	dummyAfter := &ListNode{}  // 不小于 x 的结点组成的链表
-	currBefore, currAfter, curr := dummyBefore, dummyAfter, head
+	dummy1 := &ListNode{} // 比 x 都小的结点组成的链表
+	dummy2 := &ListNode{} // 不小于 x 的结点组成的链表
+	p1, p2, curr := dummy1, dummy2, head
 	for curr != nil {
 		if curr.Val < x {
-			currBefore.Next = curr
-			currBefore = currBefore.Next
+			p1.Next = curr
+			p1 = p1.Next
 		} else {
-			currAfter.Next = curr
-			currAfter = currAfter.Next
+			p2.Next = curr
+			p2 = p2.Next
 		}
 		curr = curr.Next
 	}
-	currAfter.Next = nil
-	currBefore.Next = dummyAfter.Next
-	return dummyBefore.Next
+	p2.Next = nil
+	p1.Next = dummy2.Next
+	return dummy1.Next
 }
 
 // 不用 dummy 结点，代码复杂了许多，增加更多的条件判断

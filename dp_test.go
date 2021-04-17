@@ -55,8 +55,8 @@ func Test_climbStairs(t *testing.T) {
 }
 
 func Test_rob(t *testing.T) {
-	nums := []int{2, 7, 9, 3, 1}
-	t.Log(rob2(nums))
+	nums := []int{1, 2, 3, 1}
+	t.Log(rob22(nums))
 }
 
 func Test_longestPalindrome(t *testing.T) {
