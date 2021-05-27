@@ -467,3 +467,47 @@ func expendArountCenter(s string, l, r int) (int, int) {
 	}
 	return i + 1, j - 1
 }
+
+func longestCommonSubsequence(text1 string, text2 string) int {
+	n1, n2 := len(text1), len(text2)
+
+	dp := make([][]int, n1+1)
+	for i := range dp {
+		dp[i] = make([]int, n2+1)
+	}
+
+	for i := 1; i <= n1; i++ {
+		for j := 1; j <= n2; j++ {
+			if text1[i-1] == text2[j-1] {
+				dp[i][j] = dp[i-1][j-1] + 1
+			} else {
+				dp[i][j] = maxInt(dp[i-1][j], dp[i][j-1])
+			}
+		}
+	}
+	return dp[n1][n2]
+}
+
+func numWays(steps int, arrLen int) int {
+	const mod = 1e9 + 7
+	maxWayLen := minInt(steps, arrLen-1)
+
+	dp := make([][]int, steps+1)
+	for i := range dp {
+		dp[i] = make([]int, maxWayLen+1)
+	}
+
+	dp[0][0] = 1
+	for i := 1; i <= steps; i++ {
+		for j := 0; j <= maxWayLen; j++ {
+			dp[i][j] = dp[i-1][j]
+			if j-1 >= 0 {
+				dp[i][j] = (dp[i][j] + dp[i-1][j-1]) % mod
+			}
+			if j+1 <= maxWayLen {
+				dp[i][j] = (dp[i][j] + dp[i-1][j+1]) % mod
+			}
+		}
+	}
+	return dp[steps][0]
+}

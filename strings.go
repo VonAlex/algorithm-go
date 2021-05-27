@@ -1,8 +1,10 @@
 package leetcode
 
 import (
+	"container/heap"
 	"container/list"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -912,6 +914,85 @@ func myAtoi(s string) int {
 		}
 		res = res*10 + n
 		i++
+	}
+	return res
+}
+
+/*
+ * LC 692. 前K个高频单词
+ * https://leetcode-cn.com/problems/top-k-frequent-words/
+ *
+ * 给一非空的单词列表，返回前 k 个出现次数最多的单词。
+ */
+
+// 方法 1：哈希 + 排序
+// 时间复杂度：O(l×n+l×mlogm) n 表示给定字符串序列的长度，l 表示字符串的平均长度，m 表示实际字符串种类数
+// 空间复杂度：O(l×m)
+func topKFrequent(words []string, k int) []string {
+	cnts := make(map[string]int)
+	for _, w := range words {
+		cnts[w]++
+	}
+	wordSet := make([]string, 0, len(cnts))
+	for w := range cnts {
+		wordSet = append(wordSet, w)
+	}
+	sort.SliceStable(wordSet, func(i, j int) bool {
+		wi, wj := wordSet[i], wordSet[j]
+		return cnts[wi] > cnts[wj] || (cnts[wi] == cnts[wj] && wi < wj)
+	})
+	return wordSet[:k]
+}
+
+type pair struct {
+	w string
+	c int
+}
+
+// 方法 2：优先队列
+// 时间复杂度：O(l×n+m×l×logk)，
+// l×n 的时间将字符串插入到哈希表中, 每次插入元素到优先队列中都需要 l×logk 的时间，共需要插入 m 次
+// 空间复杂度：O(l×(m+k))
+// 哈希表空间占用为 O(l×m)，优先队列空间占用为 O(l×k)。
+
+// 构建最小堆
+type hp []pair
+
+func (h hp) Len() int {
+	return len(h)
+}
+func (h hp) Less(i, j int) bool {
+	a, b := h[i], h[j]
+	return a.c < b.c || a.c == b.c && a.w > b.w
+}
+func (h hp) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+}
+func (h *hp) Push(v interface{}) {
+	*h = append(*h, v.(pair))
+}
+func (h *hp) Pop() interface{} {
+	a := *h
+	v := a[len(a)-1]
+	*h = a[:len(a)-1]
+	return v
+}
+
+func topKFrequent2(words []string, k int) []string {
+	cnts := map[string]int{}
+	for _, w := range words {
+		cnts[w]++
+	}
+	h := &hp{}
+	for w, c := range cnts {
+		heap.Push(h, pair{w, c})
+		if h.Len() > k {
+			heap.Pop(h)
+		}
+	}
+	res := make([]string, k)
+	for i := k - 1; i >= 0; i-- {
+		res[i] = heap.Pop(h).(pair).w
 	}
 	return res
 }

@@ -30,12 +30,12 @@ func binarySearch(nums []int, target int) int {
 // 二分查找，寻找数组中相同元素的左边界 (不断收缩右边界)
 // [1, 2, 2, 2, 3] -> 1
 func binarySearchFindLeftBound(nums []int, target int) int {
-	numsLen := len(nums)
+	n := len(nums)
 	// 异常考虑
-	if nums[0] > target || nums[numsLen-1] < target {
+	if n == 0 || nums[0] > target || nums[n-1] < target {
 		return -1
 	}
-	l, r := 0, numsLen-1
+	l, r := 0, n-1
 	for l <= r {
 		mid := l + (r-l)>>1
 		if nums[mid] == target {
@@ -46,18 +46,22 @@ func binarySearchFindLeftBound(nums []int, target int) int {
 			l = mid + 1
 		}
 	}
+	if nums[l] != target {
+		return -1
+	}
 	return l
 }
 
 // 二分查找，寻找数组中相同元素的右边界 (不断收缩左边界)
 // [1, 2, 2, 2, 3] -> 3
 func binarySearchFindRightBound(nums []int, target int) int {
-	numsLen := len(nums)
+	n := len(nums)
+
 	// 异常考虑
-	if nums[0] > target || nums[numsLen-1] < target {
+	if n == 0 || nums[0] > target || nums[n-1] < target {
 		return -1
 	}
-	l, r := 0, numsLen-1
+	l, r := 0, n-1
 	for l <= r {
 		mid := l + (r-l)>>1
 		if target == nums[mid] {
@@ -67,6 +71,9 @@ func binarySearchFindRightBound(nums []int, target int) int {
 		} else if target < nums[mid] {
 			r = mid - 1
 		}
+	}
+	if nums[r] != target {
+		return -1
 	}
 	return r
 }
@@ -334,4 +341,32 @@ func SearchInsert(nums []int, target int) int {
 	// case2：数组中的数都小于 target，l = 0(起始值)
 	// case3：target 在数组中某两个数之间，l= 第一个大于 target 的数，此时 right = 最后一个小于 target 的数
 	return l
+}
+
+/*
+ * LC 34. 在排序数组中查找元素的第一个和最后一个位置
+ * https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+ */
+func searchRange(nums []int, target int) []int {
+	_bsLeftBound := func(nums []int, target int) int {
+		n := len(nums)
+		l, r := 0, n-1
+		for l <= r {
+			mid := l + (r-l)>>1
+			if nums[mid] == target {
+				r = mid - 1
+			} else if nums[mid] > target {
+				r = mid - 1
+			} else {
+				l = mid + 1
+			}
+		}
+		return l
+	}
+	lBond := _bsLeftBound(nums, target)
+	rBond := _bsLeftBound(nums, target+1) - 1
+	if lBond <= rBond {
+		return []int{lBond, rBond}
+	}
+	return []int{-1, -1}
 }

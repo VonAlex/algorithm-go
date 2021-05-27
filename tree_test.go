@@ -171,3 +171,9 @@ func Test_sortedArrayToBST(t *testing.T) {
 func Test_minDiffInBST(t *testing.T) {
 	t.Log(minDiffInBST(BSTroot))
 }
+
+func Test_topKFrequent(t *testing.T) {
+	words := []string{"i", "love", "leetcode", "i", "love", "coding"}
+	k := 1
+	t.Log(topKFrequent(words, k))
+}

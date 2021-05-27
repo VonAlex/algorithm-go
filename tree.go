@@ -3,6 +3,7 @@ package leetcode
 import (
 	"container/list"
 	"math"
+	"reflect"
 )
 
 type TreeNode struct {
@@ -987,4 +988,177 @@ func (this *Trie) SearchPrefix(word string) *Trie {
 		node = node.children[i]
 	}
 	return node
+}
+
+/*
+ * LC 421. 数组中两个数的最大异或值
+ * https://leetcode-cn.com/problems/maximum-xor-of-two-numbers-in-an-array/
+ */
+// 解法 1：前缀树法
+// 时间复杂度：O(nlogC)，其中 nn 是数组 nums 的长度，C 是数组中的元素范围
+const highBit = 30
+
+type trie struct {
+	left, right *trie
+}
+
+// 构建前缀树
+func (t *trie) add(num int) {
+	curr := t
+	for i := highBit; i >= 0; i-- {
+		bit := num >> i & 1
+		if bit == 0 {
+			if curr.left == nil {
+				curr.left = &trie{}
+			}
+			curr = curr.left
+		} else {
+			if curr.right == nil {
+				curr.right = &trie{}
+			}
+			curr = curr.right
+		}
+	}
+}
+
+func (t *trie) check(num int) (x int) {
+	curr := t
+	for i := highBit; i >= 0; i-- {
+		bit := num >> i & 1
+		if bit == 0 { // bit = 0 时，与 1 做异或操作，结果才是 1
+			if curr.right != nil {
+				curr = curr.right
+				x = x*2 + 1
+			} else { // 没有 1，只有 0 ，那么 0 ^ 0 = 0
+				curr = curr.left
+				x = x * 2
+			}
+		} else {
+			if curr.left != nil {
+				curr = curr.left
+				x = x*2 + 1
+			} else {
+				curr = curr.right
+				x = x * 2
+			}
+
+		}
+	}
+	return
+}
+
+func findMaximumXOR(nums []int) (x int) {
+	root := &trie{}
+	n := len(nums)
+	for i := 1; i < n; i++ {
+		root.add(nums[i-1])                // 将前一个加入 tire
+		x = maxInt(x, root.check(nums[i])) // 比较
+	}
+	return
+}
+
+/*
+ * LC 872. 叶子相似的树
+ * https://leetcode-cn.com/problems/leaf-similar-trees/
+ */
+func leafSimilar(root1 *TreeNode, root2 *TreeNode) bool {
+	var leaves []int
+	var _dfs func(*TreeNode)
+	_dfs = func(root *TreeNode) {
+		if root == nil {
+			return
+		}
+		if root.Left == nil && root.Right == nil {
+			leaves = append(leaves, root.Val)
+		}
+		_dfs(root.Left)
+		_dfs(root.Right)
+	}
+
+	_dfs(root1)
+	leaves1 := append([]int(nil), leaves...)
+	leaves = []int{}
+
+	_dfs(root2)
+	leaves2 := append([]int(nil), leaves...)
+	return reflect.DeepEqual(leaves1, leaves2)
+}
+
+/*
+ * LC 993. 二叉树的堂兄弟节点
+ * https://leetcode-cn.com/problems/cousins-in-binary-tree/
+ */
+// 解法 1: 深度优先搜索
+func isCousins(root *TreeNode, x int, y int) bool {
+	var xParent, yParent *TreeNode
+	var xDepth, yDepth int
+	var xFound, yFound bool
+
+	var _dfs func(curr, parent *TreeNode, depth int)
+	_dfs = func(curr, parent *TreeNode, depth int) {
+		if curr == nil {
+			return
+		}
+		if x == curr.Val {
+			xParent, xDepth, xFound = parent, depth, true
+		} else if y == curr.Val {
+			yParent, yDepth, yFound = parent, depth, true
+		}
+		if xFound && yFound {
+			return
+		}
+		_dfs(curr.Left, curr, depth+1)
+		if xFound && yFound {
+			return
+		}
+		_dfs(curr.Right, curr, depth+1)
+	}
+	_dfs(root, nil, 0)
+	return (xDepth == yDepth) && (xParent != yParent)
+}
+
+// 解法 2: 广度优先搜索
+type nodeinfo struct {
+	node  *TreeNode
+	depth int
+}
+
+func isCousins2(root *TreeNode, x int, y int) bool {
+	var xParent, yParent *TreeNode
+	var xDepth, yDepth int
+	var xFound, yFound bool
+
+	_update := func(curr, parent *TreeNode, depth int) {
+		if x == curr.Val {
+			xParent, xDepth, xFound = parent, depth, true
+		} else if y == curr.Val {
+			yParent, yDepth, yFound = parent, depth, true
+		}
+	}
+
+	q := list.New()
+	q.PushBack(&nodeinfo{root, 0})
+
+	for q.Len() != 0 {
+		e := q.Front()
+		v := e.Value.(*nodeinfo)
+		q.Remove(e)
+		curr, depth := v.node, v.depth
+
+		if curr.Left != nil {
+			_update(curr.Left, curr, depth+1)
+			q.PushBack(&nodeinfo{curr.Left, depth + 1})
+		}
+		if xFound && yFound {
+			break
+		}
+		if curr.Right != nil {
+			_update(curr.Right, curr, depth+1)
+			q.PushBack(&nodeinfo{curr.Right, depth + 1})
+		}
+		if xFound && yFound {
+			break
+		}
+	}
+	return (xDepth == yDepth) && (xParent != yParent)
 }

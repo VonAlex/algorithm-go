@@ -1,5 +1,9 @@
 package leetcode
 
+import (
+	"math/bits"
+)
+
 // 计算一个数二进制表示中有多少个 1
 func HammingWeight(n int) int {
 	count := 0
@@ -10,7 +14,28 @@ func HammingWeight(n int) int {
 	return count
 }
 
-/**
+/*
+ * LC 461. 汉明距离
+ * https://leetcode-cn.com/problems/hamming-distance/
+ *
+ * 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。
+ * 给出两个整数 x 和 y，计算它们之间的汉明距离。
+ */
+func hammingDistance(x int, y int) int {
+	var ans int
+	s := x ^ y
+	for s > 0 {
+		ans += s & 1
+		s >>= 1
+	}
+	return ans
+}
+
+func hammingDistance2(x int, y int) int {
+	return bits.OnesCount(uint(x ^ y))
+}
+
+/*
  * LeetCode T231. 2的幂
  * https://leetcode-cn.com/problems/power-of-two/
  *
@@ -54,7 +79,7 @@ func isOppositeSign(x, y int) bool {
 	return (x ^ y) < 0
 }
 
-/**
+/*
  * LeetCode 面试题56 - I. 数组中数字出现的次数
  * https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/
  *
@@ -93,4 +118,157 @@ func SingleNumbers(nums []int) []int {
 		}
 	}
 	return []int{a, b}
+}
+
+/*
+ * LC 1486. 数组异或操作
+ * https://leetcode-cn.com/problems/xor-operation-in-an-array/
+ */
+func xorOperation(n int, start int) int {
+	var res int
+	for i := 0; i < n; i++ {
+		n := start + 2*i
+		res ^= n
+	}
+	return res
+}
+
+/*
+ * LC 1734. 解码异或后的排列
+ * https://leetcode-cn.com/problems/decode-xored-permutation/
+ */
+func decode(encoded []int) []int {
+
+	// encoded 长度为 n - 1， perm 长度为 n
+	n := len(encoded) + 1
+	var total int
+	for i := 1; i <= n; i++ {
+		total ^= i
+	}
+
+	var odd int
+	for i := 1; i < n-1; i += 2 {
+		odd ^= encoded[i]
+	}
+
+	perm := make([]int, n)
+	perm[0] = total ^ odd
+
+	for i := 0; i < n-1; i++ {
+		perm[i+1] = encoded[i] ^ perm[i]
+	}
+	return perm
+}
+
+/*
+ * LC 1310. 子数组异或查询
+ * https://leetcode-cn.com/problems/xor-queries-of-a-subarray/
+ */
+// 解法 1：时间复杂度 O(mn)
+func xorQueries(arr []int, queries [][]int) []int {
+	rows := len(queries)
+	res := make([]int, 0, rows)
+	if rows == 0 {
+		return res
+	}
+	arrLen := len(arr)
+	for i := 0; i < rows; i++ {
+		var elem int
+		l, r := queries[i][0], queries[i][1]
+		for j := l; j <= r; j++ {
+			if j >= arrLen {
+				return res
+			}
+			elem ^= arr[j]
+		}
+		res = append(res, elem)
+	}
+	return res
+}
+
+// 解法 2：前缀和，时间复杂度 O(n)
+func xorQueries2(arr []int, queries [][]int) []int {
+	xors := make([]int, len(arr)+1)
+	for i, v := range arr {
+		xors[i+1] = xors[i] ^ v
+	}
+	res := make([]int, len(queries))
+	for i, p := range queries {
+		res[i] = xors[p[0]] ^ xors[p[1]+1]
+	}
+	return res
+}
+
+func countTriplets(arr []int) int {
+	n := len(arr)
+	xors := make([]int, n+1)
+	for i, v := range arr {
+		xors[i+1] = xors[i] ^ v
+	}
+
+	var ans int
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			for k := j; k < n; k++ {
+				if xors[i] == xors[k+1] {
+					ans++
+				}
+			}
+		}
+	}
+	return ans
+}
+
+func countTriplets2(arr []int) int {
+	n := len(arr)
+	xors := make([]int, n+1)
+	for i, v := range arr {
+		xors[i+1] = xors[i] ^ v
+	}
+
+	var ans int
+	for i := 0; i < n; i++ {
+		for k := i + 1; k < n; k++ {
+			if xors[i] == xors[k+1] {
+				ans += (k - i)
+			}
+		}
+	}
+	return ans
+}
+
+func countTriplets3(arr []int) int {
+	n := len(arr)
+	xors := make([]int, n+1)
+	for i, v := range arr {
+		xors[i+1] = xors[i] ^ v
+	}
+
+	var ans int
+	cnt := make(map[int]int)
+	total := make(map[int]int)
+	for k := 0; k < n; k++ {
+		if m, has := cnt[xors[k+1]]; has {
+			ans += (m*k - total[xors[k+1]])
+		}
+		cnt[xors[k]]++
+		total[xors[k]] += k
+	}
+	return ans
+}
+
+func countTriplets4(arr []int) int {
+	var ans, s int
+	cnt := make(map[int]int)
+	total := make(map[int]int)
+	for k, v := range arr {
+		prev := s
+		s ^= v
+		if m, has := cnt[s]; has {
+			ans += (m*k - total[s])
+		}
+		cnt[prev]++
+		total[prev] += k
+	}
+	return ans
 }
